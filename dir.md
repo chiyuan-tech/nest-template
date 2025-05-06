@@ -52,38 +52,53 @@
 
 ## 主要变更和当前状态
 
-*   **移除了基于 URL 的 i18n 路由:** 项目不再使用 `/[locale]/` 路径前缀。所有 URL 都是规范的单语言形式 (例如 `/blog`, `/profile`)。
-*   **语言管理:**
-    *   删除了 `middleware.ts`。
-    *   语言切换现在通过设置 Cookie (`NEXT_LOCALE`) 和页面刷新实现 (在 `Navbar.tsx` 中处理，但该切换功能目前已移除)。
-    *   `i18n/request.ts` 负责配置 `next-intl`，目前固定加载并使用英文 (`en`) 消息。
-    *   `app/layout.tsx` 使用 `getLocale` 和 `getMessages` (来自 `next-intl/server`) 从 `i18n/request.ts` 获取配置，并将其传递给 `NextIntlClientProvider`，供客户端组件使用。
-    *   `html` 标签的 `lang` 属性现在由 `app/layout.tsx` 根据 `getLocale()` 动态设置 (当前固定为 'en')。
-*   **仅支持英语:** `messages/zh.json` 已被删除，`messages/en.json` 已被清理，只保留实际使用的翻译键。`Navbar` 中的语言切换菜单已被移除。
-*   **自定义 404 页面:** `app/not-found.tsx` 定义了一个自定义的 404 错误页面。
-*   **Clerk 本地化:** `components/auth/clerk-provider.tsx` 现在使用 `useLocale()` 从 `next-intl` 上下文获取当前语言环境 (目前固定为 'en')，并相应地设置 Clerk 组件的语言。
-*   **Sitemap:** `app/sitemap.ts` 已更新，只生成规范的、无语言前缀的 URL。
+**核心变更：移除基于 URL 的 i18n 路由**
+*   项目不再使用 `/[locale]/` 路径前缀进行国际化路由。
+*   所有 URL 均统一为单语言（当前为英语）的规范形式，例如 `/blog`, `/profile`。
+
+**语言管理与本地化 (当前固定为英语 'en')**
+*   **移除了 `middleware.ts`**: 语言路由的中间件不再需要。
+*   **语言设置**:
+    *   语言切换机制（原通过 Cookie `NEXT_LOCALE` 和页面刷新，在 `Navbar.tsx` 中处理）已被移除。
+    *   `i18n/request.ts` 文件负责配置 `next-intl`，目前硬编码加载并使用英语 (`en`) 消息。
+*   **`next-intl`集成**:
+    *   根布局 `app/layout.tsx` 使用 `next-intl/server` 中的 `getLocale` 和 `getMessages` 从 `i18n/request.ts` 获取配置。
+    *   获取到的区域设置和消息随后传递给 `NextIntlClientProvider`，供客户端组件消费。
+*   **HTML 语言属性**: `<html>` 标签的 `lang` 属性由 `app/layout.tsx` 根据 `getLocale()` (当前固定为 'en') 动态设置。
+*   **翻译资源**:
+    *   移除了中文翻译文件 `messages/zh.json`。
+    *   英文翻译文件 `messages/en.json` 已进行清理，仅保留实际使用的翻译键。
+*   **UI 中的语言切换**: `Navbar` 组件中的语言切换菜单已被移除。
+*   **Clerk 组件本地化**: `components/auth/clerk-provider.tsx` 使用 `next-intl` 的 `useLocale()` (当前固定为 'en') 来设置 Clerk 相关组件的显示语言。
+
+**其他重要变更**
+*   **自定义 404 页面**: `app/not-found.tsx` 文件定义了一个项目专属的 404 错误页面。
+*   **Sitemap 更新**: `app/sitemap.ts` 已更新，仅生成规范的、无语言前缀的 URL。
 
 ## 目录和文件说明
 
-*   **app/**: Next.js App Router 的核心。页面路由直接在此目录下定义 (例如 `app/blog/page.tsx` 对应 `/blog`)。
-*   **app/layout.tsx**: 应用程序的根布局。设置 HTML 结构、加载全局 CSS/字体、配置 `NextIntlClientProvider` 和 Clerk Provider、渲染 `Navbar` 和 `Footer`。
-*   **app/page.tsx**: 应用程序的首页 (`/`)。
-*   **app/not-found.tsx**: 当路由未匹配时显示的自定义 404 页面。
-*   **app/sitemap.ts**: 生成 `sitemap.xml` 的逻辑。
-*   **components/**: 可复用的 UI 组件。
-    *   `components/ui/`: 通过 `shadcn/ui` CLI 生成的基础 UI 组件。
-    *   `components/auth/`: 与用户认证流程相关的组件 (Clerk)。
-*   **lib/**: 存放非 UI 的辅助代码，如工具函数、静态数据 (`blogData.ts`)。
-*   **i18n/**: 存放 `next-intl` 的服务器端配置文件 (`request.ts`)。
-*   **messages/**: 存放 `next-intl` 使用的翻译文件 (目前只有 `en.json`)。
-*   **public/**: 存放静态资源，可通过根 URL 直接访问。
-*   **next.config.ts**: Next.js 项目配置文件，已集成 `next-intl/plugin`。
-*   **package.json**: 项目依赖和脚本。
-*   **tsconfig.json**: TypeScript 编译器配置。
-*   **components.json**: `shadcn/ui` 配置文件。
-
-
-<!-- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_YXdhaXRlZC1zY29ycGlvbi03MS5jbGVyay5hY2NvdW50cy5kZXYk
-CLERK_SECRET_KEY=sk_test_PllyFoUqkQKzNQytPlj8kD31cyeI1Z0UrVbH4qyfpj
-NEXT_PUBLIC_SITE_URL=https://framepola.com -->
+*   **`app/`**: Next.js App Router 的核心目录。
+    *   页面路由直接在此目录下定义，例如 `app/blog/page.tsx` 对应 `/blog` 路径。
+*   **`app/layout.tsx`**: 应用程序的根布局文件。
+    *   负责设置 HTML 文档的基本结构。
+    *   加载全局 CSS 样式和字体。
+    *   配置 `NextIntlClientProvider` (用于 `next-intl` 国际化) 和 Clerk Provider (用于用户认证)。
+    *   渲染全局共享的 `Navbar` 和 `Footer` 组件。
+*   **`app/page.tsx`**: 应用程序的首页，对应 `/` 路径。
+*   **`app/not-found.tsx`**: 自定义的 404 错误页面，当路由不匹配时显示。
+*   **`app/sitemap.ts`**: 用于生成 `sitemap.xml` 文件的相关逻辑。
+*   **`components/`**: 存放可复用的 UI 组件。
+    *   **`components/ui/`**: 通过 `shadcn/ui` CLI 生成的基础 UI 组件库。
+    *   **`components/auth/`**: 与用户认证流程 (Clerk) 相关的组件。
+*   **`lib/`**: 存放非 UI 的辅助代码。
+    *   例如：工具函数 (`utils.ts`)、静态数据 (`blogData.ts`)。
+*   **`i18n/`**: 存放 `next-intl` 的服务器端配置文件 (`request.ts`)。
+*   **`messages/`**: 存放 `next-intl` 使用的翻译资源文件。
+    *   目前仅包含英文翻译 `en.json`。
+*   **`public/`**: 存放静态资源文件。
+    *   此目录下的文件可以通过应用的根 URL 直接访问。
+*   **`next.config.ts`**: Next.js 项目的配置文件。
+    *   已集成 `next-intl/plugin` 以支持国际化配置。
+*   **`package.json`**: 项目的依赖项配置文件和脚本定义。
+*   **`tsconfig.json`**: TypeScript 编译器的配置文件。
+*   **`components.json`**: `shadcn/ui` 的配置文件。
