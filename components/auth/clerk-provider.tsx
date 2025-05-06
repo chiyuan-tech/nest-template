@@ -2,7 +2,7 @@
 
 import { ClerkProvider } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
-import { zhCN } from '@clerk/localizations';
+import { zhCN, enUS } from '@clerk/localizations';
 
 // 自定义 Clerk 中文本地化配置
 const customTranslations = {
@@ -137,9 +137,11 @@ export default function ClerkProviderWithLocale({
     ...customTranslations
   };
 
+  let localization = locale === 'zh' ? zhCN : enUS;
+
   return (
     <ClerkProvider 
-      localization={zhCN}
+      localization={localization}
       appearance={{
         layout: {
           socialButtonsVariant: "iconButton",
