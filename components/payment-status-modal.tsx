@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter, usePathname, useParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useLocale } from 'next-intl';
 
 export default function PaymentStatusModal() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const params = useParams();
+  const currentLocale = useLocale();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({
@@ -16,24 +17,6 @@ export default function PaymentStatusModal() {
     buttonText: { en: 'Confirm', zh: '确认' }
   });
   const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
-  const [preferredLang, setPreferredLang] = useState('en');
-
-  useEffect(() => {
-    const urlLocale = params.locale as string | undefined;
-    let determinedLang = 'en';
-
-    if (urlLocale === 'zh') {
-      determinedLang = 'zh';
-    } else if (urlLocale === 'en') {
-      determinedLang = 'en';
-    } else {
-      if (typeof navigator !== "undefined") {
-        determinedLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
-      }
-    }
-    setPreferredLang(determinedLang);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.locale]);
 
   useEffect(() => {
     const paysuccess = searchParams.get('paysuccess');
@@ -81,7 +64,7 @@ export default function PaymentStatusModal() {
   };
 
   const getLocalizedText = (textObj: { en: string; zh: string }) => {
-    return preferredLang === 'zh' ? textObj.zh : textObj.en;
+    return currentLocale === 'zh' ? textObj.zh : textObj.en;
   };
 
   if (!isModalOpen) {

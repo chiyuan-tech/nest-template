@@ -8,15 +8,12 @@ import {
   useClerk
 } from '@clerk/nextjs';
 import { Button } from '../../components/ui/button';
-import { useParams } from 'next/navigation';
 import UserProfileMenu from './user-profile-menu';
 
 export default function AuthButton() {
   const t = useTranslations('nav');
   const { isSignedIn, user } = useUser();
   const { openSignIn } = useClerk();
-  const params = useParams();
-  const locale = params.locale as string || 'zh';
 
   if (isSignedIn && user) {
     return (

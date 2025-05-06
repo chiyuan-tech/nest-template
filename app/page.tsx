@@ -1,6 +1,18 @@
-import { redirect } from 'next/navigation';
+// import { Navbar } from '../components/Navbar'; // Navbar is now in root layout
 
-export default function RootPage() {
-  redirect('/en'); // 默认重定向到英文页面
-  return null;
+import ComparisonSlider from '../components/ComparisonSlider';
+import PricingSection from '../components/PricingSection';
+
+import { Footer } from '../components/Footer';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <ComparisonSlider />
+        <PricingSection />
+      </main>
+      <Footer />
+    </div>
+  );
 }

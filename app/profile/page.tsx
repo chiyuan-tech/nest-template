@@ -1,14 +1,13 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Footer } from '../../../components/Footer';
+import { Footer } from '../../components/Footer';
 import Image from 'next/image';
-import { Progress } from '../../../components/ui/progress';
+import { Progress } from '../../components/ui/progress';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useParams } from 'next/navigation';
 import {
   Pagination,
   PaginationContent,
@@ -156,8 +155,7 @@ export default function ProfilePage() {
   const { user, isLoaded } = useUser();
   const t = useTranslations('user');
   const commonT = useTranslations('common');
-  const params = useParams();
-  const locale = params.locale as string || 'zh';
+  const locale = useLocale();
 
   // API 数据状态 (用户信息)
   const [userApiInfo, setUserApiInfo] = useState<UserApiInfo | null>(null);
@@ -173,6 +171,21 @@ export default function ProfilePage() {
   const [totalHistoryCount, setTotalHistoryCount] = useState(0);
   const historyPageSize = 30;
   const [isDownloading, setIsDownloading] = useState<number | null>(null); // 跟踪正在下载的图片ID
+
+  // Function to format timestamp based on locale
+  const formatTimestamp = (timestamp: number): string => {
+    if (!timestamp) return 'N/A';
+    try {
+      return new Intl.DateTimeFormat(locale, {
+        year: 'numeric', month: 'long', day: 'numeric', 
+        hour: '2-digit', minute: '2-digit', 
+        // timeZone: 'UTC' // Or get timezone from context if needed
+      }).format(new Date(timestamp * 1000));
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return new Date(timestamp * 1000).toLocaleDateString(); // Fallback
+    }
+  };
 
   // 动态设置页面标题
   useEffect(() => {
@@ -291,7 +304,7 @@ export default function ProfilePage() {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen text-center px-6">
         <p className="text-lg mb-4">{t('loginPrompt', {defaultMessage: 'Please log in to view your profile and generation history.'})}</p>
-        <Button onClick={() => window.location.href=`/${locale}/sign-in?redirect_url=/${locale}/profile`}>
+        <Button onClick={() => window.location.href='/sign-in?redirect_url=/profile'}>
           {t('loginAction', {defaultMessage: 'Log In / Sign Up'})}
         </Button>
       </div>
@@ -316,8 +329,11 @@ export default function ProfilePage() {
   };
   const currentPlanName = getPlanName(userApiInfo?.level);
 
+  // Pagination items calculation
+  const paginationItems = getPaginationItems(currentPage, totalPages);
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
       <main className="flex-grow py-12 px-6">
         <div className="container mx-auto max-w-5xl">
           <h1 className="text-3xl font-bold text-gray-800 mb-10">{t('account')}</h1>
@@ -330,6 +346,7 @@ export default function ProfilePage() {
               </Avatar>
               <h2 className="text-xl font-semibold text-gray-800">{user.fullName || user.username}</h2>
               <p className="text-sm text-gray-500 mt-1">{user.primaryEmailAddress?.emailAddress}</p>
+              <p className="text-xs text-gray-500 mt-2">{t('createdAt')}: {user.createdAt ? formatTimestamp(user.createdAt.getTime() / 1000) : 'N/A'}</p>
             </div>
 
             <div className="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -354,11 +371,19 @@ export default function ProfilePage() {
                       </div>
                       <Progress value={usagePercentage} className="h-2" />
                     </div>
+                    <div>
+                      <span className="font-medium">{t('subscription_status', { defaultMessage: 'Status:'})}</span> {userApiInfo.subscription_status || t('noSubscription')}
+                    </div>
+                    {userApiInfo.current_period_end > 0 && (
+                      <div>
+                        <span className="font-medium">{t('current_period_end', {defaultMessage: 'Renews/Expires On:'})}</span> {formatTimestamp(userApiInfo.current_period_end)}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center py-4">
                     <p className="text-gray-600 mb-4">{t('noSubscriptionMessage', { defaultMessage: 'You currently do not have an active subscription.' })}</p>
-                    <Button onClick={() => window.location.href=`/${locale}/#pricing`}>
+                    <Button onClick={() => window.location.href='/sign-in?redirect_url=/profile'}>
                       {t('viewPlans', { defaultMessage: 'View Plans' })}
                     </Button>
                   </div>
@@ -441,7 +466,7 @@ export default function ProfilePage() {
                           />
                         </PaginationItem>
 
-                        {getPaginationItems(currentPage, totalPages).map((page, index) => (
+                        {paginationItems.map((page, index) => (
                           <PaginationItem key={index}>
                             {typeof page === 'number' ? (
                               <PaginationLink
@@ -479,7 +504,7 @@ export default function ProfilePage() {
             ) : (
               <div className="text-center py-10 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <p className="text-gray-500 mb-4">{t('noImagesYet', {defaultMessage: 'You haven\'t generated any images yet.'})}</p>
-                <Button variant="default" onClick={() => window.location.href=`/${locale}/`}>
+                <Button variant="default" onClick={() => window.location.href='/'}>
                   {t('generateFirstImage', {defaultMessage: 'Create your first image'})}
                 </Button>
               </div>

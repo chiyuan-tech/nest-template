@@ -12,9 +12,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useClerk } from "@clerk/nextjs";
 import { UserResource } from "@clerk/types";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 interface UserProfileMenuProps {
@@ -29,9 +29,8 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
 
   const { signOut } = useClerk();
   const t = useTranslations('user');
-  const params = useParams();
+  const locale = useLocale();
   const pathname = usePathname();
-  const locale = params.locale as string || 'zh';
 
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`;
 
@@ -100,10 +99,10 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
         <DropdownMenuItem 
           asChild 
           className={`focus:bg-muted hover:bg-muted cursor-pointer ${
-            pathname === `/${locale}/profile` ? 'bg-muted font-semibold' : ''
+            pathname === `/profile` ? 'bg-muted font-semibold' : ''
           }`}
         >
-          <Link href={`/${locale}/profile`}>
+          <Link href={`/profile`}>
             {t('profile')}
           </Link>
         </DropdownMenuItem>

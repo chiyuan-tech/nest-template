@@ -1,45 +1,14 @@
 {
   "nav": {
     "home": "Home",
-    "examples": "Examples",
     "blog": "Blog",
-    "pricing": "Pricing",
     "login": "Login/Sign Up",
-    "language": "Language",
-    "chinese": "Simplified Chinese",
-    "english": "English",
-    "signOut": "Sign Out",
     "menuTitle": "Navigation Menu"
   },
-  "auth": {
-    "welcome": "Welcome Back",
-    "nickname": "Nickname"
-  },
-  
   "user": {
     "profile": "Profile",
-    "settings": "Settings",
     "signOut": "Sign Out",
     "account": "Account Management",
-    "preferences": "Preferences",
-    "theme": "Theme",
-    "language": "Language",
-    "generatedImages": "Generated Images",
-    "points": "Points Balance",
-    "recharge": "Recharge",
-    "noImages": "You haven't generated any images yet.",
-    "preview": "Preview",
-    "download": "Download",
-    "delete": "Delete",
-    "nickname": "Nickname",
-    "email": "Email",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "phone": "Phone",
-    "createdAt": "Created At",
-    "lastSignInAt": "Last Sign In",
-    "emailVerified": "Email Verified",
-    "externalAccounts": "External Accounts",
     "subscriptionStatus": "Subscription Status",
     "currentPlan": "Current Plan:",
     "generationUsage": "Generation Usage:",
@@ -49,31 +18,31 @@
     "noSubscription": "No Subscription",
     "noSubscriptionMessage": "You currently do not have an active subscription.",
     "viewPlans": "View Plans",
-    "errorFetching": "Error fetching data:",
-    "noData": "No subscription data available.",
-    "noImagesYet": "You haven't generated any images yet.",
-    "generateFirstImage": "Create your first image",
     "errorFetchingUserInfo": "Error fetching user data:",
     "userInfoNotAvailable": "User subscription details not available.",
     "errorFetchingHistory": "Error loading generation history:",
-    "viewDetails": "View",
-    "retry": "Retry",
+    "generatedImages": "Generated Images",
+    "download": "Download",
+    "noImagesYet": "You haven't generated any images yet.",
+    "generateFirstImage": "Create your first image",
     "loginPrompt": "Please log in to view your profile and generation history.",
     "loginAction": "Log In / Sign Up",
-    "downloadImage": "Download Image",
-    "downloadImageAria": "Download generated image {id}"
+    "downloadImageAria": "Download generated image {id}",
+    "createdAt": "Created At",
+    "retry": "Retry"
   },
   "blog": {
     "title": "Blog",
-    "allArticles": "All Articles",
     "backToBlog": "Back to Blog",
     "publishedOn": "Published on",
     "readMore": "Read More",
-    "categories": "Categories",
-    "updates": "Product Updates",
-    "tutorials": "Tutorials",
-    "stories": "User Stories",
-    "tags": "Tags",
+    "categoriesTitle": "Categories",
+    "categories": {
+      "all": "All",
+      "updates": "Product Updates",
+      "tutorials": "Tutorials",
+      "stories": "User Stories"
+    },
     "posts": {
       "how-to-take-perfect-polaroid-style-photos": {
         "title": "How to Take Perfect Polaroid-Style Photos",
@@ -105,7 +74,8 @@
         "excerpt": "We recently upgraded our servers, and photo processing speed is now up to 30% faster.",
         "content": "<h2>Backend Architecture Upgrade</h2><p>To handle the growing user base and provide a smoother service experience, our technical team recently completed a major backend architecture upgrade. We optimized the image processing pipeline and increased server resources.</p><h2>Significant Speed Improvement</h2><p>Based on internal testing and early user feedback, the average photo generation speed has increased by about 30%. This means you can now get your desired Polaroid-style photos faster, reducing wait times.</p><h2>Continuous Optimization</h2><p>Performance optimization is an ongoing process. We will continue to monitor service performance and explore new technical approaches to ensure PolaToons remains efficient and stable.</p><p>Thank you for your continued support! We hope this update brings you a better user experience.</p>"
       }
-    }
+    },
+    "noPostsInCategory": "No posts in this category yet."
   },
   "pricing": {
     "title": "Choose Your Perfect Plan",
@@ -113,7 +83,6 @@
     "perMonth": "/month",
     "mostPopular": "Most Popular",
     "upgradePlan": "Upgrade Plan",
-    "saveAnnually": "Save 20% with annual billing",
     "newTag": "New",
     "loading": "Processing...",
     "currentPlanText": "No Subscription",
@@ -202,8 +171,7 @@
     "pricing": "Pricing",
     "legal": "Legal",
     "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "contact": "Contact Us"
+    "privacy": "Privacy Policy"
   },
   "common": {
     "loading": "Loading...",
@@ -214,5 +182,10 @@
     "description": "Slide to compare the original photos with their AI-generated Polaroid cartoon versions.",
     "originalLabel": "Original",
     "generatedLabel": "Generated"
+  },
+  "NotFound": {
+    "title": "Page Not Found",
+    "description": "Oops! The page you're looking for doesn't seem to exist.",
+    "backButton": "Go Back Home"
   }
 } 

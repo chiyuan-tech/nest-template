@@ -4,6 +4,10 @@ import type { Metadata } from 'next'
 import Script from 'next/script';
 import PaymentStatusModal from '@/components/payment-status-modal';
 import { Suspense } from 'react';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages, getTimeZone } from 'next-intl/server';
+import { Navbar } from '@/components/Navbar';
+import ClerkProviderWithLocale from '@/components/auth/clerk-provider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
@@ -39,7 +43,6 @@ export const metadata: Metadata = {
   },
 }
 
-// 定义 Organization 和 WebSite 的 Schema 结构化数据
 const schemaData = {
   "@context": "https://schema.org",
   "@graph": [
@@ -61,24 +64,40 @@ const schemaData = {
   ]
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const GA_TRACKING_ID = 'G-BST9KGD31X';
 
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const timeZone = await getTimeZone();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className={`${inter.variable} ${playfair.variable} ${fredoka.variable} ${baloo.variable} ${nunito.variable} bg-background text-foreground`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
         />
-        {children}
-        <Suspense fallback={null}>
-          <PaymentStatusModal />
-        </Suspense>
+        <NextIntlClientProvider
+            locale={locale}
+            messages={messages}
+            timeZone={timeZone}
+        >
+          <ClerkProviderWithLocale>
+             <main className="min-h-screen">
+                <Navbar />
+                {children}
+             </main>
+             <Suspense fallback={null}>
+               <PaymentStatusModal />
+             </Suspense>
+          </ClerkProviderWithLocale>
+        </NextIntlClientProvider>
+
         <Script
           strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
