@@ -122,6 +122,7 @@ const customTranslations = {
   }
 };
 
+
 export default function ClerkProviderWithLocale({
   children,
 }: {
