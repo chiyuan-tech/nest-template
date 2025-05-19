@@ -1,22 +1,34 @@
-# Website Name
-ImageFusion
+# llms.txt for https://www.4oimagex.com
+# This file provides guidance to LLM crawlers on allowed content
 
-> AI Image Fusion Tool | Free Online Photo Combiner & Enhancer. Combine images online effortlessly using AI to merge photos, enhance detail, and create seamless results.
+# -------------------------------------
+# ✅ Website Information
+Website: https://www.4oimagex.com
+Name: 4oimagex
+Description: AI Image Generator | Create stunning visuals with cutting-edge AI technology. Transform your ideas into artistic images with 4oimagex, the advanced AI image generator that helps you create beautiful illustrations and artwork instantly.
 
-## Core Content
-- [AI Image Fusion Tool Features](https://www.imagefusionai.com/#features)
-- [Online Image Fusion Examples](https://www.imagefusionai.com/#showcase)
-- [AI Photo Fusion Pricing](https://www.imagefusionai.com/#pricing)
-- [AI Image Fusion Blog](https://www.imagefusionai.com/blog)
-- [Combine Images FAQ](https://www.imagefusionai.com/#faq)
+# -------------------------------------
+# ✅ Core Content Sections
+Allow: /#how-it-works
+Allow: /#showcase
+Allow: /#testimonials
+Allow: /#pricing
+Allow: /#faq
+Allow: /blog
+Allow: /blog/ai-art-generation-guide
+Allow: /blog/how-to-create-perfect-ai-illustrations
 
-## Important Pages
-- [Homepage - AI Image Combiner](https://www.imagefusionai.com/)
-- [Terms of Service](https://www.imagefusionai.com/terms)
-- [Privacy Policy](https://www.imagefusionai.com/privacy)
+# -------------------------------------
+# ✅ Important Legal Pages
+Allow: /terms
+Allow: /privacy
 
-## Latest Updates (Blog)
-# Note: Replace with actual latest blog post URLs if possible
-- [How to Take Perfect Photos for AI Image Fusion](https://www.imagefusionai.com/blog/how-to-take-perfect-polaroid-style-photos)
-- [New AI Image Fusion Effects: Enhanced Depth & Realism](https://www.imagefusionai.com/blog/new-feature-3d-effect-enhancement)
-- [Faster AI Image Fusion: Performance Optimization Update](https://www.imagefusionai.com/blog/performance-optimization-update-faster-processing) 
+# -------------------------------------
+# ❌ Disallowed API or Internal Paths (implicitly via robots.txt)
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# -------------------------------------
+# 📌 Sitemap for better discovery
+Sitemap: https://www.4oimagex.com/sitemap.xml

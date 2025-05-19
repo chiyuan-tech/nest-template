@@ -1,117 +1,102 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-// import { Navbar } from '../../components/Navbar';
-import { Footer } from '../../components/Footer';
 import { useState } from 'react';
-// Remove Image import as it's no longer used in the list
-// import Image from 'next/image'; 
 import Link from 'next/link';
-// Import the correct type and data
-import { blogPostMetadata, BlogPostMeta } from '../../lib/blogData';
+import { cn } from '@/lib/utils';
+import { blogPosts } from './data/blogPosts';
 
-// Removed the custom Post interface, use BlogPostMeta
-// interface Post { ... }
+type BlogCategory = 'all' | 'updates' | 'tutorials' | 'stories';
 
-export default function BlogPage() {
-  const t = useTranslations('blog');
-  const [activeCategory, setActiveCategory] = useState('all');
+export default function Blog() {
+  const [activeCategory, setActiveCategory] = useState<BlogCategory>('all');
   
-  // Use the imported type BlogPostMeta
-  const allPostsMeta: BlogPostMeta[] = blogPostMetadata;
-
-  // Filter posts based on the actual 'category' property
-  const filteredPosts = activeCategory === 'all'
-    ? allPostsMeta
-    : allPostsMeta.filter(post => post.category === activeCategory);
-
-  // Get unique categories from the actual data
-  const categories = ['all', ...new Set(allPostsMeta.map(post => post.category))];
+  const categories = [
+    { id: 'all', name: 'All' },
+    { id: 'updates', name: 'Product Updates' },
+    { id: 'tutorials', name: 'Tutorials' },
+    { id: 'stories', name: 'User Stories' },
+  ];
+  
+  const filteredPosts = blogPosts.filter(post => 
+    activeCategory === 'all' || post.category === activeCategory
+  );
+  
+  // Sort posts by date (newest first)
+  const sortedPosts = [...filteredPosts].sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* <Navbar /> */}
-      <main className="flex-grow py-12 px-6">
-        <div className="container mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold font-fredoka text-center mb-12">
-            {t('title')}
-          </h1>
-          
-          <div className="flex justify-center space-x-4 mb-12">
-            {categories.map(category => (
-              <button 
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === category ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
-              >
-                {/* Use correct nested key */}
-                {t(`categories.${category}`)}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* Sidebar - Categories (Left) */}
-            <div className="md:col-span-1">
-              <div className="bg-white rounded-2xl p-6 shadow-custom mb-6 sticky top-24">
-                {/* Use the new title key */}
-                <h3 className="text-lg font-bold mb-4">{t('categoriesTitle')}</h3>
-                <ul className="space-y-2">
-                  {/* Map over categories again for the sidebar list */}
-                  {categories.map(category => (
-                    <li key={category}>
-                      <button
-                        onClick={() => setActiveCategory(category)}
-                        className={`w-full text-left px-3 py-2 rounded-lg ${
-                          activeCategory === category ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted'
-                        }`}
-                      >
-                        {/* Use correct nested key */}
-                        {t(`categories.${category}`)}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+    <div className="container mx-auto px-6 py-12">
+      <h1 className="text-4xl font-bold mb-8 text-center font-fredoka text-foreground">
+        Blog
+      </h1>
+      
+      {/* Categories Filter */}
+      <div className="flex flex-wrap justify-center mb-12 gap-2">
+        {categories.map(category => (
+          <button
+            key={category.id}
+            onClick={() => setActiveCategory(category.id as BlogCategory)}
+            className={cn(
+              "px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200",
+              activeCategory === category.id 
+                ? "bg-primary text-white" 
+                : "bg-secondary text-foreground hover:bg-secondary/80"
+            )}
+          >
+            {category.name}
+          </button>
+        ))}
+      </div>
+      
+      {/* Blog Posts Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {sortedPosts.length > 0 ? (
+          sortedPosts.map(post => (
+            <div key={post.slug} className="flex flex-col bg-white rounded-xl shadow-md border border-muted overflow-hidden hover:shadow-lg transition-shadow duration-200">
+              <div className="p-6 flex-grow">
+                <div className="mb-3">
+                  <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-accent text-accent-foreground">
+                    {getCategoryName(post.category)}
+                  </span>
+                  <span className="text-muted-foreground text-sm ml-2">
+                    Published on {new Date(post.date).toLocaleDateString()}
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold mb-3 text-foreground">
+                  {post.title}
+                </h2>
+                <p className="text-muted-foreground mb-4 line-clamp-3">
+                  {post.excerpt}
+                </p>
+              </div>
+              <div className="px-6 pb-6 mt-auto">
+                <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-primary hover:text-primary/80 font-medium transition-colors duration-200">
+                  Read More
+                  <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                  </svg>
+                </Link>
               </div>
             </div>
-            
-            {/* Blog Post List (Right) */}
-            <div className="md:col-span-3">
-              <div className="space-y-8">
-                {/* 使用 filteredPostsMeta 进行迭代 */} 
-                {filteredPosts.map((post: BlogPostMeta) => (
-                  // 更新 Link href 指向 /blog/[slug]
-                  <Link 
-                    href={`/blog/${post.slug}`} 
-                    key={post.id}
-                    // 修改卡片样式，移除图片相关
-                    className="block bg-white rounded-2xl p-6 shadow-custom hover:shadow-lg transition-shadow"
-                  >
-                    {/* 内容区调整 */}
-                    <div>
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-xs text-muted-foreground">{post.date}</span>
-                        <span className="px-2 py-1 bg-primary/10 rounded-full text-xs text-primary font-medium">
-                          {/* Use correct nested key */}
-                          {t(`categories.${post.category}`)}
-                        </span>
-                      </div>
-                      {/* 使用翻译函数获取 title */}
-                      <h3 className="text-xl font-bold mb-2 text-foreground hover:text-primary transition-colors">{t(`posts.${post.slug}.title`)}</h3>
-                      {/* 使用翻译函数获取 excerpt */}
-                      <p className="text-muted-foreground line-clamp-3">{t(`posts.${post.slug}.excerpt`)}</p> 
-                    </div>
-                  </Link>
-                ))} 
-                {filteredPosts.length === 0 && (
-                  <p className="text-muted-foreground text-center">{t('noPostsInCategory')}</p>
-                )}
-              </div>
-            </div>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-12 text-muted-foreground">
+            No posts in this category yet
           </div>
-        </div>
-      </main>
-      <Footer />
+        )}
+      </div>
     </div>
   );
+}
+
+// Helper function: Get category name in English
+function getCategoryName(category: string): string {
+  switch(category) {
+    case 'updates': return 'Product Updates';
+    case 'tutorials': return 'Tutorials';
+    case 'stories': return 'User Stories';
+    default: return 'All';
+  }
 } 

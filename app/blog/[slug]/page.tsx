@@ -1,75 +1,69 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
 import { useParams, notFound, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Footer } from '../../../components/Footer';
 import { useEffect } from 'react';
-import { blogPostMetadata } from '../../../lib/blogData';
+import { blogPosts } from '../data/blogPosts';
 
 export default function BlogPostPage() {
-  const t = useTranslations('blog');
   const params = useParams();
-  const pathname = usePathname();
-  const locale = useLocale();
   const slug = params.slug as string;
 
-  const postMeta = blogPostMetadata.find(p => p.slug === slug);
+  const post = blogPosts.find(p => p.slug === slug);
 
-  if (!postMeta) {
+  if (!post) {
     notFound();
   }
 
-  const postTranslation = t.raw(`posts.${slug}`) as { title: string; excerpt: string; content: string; } | null | undefined;
-
-  if (!postTranslation || typeof postTranslation.content !== 'string') {
-    console.error(`Missing or invalid translation for posts.${slug}`);
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <main className="flex-grow py-12 px-6">
-          <div className="container mx-auto max-w-2xl text-center">
-            <p>Error loading post content or translation missing.</p>
-            <Link href={`/blog`} className="text-primary hover:underline mt-4 inline-block">
-              &larr; {t('backToBlog')}
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  const postTitle = postTranslation.title;
-  const postContent = postTranslation.content;
-
-  const categoryText = t(`categories.${postMeta.category}`);
-
   useEffect(() => {
-    document.title = `${postTitle} - PolaToons Blog`;
-  }, [postTitle]);
+    document.title = `${post.title} - 4o Image Generator Blog`;
+  }, [post.title]);
+
+  function getCategoryName(category: string): string {
+    switch(category) {
+      case 'updates': return 'Product Updates';
+      case 'tutorials': return 'Tutorials';
+      case 'stories': return 'User Stories';
+      default: return 'All';
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-grow py-12 px-6">
-        <div className="container mx-auto max-w-2xl bg-white p-8 md:p-12 rounded-2xl shadow-custom">
-          <Link href={`/blog`} className="text-primary hover:underline mb-8 inline-block">
-            &larr; {t('backToBlog')}
+        <div className="container mx-auto max-w-3xl bg-white p-8 md:p-12 rounded-2xl shadow-lg">
+          <Link href={`/blog`} className="text-primary hover:underline mb-8 inline-flex items-center gap-2 font-medium">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Back to Blog
           </Link>
 
-          <h1 className="text-3xl md:text-4xl font-bold font-fredoka mb-4 text-foreground">
-            {postTitle}
+          <h1 className="text-3xl md:text-4xl font-bold font-fredoka mb-4 text-foreground mt-6">
+            {post.title}
           </h1>
+          
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground mb-8 border-b pb-4">
-            <span>{t('publishedOn')} {postMeta.date}</span>
+            <span>Published on {new Date(post.date).toLocaleDateString()}</span>
             <span className="hidden md:inline">&bull;</span>
             <span className="px-2 py-0.5 bg-primary/10 rounded-full text-xs text-primary font-medium">
-              {categoryText}
+              {getCategoryName(post.category)}
             </span>
           </div>
 
           <article
-            className="prose prose-slate prose-lg prose-headings:mt-8 prose-headings:mb-4 prose-p:leading-relaxed prose-p:mb-5 prose-a:text-primary hover:prose-a:text-primary/80 prose-strong:font-semibold"
-            dangerouslySetInnerHTML={{ __html: postContent }}
+            className="prose prose-slate prose-lg max-w-none 
+                      prose-headings:font-bold prose-headings:text-gray-800 prose-headings:font-fredoka 
+                      prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6
+                      prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4
+                      prose-p:text-gray-600 prose-p:leading-relaxed prose-p:mb-6 prose-p:mt-4
+                      prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline
+                      prose-strong:text-gray-800 prose-strong:font-bold
+                      prose-ul:my-6 prose-ul:pl-6 prose-li:mb-2 prose-li:text-gray-600
+                      prose-ol:my-6 prose-ol:pl-6
+                      prose-img:rounded-lg prose-img:shadow-md prose-img:my-8"
+            dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </div>
       </main>

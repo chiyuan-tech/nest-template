@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
+import { blogPostMetadata } from '@/lib/blogData';
 
 // !!! IMPORTANT: Replace with your actual production domain !!!
 // You can use environment variables like process.env.NEXT_PUBLIC_SITE_URL
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://wwww.framepola.com';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.4oimagex.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Removed locales array as we generate canonical URLs now
@@ -12,24 +13,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
     '/',
     '/blog',
-    // '/pricing', // Assuming pricing is a section on home page handled by /#pricing link, remove if it's not a separate page
     '/terms',
     '/privacy',
-    '/sign-in', // Add sign-in page
-    '/sign-up', // Add sign-up page
-    // Add other static pages if they exist (e.g., '/profile')
-    '/profile' 
+    '/explore'
   ];
 
-  // Blog post slugs (obtained from somewhere, e.g., CMS or file system)
-  const blogPostSlugs = [
-    'how-to-take-perfect-polaroid-style-photos',
-    'new-feature-3d-effect-enhancement',
-    'user-story-wedding-photos-to-creative-souvenirs',
-    'history-and-charm-of-polaroid-style',
-    '5-creative-ways-to-display-polaroid-photos',
-    'performance-optimization-update-faster-processing'
-  ];
+  // Get blog post slugs from the actual data source
+  const blogPostSlugs = blogPostMetadata.map(post => post.slug);
 
   const sitemapEntries: MetadataRoute.Sitemap = [];
 

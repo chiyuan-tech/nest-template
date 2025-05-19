@@ -2,19 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
 
 export default function PaymentStatusModal() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const currentLocale = useLocale();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({
-    title: { en: '', zh: '' },
-    message: { en: '', zh: '' },
-    buttonText: { en: 'Confirm', zh: '确认' }
+    title: '',
+    message: '',
+    buttonText: 'Confirm'
   });
   const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
 
@@ -22,26 +20,26 @@ export default function PaymentStatusModal() {
     const paysuccess = searchParams.get('paysuccess');
     const payfail = searchParams.get('payfail');
     let content = {
-      title: { en: '', zh: '' },
-      message: { en: '', zh: '' },
-      buttonText: { en: 'Confirm', zh: '确认' }
+      title: '',
+      message: '',
+      buttonText: 'Confirm'
     };
     let shouldOpenModal = false;
     let successState: boolean | null = null;
 
     if (paysuccess === '1') {
       content = {
-        title: { en: 'Success', zh: '订阅成功' },
-        message: { en: 'Subscription successful! Welcome aboard.', zh: '订阅成功！欢迎加入。' },
-        buttonText: { en: 'Confirm', zh: '确认' }
+        title: 'Success',
+        message: 'Subscription successful! Welcome aboard.',
+        buttonText: 'Confirm'
       };
       shouldOpenModal = true;
       successState = true;
     } else if (payfail === '1') {
       content = {
-        title: { en: 'Failed', zh: '订阅失败' },
-        message: { en: 'Subscription failed. Please check your payment details or try again.', zh: '订阅失败。请检查您的支付信息或重试。' },
-        buttonText: { en: 'Confirm', zh: '确认' }
+        title: 'Failed',
+        message: 'Subscription failed. Please check your payment details or try again.',
+        buttonText: 'Confirm'
       };
       shouldOpenModal = true;
       successState = false;
@@ -63,10 +61,6 @@ export default function PaymentStatusModal() {
     setIsModalOpen(false);
   };
 
-  const getLocalizedText = (textObj: { en: string; zh: string }) => {
-    return currentLocale === 'zh' ? textObj.zh : textObj.en;
-  };
-
   if (!isModalOpen) {
     return null;
   }
@@ -78,11 +72,11 @@ export default function PaymentStatusModal() {
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white mb-2">
-          {getLocalizedText(modalContent.title)}
+          {modalContent.title}
         </h3>
         <div className="mt-2">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {getLocalizedText(modalContent.message)}
+            {modalContent.message}
           </p>
         </div>
         <div className="mt-5 sm:mt-6">
@@ -91,7 +85,7 @@ export default function PaymentStatusModal() {
             className="inline-flex justify-center w-full rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-offset-gray-800"
             onClick={closeModal}
           >
-            {getLocalizedText(modalContent.buttonText)}
+            {modalContent.buttonText}
           </button>
         </div>
       </div>

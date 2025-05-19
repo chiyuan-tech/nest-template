@@ -1,25 +1,16 @@
 'use client';
 
 import { ClerkProvider } from '@clerk/nextjs';
-import { useLocale } from 'next-intl';
-import { zhCN, enUS } from '@clerk/localizations';
-
-
+import { enUS } from '@clerk/localizations';
 
 export default function ClerkProviderWithLocale({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const locale = useLocale();
-  console.log('ClerkProvider - Current locale from useLocale:', locale);
-
-
-  let localization = locale === 'zh' ? zhCN : enUS;
-
   return (
     <ClerkProvider 
-      localization={localization}
+      localization={enUS}
       appearance={{
         layout: {
           socialButtonsVariant: "iconButton",

@@ -12,7 +12,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useClerk } from "@clerk/nextjs";
 import { UserResource } from "@clerk/types";
-import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -28,8 +27,6 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
   const userId = user?.id;
 
   const { signOut } = useClerk();
-  const t = useTranslations('user');
-  const locale = useLocale();
   const pathname = usePathname();
 
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`;
@@ -103,7 +100,7 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
           }`}
         >
           <Link href={`/profile`}>
-            {t('profile')}
+            Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -114,7 +111,7 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
             signOut();
           }}
         >
-          {t('signOut')}
+          Sign Out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

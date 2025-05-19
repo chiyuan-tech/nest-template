@@ -1,7 +1,6 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
-import { useTranslations, useLocale } from 'next-intl';
+import { useUser, useAuth } from '@clerk/nextjs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Footer } from '../../components/Footer';
 import Image from 'next/image';
@@ -17,6 +16,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import Link from 'next/link';
+import { DownloadIcon, ReloadIcon } from '@radix-ui/react-icons';
 
 // 定义从API获取的用户信息类型
 interface UserApiInfo {
@@ -53,6 +54,13 @@ interface GenerationHistoryResponse {
   count: number;
   list: GenerationHistoryItem[];
   total_page: number; // API 直接返回了总页数，很好
+}
+
+// 定义用户生成图片的接口
+interface GeneratedImage {
+  id: string;
+  imageUrl: string;
+  createdAt: string;
 }
 
 // 将辅助函数移到组件外部
@@ -93,13 +101,11 @@ function getPaginationItems(currentPage: number, totalPages: number, siblingCoun
 }
 
 // --- 将下载逻辑定义为独立函数 --- 
-// 添加 setIsDownloading 和 t 作为参数
 async function downloadImageWithCors(
   imageUrl: string, 
   filename: string, 
   setIsDownloading: (id: number | null) => void, // 用于更新加载状态
-  imageId: number, // 图片 ID 用于设置加载状态
-  t: Function // 翻译函数
+  imageId: number // 图片 ID 用于设置加载状态
 ) {
   setIsDownloading(imageId); // 开始下载，设置加载状态
   try {
@@ -132,13 +138,10 @@ async function downloadImageWithCors(
 
   } catch (error: any) {
     console.error('Download failed:', error);
-    // 使用翻译函数 t 显示错误信息
-    const errorMessage = t('downloadFailed', { defaultMessage: 'Download failed!' });
-    const corsMessage = t('downloadCorsError', {
-        defaultMessage: 'Could not fetch image from {imageUrl}. This is often due to missing CORS headers (Access-Control-Allow-Origin) on the server. Check the browser console for details.',
-        imageUrl: imageUrl
-    });
-    const genericMessage = t('downloadGenericError', { defaultMessage: 'Error: {errorMsg}', errorMsg: error.message });
+    // 使用英文显示错误信息
+    const errorMessage = 'Download failed!';
+    const corsMessage = `Could not fetch image from ${imageUrl}. This is often due to missing CORS headers (Access-Control-Allow-Origin) on the server. Check the browser console for details.`;
+    const genericMessage = `Error: ${error.message}`;
 
     // 检查是否是网络错误或类型错误（通常与 CORS 相关）
     if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
@@ -152,10 +155,8 @@ async function downloadImageWithCors(
 }
 
 export default function ProfilePage() {
-  const { user, isLoaded } = useUser();
-  const t = useTranslations('user');
-  const commonT = useTranslations('common');
-  const locale = useLocale();
+  const { user, isLoaded, isSignedIn } = useUser();
+  const { userId, sessionId, getToken } = useAuth();
 
   // API 数据状态 (用户信息)
   const [userApiInfo, setUserApiInfo] = useState<UserApiInfo | null>(null);
@@ -172,14 +173,18 @@ export default function ProfilePage() {
   const historyPageSize = 30;
   const [isDownloading, setIsDownloading] = useState<number | null>(null); // 跟踪正在下载的图片ID
 
+  // New state for generated images
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userImages, setUserImages] = useState<GeneratedImage[]>([]);
+
   // Function to format timestamp based on locale
   const formatTimestamp = (timestamp: number): string => {
     if (!timestamp) return 'N/A';
     try {
-      return new Intl.DateTimeFormat(locale, {
+      return new Intl.DateTimeFormat('en-US', {
         year: 'numeric', month: 'long', day: 'numeric', 
-        hour: '2-digit', minute: '2-digit', 
-        // timeZone: 'UTC' // Or get timezone from context if needed
+        hour: '2-digit', minute: '2-digit'
       }).format(new Date(timestamp * 1000));
     } catch (e) {
       console.error("Error formatting date:", e);
@@ -187,103 +192,112 @@ export default function ProfilePage() {
     }
   };
 
-  // 动态设置页面标题
+  // 修改useEffect，添加userId作为依赖项以确保登录时触发
   useEffect(() => {
-    if (isLoaded && user) {
-      document.title = `${user.fullName || user.username || 'Profile'} - PolaToons`;
-    } else if (isLoaded && !user) {
-      document.title = `Profile - PolaToons`; // 用户未登录的情况
-    }
+    // 删除修改document.title的代码，保持网站原有标题不变
   }, [isLoaded, user]);
 
-  // API 调用 Effect (获取用户信息)
+  // API 调用 Effect (获取用户信息) - 添加userId监听
   useEffect(() => {
-    if (isLoaded && user?.id) {
-      const fetchUserInfo = async () => {
-        setIsLoadingUserInfo(true);
-        setUserInfoError(null);
-        try {
-          const googleIdToFetch = user?.id || '';
-          const response = await fetch(`https://cartoon.framepola.com/api/user/info?google_id=${googleIdToFetch}`);
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.status} ${response.statusText}`);
-          }
-          const result = await response.json();
-          if (result.code === 1000 && result.data) {
-            setUserApiInfo(result.data);
-          } else {
-            console.warn("User info API returned success code but no data for:", googleIdToFetch);
-            setUserApiInfo(null);
-          }
-        } catch (error) {
-          console.error("Failed to fetch user API info:", error);
-          setUserInfoError(error instanceof Error ? error.message : 'An unknown error occurred fetching user info');
-        } finally {
-          setIsLoadingUserInfo(false);
+    const fetchUserInfo = async () => {
+      if (!isLoaded || !userId) {
+        // 还未加载完成或用户未登录
+        setIsLoadingUserInfo(false);
+        setUserApiInfo(null);
+        return;
+      }
+
+      setIsLoadingUserInfo(true);
+      setUserInfoError(null);
+      try {
+        const googleIdToFetch = userId || '';
+        const response = await fetch(`https://svc.4oimagex.com/api/ai4oimagex/user/info?google_id=${googleIdToFetch}`);
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status} ${response.statusText}`);
         }
-      };
-      fetchUserInfo();
-    } else if (isLoaded && !user) {
-      setIsLoadingUserInfo(false);
-      setUserApiInfo(null);
-    }
-  }, [isLoaded, user]);
+        const result = await response.json();
+        if (result.code === 1000 && result.data) {
+          setUserApiInfo(result.data);
+        } else {
+          console.warn("User info API returned success code but no data for:", googleIdToFetch);
+          setUserApiInfo(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user API info:", error);
+        setUserInfoError(error instanceof Error ? error.message : 'An unknown error occurred fetching user info');
+      } finally {
+        setIsLoadingUserInfo(false);
+      }
+    };
 
-  // API 调用 Effect (获取图片历史记录)
+    fetchUserInfo();
+  }, [isLoaded, userId]); // 使用userId替换user作为依赖项
+
+  // API 调用 Effect (获取图片历史记录) - 添加userId监听
   useEffect(() => {
-    if (isLoaded && user?.id) {
-      const fetchGenerationHistory = async (page: number) => {
-        setIsLoadingHistory(true);
-        setHistoryError(null);
-        try {
-          const googleIdToFetch = user?.id || '';
-          const response = await fetch(`https://cartoon.framepola.com/api/generateImageOpus/list`, {
-            method: 'POST',
-            // headers: {
-            //   'Content-Type': 'application/json',
-            // },
-            body: JSON.stringify({
-              page: page,
-              page_size: historyPageSize,
-              google_id: googleIdToFetch,
-            }),
-          });
+    const fetchGenerationHistory = async (page: number) => {
+      if (!isLoaded || !userId) {
+        // 还未加载完成或用户未登录
+        setIsLoadingHistory(false);
+        setHistoryList([]);
+        setTotalPages(0);
+        setTotalHistoryCount(0);
+        return;
+      }
 
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.status} ${response.statusText}`);
-          }
-          const result = await response.json();
+      setIsLoadingHistory(true);
+      setHistoryError(null);
+      try {
+        const googleIdToFetch = userId || '';
+        const response = await fetch(`https://svc.4oimagex.com/api/ai4oimagex/generateImageOpus/list`, {
+          method: 'POST',
+          body: JSON.stringify({
+            page: page,
+            page_size: historyPageSize,
+            google_id: googleIdToFetch,
+          }),
+        });
 
-          if (result.code === 1000 && result.data) {
-            setHistoryList(result.data.list || []);
-            setTotalPages(result.data.total_page || 0);
-            setTotalHistoryCount(result.data.count || 0);
-          } else {
-            console.error("Failed to fetch history:", result.msg || 'Unknown API error');
-            setHistoryList([]);
-            setTotalPages(0);
-            setTotalHistoryCount(0);
-            setHistoryError(result.msg || 'Failed to fetch generation history');
-          }
-        } catch (error) {
-          console.error("Failed to fetch generation history:", error);
-          setHistoryError(error instanceof Error ? error.message : 'An unknown error occurred fetching history');
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        }
+        const result = await response.json();
+
+        if (result.code === 1000 && result.data) {
+          setHistoryList(result.data.list || []);
+          setTotalPages(result.data.total_page || 0);
+          setTotalHistoryCount(result.data.count || 0);
+        } else {
+          console.error("Failed to fetch history:", result.msg || 'Unknown API error');
           setHistoryList([]);
           setTotalPages(0);
           setTotalHistoryCount(0);
-        } finally {
-          setIsLoadingHistory(false);
+          setHistoryError(result.msg || 'Failed to fetch generation history');
         }
-      };
+      } catch (error) {
+        console.error("Failed to fetch generation history:", error);
+        setHistoryError(error instanceof Error ? error.message : 'An unknown error occurred fetching history');
+        setHistoryList([]);
+        setTotalPages(0);
+        setTotalHistoryCount(0);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    // 首次加载数据
+    fetchGenerationHistory(currentPage);
+    
+    // 设置定时器，每2秒自动刷新数据
+    const intervalId = setInterval(() => {
       fetchGenerationHistory(currentPage);
-    } else if (isLoaded && !user) {
-      setIsLoadingHistory(false);
-      setHistoryList([]);
-      setTotalPages(0);
-      setTotalHistoryCount(0);
-      setHistoryError(null);
-    }
-  }, [isLoaded, user, currentPage]);
+    }, 2000);
+    
+    // 清理函数，组件卸载时清除定时器
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isLoaded, userId, currentPage]); // 使用userId替换user作为依赖项
 
   // 处理分页变化
   const handlePageChange = (newPage: number) => {
@@ -297,16 +311,38 @@ export default function ProfilePage() {
   };
 
   if (!isLoaded) {
-    return <div className="flex justify-center items-center min-h-screen">{commonT('loading', { defaultMessage: 'Loading...' })}</div>;
+    return (
+      <div className="min-h-screen flex flex-col">
+        <main className="flex-grow py-12 px-6">
+          <div className="container mx-auto">
+            <div className="text-center py-12">
+              <ReloadIcon className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
+              <p className="text-gray font-inter">Loading...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
-  if (!user) {
+  if (!isSignedIn) {
     return (
-      <div className="flex flex-col justify-center items-center min-h-screen text-center px-6">
-        <p className="text-lg mb-4">{t('loginPrompt', {defaultMessage: 'Please log in to view your profile and generation history.'})}</p>
-        <Button onClick={() => window.location.href='/sign-in?redirect_url=/profile'}>
-          {t('loginAction', {defaultMessage: 'Log In / Sign Up'})}
-        </Button>
+      <div className="min-h-screen flex flex-col">
+        <main className="flex-grow py-12 px-6">
+          <div className="container mx-auto max-w-lg">
+            <div className="bg-white rounded-2xl p-8 text-center shadow-custom">
+              <h1 className="text-2xl font-bold mb-4 font-space-grotesk">Profile</h1>
+              <p className="mb-6 text-gray font-inter">Please sign in to view your profile</p>
+              <Link href="/sign-in">
+                <Button className="bg-primary hover:bg-primary/90 text-white font-inter">
+                  Sign In
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -321,10 +357,10 @@ export default function ProfilePage() {
   // 获取订阅计划名称 (可以从翻译文件获取)
   const getPlanName = (level: number | undefined) => {
     switch (level) {
-      case 1: return t('premiumPlan', {defaultMessage: 'Premium Plan'}); // Level 1 -> Basic
-      case 2: return t('ultimatePlan', {defaultMessage: 'Ultimate Plan'}); // Level 2 -> Premium
-      // case 3: return t('ultimatePlan', {defaultMessage: 'Ultimate Plan'}); // Level 3 -> Ultimate
-      default: return t('noSubscription', {defaultMessage: 'No Subscription'}); // Level 0 或 undefined -> No Subscription
+      case 1: return 'Premium Plan'; // Level 1 -> Basic
+      case 2: return 'Ultimate Plan'; // Level 2 -> Premium
+      // case 3: return 'Ultimate Plan'; // Level 3 -> Ultimate
+      default: return 'No Subscription'; // Level 0 或 undefined -> No Subscription
     }
   };
   const currentPlanName = getPlanName(userApiInfo?.level);
@@ -332,182 +368,153 @@ export default function ProfilePage() {
   // Pagination items calculation
   const paginationItems = getPaginationItems(currentPage, totalPages);
 
+  // 用户信息卡片统计项 - 不再使用这个硬编码的数据
+  const stats = [
+    {
+      label: 'Membership Level',
+      value: userApiInfo?.level === 2 ? 'Ultimate Plan' : userApiInfo?.level === 1 ? 'Premium Plan' : 'Free Plan',
+      key: 'level',
+      custom: (
+        <span className="px-3 py-1 rounded-lg bg-[#232b3e] text-primary font-bold text-sm">
+          {userApiInfo?.level === 2 ? 'Ultimate Plan' : 
+           userApiInfo?.level === 1 ? 'Premium Plan' : 
+           'Free Plan'}
+        </span>
+      )
+    },
+    {
+      label: 'Points Remaining',
+      value: userApiInfo?.api_left_times?.toString() || '0',
+      key: 'points',
+    },
+    {
+      label: 'Generated Images',
+      value: userApiInfo?.api_used_times?.toString() || '0',
+      key: 'images',
+    },
+    {
+      label: 'Total API Calls',
+      value: userApiInfo?.api_total_times?.toString() || '0',
+      key: 'api',
+    },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
-      <main className="flex-grow py-12 px-6">
-        <div className="container mx-auto max-w-5xl">
-          <h1 className="text-3xl font-bold text-gray-800 mb-10">{t('account')}</h1>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div className="md:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col items-center text-center">
-              <Avatar className="w-24 h-24 mb-4 border-2 border-gray-100">
-                <AvatarImage src={user.imageUrl} alt={user.username || 'User Avatar'} />
-                <AvatarFallback className="text-3xl font-semibold bg-gray-100 text-gray-600">{initials}</AvatarFallback>
-              </Avatar>
-              <h2 className="text-xl font-semibold text-gray-800">{user.fullName || user.username}</h2>
-              <p className="text-sm text-gray-500 mt-1">{user.primaryEmailAddress?.emailAddress}</p>
-              <p className="text-xs text-gray-500 mt-2">{t('createdAt')}: {user.createdAt ? formatTimestamp(user.createdAt.getTime() / 1000) : 'N/A'}</p>
+    <div className="min-h-screen flex flex-col bg-background">
+      <main className="flex-grow">
+        {/* 顶部用户信息卡片 */}
+        <div className="container mx-auto mt-8 mb-8">
+          <div className="bg-card rounded-2xl px-10 py-8 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-xl">
+            {/* 头像 */}
+            <div className="flex-shrink-0">
+              <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-border">
+                <div className="relative w-full h-full">
+                  <Image
+                    src={user.imageUrl}
+                    alt={user.fullName || 'User'}
+                    fill
+                    className="object-cover"
+                    priority={false}
+                    loading="lazy"
+                    draggable="false"
+                    unoptimized={true}
+                  />
+                </div>
+              </div>
             </div>
+            {/* 用户信息和统计 */}
+            <div className="flex-1 flex flex-col gap-4">
+              <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+                <span className="text-2xl font-bold text-card-foreground font-space-grotesk">{user.fullName || user.username}</span>
+                <span className="text-muted-foreground text-base font-inter">{user.primaryEmailAddress?.emailAddress}</span>
+              </div>
+              <div className="flex flex-wrap gap-4 mt-2">
+                {/* 会员等级/积分/生成数/API调用数 */}
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
+                  <span>Membership Level</span>
+                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-bold ml-2">
+                    {userApiInfo?.level === 2 ? 'Ultimate Plan' : 
+                     userApiInfo?.level === 1 ? 'Premium Plan' : 
+                     'Free Plan'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
+                  <span>Points Remaining</span>
+                  <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.api_left_times || 0}</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
+                  <span>Generated Images</span>
+                  <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.api_used_times || 0}</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
+                  <span>Total API Calls</span>
+                  <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.api_total_times || 0}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <div className="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">{t('subscriptionStatus', { defaultMessage: 'Subscription Status' })}</h3>
-              {isLoadingUserInfo ? (
-                <p className="text-gray-500">{commonT('loading', { defaultMessage: 'Loading...' })}</p>
-              ) : userInfoError ? (
-                <p className="text-red-600">{t('errorFetchingUserInfo', { defaultMessage: 'Error fetching user data:' })} {userInfoError}</p>
-              ) : userApiInfo ? (
-                userApiInfo.level > 0 ? (
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">{t('currentPlan', { defaultMessage: 'Current Plan:' })}</span>
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${userApiInfo.level === 2 ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
-                        {currentPlanName}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium text-gray-600">{t('generationUsage', { defaultMessage: 'Generation Usage:' })}</span>
-                        <span className="text-gray-500">{userApiInfo.api_used_times} / {userApiInfo.api_total_times}</span>
-                      </div>
-                      <Progress value={usagePercentage} className="h-2" />
-                    </div>
-                    <div>
-                      <span className="font-medium">{t('subscription_status', { defaultMessage: 'Status:'})}</span> {userApiInfo.subscription_status || t('noSubscription')}
-                    </div>
-                    {userApiInfo.current_period_end > 0 && (
-                      <div>
-                        <span className="font-medium">{t('current_period_end', {defaultMessage: 'Renews/Expires On:'})}</span> {formatTimestamp(userApiInfo.current_period_end)}
+        {/* Generation History 标题 */}
+        <div className="container mx-auto mb-4">
+          <h2 className="text-primary text-2xl font-bold mb-4 font-space-grotesk">Generation History</h2>
+        </div>
+
+        {/* 图片历史区域 */}
+        <div className="container mx-auto pb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {historyList.length > 0 ? (
+              historyList
+                .filter(item => item.status !== -1) // 过滤掉状态为-1的作品
+                .map((item) => (
+                <div key={item.id} className="bg-card rounded-xl overflow-hidden relative flex flex-col shadow-lg border border-border">
+                  {/* 下载按钮 - 只在有dist_image时才显示 */}
+                  {item.dist_image && (
+                    <button 
+                      className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-primary p-2 rounded-full text-white transition-colors"
+                      onClick={() => downloadImageWithCors(item.dist_image, `outfit-${item.id}.png`, setIsDownloading, item.id)}
+                    >
+                      <DownloadIcon className="h-4 w-4" />
+                    </button>
+                  )}
+                  
+                  {/* 图片内容 - 修改为完全占满区域 */}
+                  <div className="relative w-full aspect-[3/4] overflow-hidden">
+                    {item.dist_image ? (
+                      // 有dist_image时显示图片
+                      <Image
+                        src={item.dist_image}
+                        alt={`Generated image ${item.id}`}
+                        fill
+                        className="object-cover w-full h-full"
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                        priority={false}
+                        loading="lazy"
+                        draggable="false"
+                        unoptimized={true}
+                      />
+                    ) : (
+                      // 没有dist_image时显示loading状态
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/30">
+                        <ReloadIcon className="animate-spin h-8 w-8 text-primary mb-2" />
+                        <p className="text-xs text-center text-muted-foreground px-2">
+                          Generating your outfit...
+                        </p>
+                        <p className="text-xs mt-1 text-center text-muted-foreground/80 px-2">
+                          This may take 1-2 minutes
+                        </p>
                       </div>
                     )}
                   </div>
-                ) : (
-                  <div className="text-center py-4">
-                    <p className="text-gray-600 mb-4">{t('noSubscriptionMessage', { defaultMessage: 'You currently do not have an active subscription.' })}</p>
-                    <Button onClick={() => window.location.href='/sign-in?redirect_url=/profile'}>
-                      {t('viewPlans', { defaultMessage: 'View Plans' })}
-                    </Button>
+                  
+                  {/* 日期 - 减少内边距使其更紧凑 */}
+                  <div className="px-3 py-1.5 text-xs text-muted-foreground font-inter bg-muted">
+                    {formatTimestamp(item.created)}
                   </div>
-                )
-              ) : (
-                <p className="text-gray-500">{t('userInfoNotAvailable', { defaultMessage: 'User subscription details not available.' })}</p>
-              )}
-            </div>
-          </div>
-
-          <div id="generation-history-section">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('generatedImages')}</h2>
-
-            {isLoadingHistory ? (
-              <div className="text-center py-10">
-                <p className="text-gray-500">{commonT('loadingHistory', { defaultMessage: 'Loading history...' })}</p>
-              </div>
-            ) : historyError ? (
-              <div className="text-center py-10 bg-red-50 border border-red-200 rounded-lg px-4">
-                <p className="text-red-600">{t('errorFetchingHistory', { defaultMessage: 'Error loading generation history:' })} {historyError}</p>
-                <Button variant="link" className="mt-2 text-red-600" onClick={() => handlePageChange(currentPage)}>
-                  {t('retry', { defaultMessage: 'Retry' })}
-                </Button>
-              </div>
-            ) : totalHistoryCount > 0 ? (
-              <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-                  {historyList.map((item) => (
-                    <div 
-                      key={item.id} 
-                      className={`group relative aspect-square overflow-hidden rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isDownloading === item.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                      onClick={() => {
-                        if (isDownloading !== item.id) { // 防止在下载时再次触发
-                          downloadImageWithCors(
-                            item.dist_image, 
-                            `polatoons-image-${item.id}.png`, 
-                            setIsDownloading, 
-                            item.id,
-                            t // 传入翻译函数
-                          )
-                        }
-                      }}
-                      title={`${t('downloadImage', { defaultMessage: 'Download Image' })}: ${item.prompt || 'Generated Image'}`}
-                      aria-label={t('downloadImageAria', { defaultMessage: 'Download generated image {id}', id: item.id })}
-                    >
-                      <Image
-                        src={item.dist_image}
-                        alt={item.prompt || `Generated Image ${item.id}`}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
-                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                        priority={historyList.slice(0, 10).includes(item)}
-                        unoptimized={true}
-                      />
-                      {isDownloading === item.id && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                          <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                  ))}
                 </div>
-
-                {totalPages > 1 && (
-                  <div className="mt-10 flex justify-center">
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handlePageChange(currentPage - 1);
-                            }}
-                            aria-disabled={currentPage <= 1}
-                            className={currentPage <= 1 ? 'pointer-events-none opacity-50' : undefined}
-                          />
-                        </PaginationItem>
-
-                        {paginationItems.map((page, index) => (
-                          <PaginationItem key={index}>
-                            {typeof page === 'number' ? (
-                              <PaginationLink
-                                href="#"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handlePageChange(page);
-                                }}
-                                isActive={currentPage === page}
-                              >
-                                {page}
-                              </PaginationLink>
-                            ) : (
-                              <PaginationEllipsis />
-                            )}
-                          </PaginationItem>
-                        ))}
-
-                        <PaginationItem>
-                          <PaginationNext
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handlePageChange(currentPage + 1);
-                            }}
-                            aria-disabled={currentPage >= totalPages}
-                            className={currentPage >= totalPages ? 'pointer-events-none opacity-50' : undefined}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  </div>
-                )}
-              </>
+              ))
             ) : (
-              <div className="text-center py-10 bg-white rounded-xl border border-gray-200 shadow-sm">
-                <p className="text-gray-500 mb-4">{t('noImagesYet', {defaultMessage: 'You haven\'t generated any images yet.'})}</p>
-                <Button variant="default" onClick={() => window.location.href='/'}>
-                  {t('generateFirstImage', {defaultMessage: 'Create your first image'})}
-                </Button>
-              </div>
+              <div className="col-span-full text-center text-muted-foreground py-12">No images yet.</div>
             )}
           </div>
         </div>

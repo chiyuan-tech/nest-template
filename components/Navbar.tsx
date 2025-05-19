@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '../components/ui/button';
@@ -19,7 +18,6 @@ import {
 } from "../components/ui/sheet";
 
 export function Navbar() {
-  const t = useTranslations('nav');
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -42,17 +40,17 @@ export function Navbar() {
   const renderNavLinks = (isMobile = false) => (
     <>
         <Link
-            href={`/`}
+            href="/"
             className={`block w-full text-left rounded-md ${pathname === '/' ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'} ${isMobile ? 'px-4 py-3 text-base' : 'px-4 py-2 font-nunito whitespace-nowrap'}`}
         >
-          {t('home')}
+          Home
         </Link>
 
         <Link
-            href={`/blog`}
+            href="/blog"
             className={`block w-full text-left rounded-md ${pathname.startsWith(`/blog`) ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'} ${isMobile ? 'px-4 py-3 text-base' : 'px-4 py-2 font-nunito whitespace-nowrap'}`}
         >
-          {t('blog')}
+          Blog
         </Link>
     </>
   );
@@ -62,7 +60,7 @@ export function Navbar() {
       <div className="container mx-auto flex justify-between items-center">
         {/* Left: Logo (ensure it doesn't shrink) */}
         <div className="flex-shrink-0">
-          <Link href={`/`} className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link href="/" className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
             <span className="text-xl font-bold font-fredoka text-primary">
               PolaToons
             </span>
@@ -98,25 +96,25 @@ export function Navbar() {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[340px] px-6 pt-12 pb-8 bg-background flex flex-col">
                 <SheetHeader className="mb-4 text-left">
-                  <SheetTitle className="text-lg font-semibold">{t('menuTitle')}</SheetTitle>
+                  <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
                 </SheetHeader>
                 <nav className="flex-1 flex flex-col space-y-2 mb-8 overflow-y-auto">
                     <SheetClose asChild>
                         <Link
-                            href={`/`}
+                            href="/"
                             className={`block w-full text-left rounded-md ${pathname === '/' ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'} px-4 py-3 text-base`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          {t('home')}
+                          Home
                         </Link>
                     </SheetClose>
                     <SheetClose asChild>
                         <Link
-                            href={`/blog`}
+                            href="/blog"
                             className={`block w-full text-left rounded-md ${pathname.startsWith(`/blog`) ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'} px-4 py-3 text-base`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          {t('blog')}
+                          Blog
                         </Link>
                     </SheetClose>
                 </nav>

@@ -4,8 +4,6 @@ import type { Metadata } from 'next'
 import Script from 'next/script';
 import PaymentStatusModal from '@/components/payment-status-modal';
 import { Suspense } from 'react';
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages, getTimeZone } from 'next-intl/server';
 import { Navbar } from '@/components/Navbar';
 import ClerkProviderWithLocale from '@/components/auth/clerk-provider';
 
@@ -64,39 +62,29 @@ const schemaData = {
   ]
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const GA_TRACKING_ID = 'G-BST9KGD31X';
 
-  const locale = await getLocale();
-  const messages = await getMessages();
-  const timeZone = await getTimeZone();
-
   return (
-    <html lang={locale}>
+    <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} ${fredoka.variable} ${baloo.variable} ${nunito.variable} bg-background text-foreground`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
         />
-        <NextIntlClientProvider
-            locale={locale}
-            messages={messages}
-            timeZone={timeZone}
-        >
-          <ClerkProviderWithLocale>
-             <main className="min-h-screen">
-                <Navbar />
-                {children}
-             </main>
-             <Suspense fallback={null}>
-               <PaymentStatusModal />
-             </Suspense>
-          </ClerkProviderWithLocale>
-        </NextIntlClientProvider>
+        <ClerkProviderWithLocale>
+           <main className="min-h-screen">
+              <Navbar />
+              {children}
+           </main>
+           <Suspense fallback={null}>
+             <PaymentStatusModal />
+           </Suspense>
+        </ClerkProviderWithLocale>
 
         <Script
           strategy="afterInteractive"

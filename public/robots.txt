@@ -1,25 +1,50 @@
-# Default rules for all user agents
+# =====================================
+# 🤖 Robots.txt for https://www.4oimagex.com
+# =====================================
+
+# -------------------------------------
+# 🌐 General rules for all crawlers
+# -------------------------------------
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /_next/ 
-# Disallow: /static/ # Uncomment if you have a public static folder you want to hide
-# Disallow: /admin/ # Uncomment if you have an admin section
+Disallow: /api/        # API endpoints (not meant for indexing)
+Disallow: /_next/      # Next.js internal assets
+Disallow: /admin/      # Admin dashboard (protected)
+# Note: Static assets are allowed (no Disallow for /static/)
 
-# Rules for specific AI crawlers (following the example)
-User-Agent: GPTBot
-Allow: /llms.txt
-Disallow: /
-
-User-Agent: anthropic-ai
-Allow: /llms.txt
-Disallow: /
-
-# Explicit allow for Google (optional but clear)
-User-Agent: Googlebot
+# -------------------------------------
+# 🔍 Googlebot rules
+# -------------------------------------
+User-agent: Googlebot
 Allow: /
 Disallow: /api/
 Disallow: /_next/
 
-# Point to the correct sitemap
-Sitemap: www.imagefusionai.com/sitemap.xml 
+# -------------------------------------
+# 🔎 Bingbot rules (search indexing allowed)
+# -------------------------------------
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+# -------------------------------------
+# 🔎 Baiduspider rules
+# -------------------------------------
+User-agent: Baiduspider
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+# -------------------------------------
+# 🤖 AI Crawler Rules (LLM-specific bots - restricted)
+# -------------------------------------
+User-agent: GPTBot
+User-agent: anthropic-ai
+Allow: /llms.txt
+Disallow: /
+
+# -------------------------------------
+# 📌 Sitemap
+# -------------------------------------
+Sitemap: https://www.4oimagex.com/sitemap.xml

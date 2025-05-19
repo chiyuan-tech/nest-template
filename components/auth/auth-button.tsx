@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { 
   SignInButton, 
   UserButton, 
@@ -11,7 +10,7 @@ import { Button } from '../../components/ui/button';
 import UserProfileMenu from './user-profile-menu';
 
 export default function AuthButton() {
-  const t = useTranslations('nav');
+
   const { isSignedIn, user } = useUser();
   const { openSignIn } = useClerk();
 
@@ -27,7 +26,7 @@ export default function AuthButton() {
       className="text-foreground hover:text-primary hover:bg-transparent p-0 h-auto"
       onClick={() => openSignIn()}
     >
-      {t('login')}
+      Login
     </Button>
   );
 } 
