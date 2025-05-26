@@ -93,38 +93,6 @@ export function Navbar() {
     return () => clearInterval(intervalId);
   }, [isSignedIn, user?.id]);
 
-  // 处理URL hash变化时的滚动逻辑
-  useEffect(() => {
-    // 当路径变为首页且包含hash时，滚动到对应元素
-    if (pathname === '/' && typeof window !== 'undefined') {
-      const hash = window.location.hash;
-      if (hash) {
-        const id = hash.substring(1); // 移除#号
-        // 使用setTimeout确保页面内容已加载
-        setTimeout(() => {
-          const element = document.getElementById(id);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 100);
-      }
-    }
-  }, [pathname]);
-
-  const scrollToSection = (id: string) => {
-    if (pathname === '/') {
-      // 如果已经在首页，直接滚动到目标元素
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      // 如果不在首页，先导航到首页，然后滚动到目标元素
-      router.push(`/#${id}`);
-    }
-    setIsMobileMenuOpen(false);
-  };
-
   const handleMobileLinkClick = (action: () => void) => {
     action();
     setIsMobileMenuOpen(false);
@@ -141,62 +109,6 @@ export function Navbar() {
         >
           Home
         </Link>
-
-        <a
-          href="#how-it-works"
-          className={cn(
-            'nav-link-item px-4 py-2 rounded-md transition-colors',
-            pathname === '/' ? 'text-foreground/80 hover:text-primary' : 'text-foreground/80 hover:text-primary'
-          )}
-          onClick={e => {
-            e.preventDefault();
-            scrollToSection('how-it-works');
-          }}
-        >
-          How It Works
-        </a>
-
-        <a
-          href="#features"
-          className={cn(
-            'nav-link-item px-4 py-2 rounded-md transition-colors',
-            pathname === '/' ? 'text-foreground/80 hover:text-primary' : 'text-foreground/80 hover:text-primary'
-          )}
-          onClick={e => {
-            e.preventDefault();
-            scrollToSection('features');
-          }}
-        >
-          Features
-        </a>
-
-        <a
-          href="#pricing"
-          className={cn(
-            'nav-link-item px-4 py-2 rounded-md transition-colors',
-            pathname === '/' ? 'text-foreground/80 hover:text-primary' : 'text-foreground/80 hover:text-primary'
-          )}
-          onClick={e => {
-            e.preventDefault();
-            scrollToSection('pricing');
-          }}
-        >
-          Pricing
-        </a>
-
-        <a
-          href="#faq"
-          className={cn(
-            'nav-link-item px-4 py-2 rounded-md transition-colors',
-            pathname === '/' ? 'text-foreground/80 hover:text-primary' : 'text-foreground/80 hover:text-primary'
-          )}
-          onClick={e => {
-            e.preventDefault();
-            scrollToSection('faq');
-          }}
-        >
-          FAQ
-        </a>
 
         <Link
             href="/blog"
