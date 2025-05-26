@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const defaultColors = require('tailwindcss/colors');
+
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -16,38 +18,44 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+    colors: {
+      ...defaultColors,
+    },
     extend: {
       fontFamily: {
         playfair: ['var(--font-playfair)'],
         inter: ['var(--font-inter)'],
-        fredoka: ['var(--font-fredoka)'],
+        fredoka: ['Fredoka One', 'cursive'],
         baloo: ['var(--font-baloo)'],
         nunito: ['var(--font-nunito)']
       },
+      maxWidth: {
+        '7xl': '80rem',
+      },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "#FFFDF5", // 主背景色，柔和奶油白
-        foreground: "#212121", // 标题文本，深灰色
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        background: "#FFFFFF",
+        foreground: "#212121",
         primary: {
-          DEFAULT: "#FF6B6B", // 主按钮色，樱桃红
+          DEFAULT: "rgba(0, 151, 167, 0.8)",
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#FFD93D", // 次按钮色，明黄色
+          DEFAULT: "#F5F5F5",
           foreground: "#212121",
         },
         destructive: {
-          DEFAULT: "#E63946", // 错误色
+          DEFAULT: "#E63946",
           foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "#EAEAEA", // 边框色
-          foreground: "#4E4E4E", // 正文文本
+          DEFAULT: "#E0E0E0",
+          foreground: "#757575",
         },
         accent: {
-          DEFAULT: "#FFFFFF", // 卡片背景
+          DEFAULT: "#FFFFFF",
           foreground: "#212121",
         },
         popover: {
@@ -58,10 +66,10 @@ module.exports = {
           DEFAULT: "#FFFFFF",
           foreground: "#212121",
         },
-        info: "#3A86FF", // 信息色
-        success: "#32CD32", // 成功色
-        warning: "#FFA500", // 警告色
-        error: "#E63946", // 错误色
+        info: "#2196F3",
+        success: "#4CAF50",
+        warning: "#FFC107",
+        error: "#E63946",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -83,7 +91,17 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       boxShadow: {
-        'custom': 'rgba(0, 0, 0, 0.08) 0px 4px 12px',
+        DEFAULT: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+        inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
+        none: 'none',
+        'custom': '0 4px 12px rgba(0, 0, 0, 0.08)',
+        'nav': '0 2px 8px rgba(0, 0, 0, 0.06)',
+        'card': '0 4px 16px rgba(0, 0, 0, 0.1)',
       }
     },
   },

@@ -22,8 +22,8 @@ export default function AuthButton() {
 
   return (
     <Button
-      variant="ghost"
-      className="text-foreground hover:text-primary hover:bg-transparent p-0 h-auto"
+      variant="default"
+      className="bg-primary text-white hover:bg-primary/90 px-6 py-2 rounded-full transition-colors"
       onClick={() => openSignIn()}
     >
       Login

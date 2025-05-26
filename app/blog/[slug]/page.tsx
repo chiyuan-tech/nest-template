@@ -1,73 +1,52 @@
 'use client';
 
-import { useParams, notFound, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { Footer } from '../../../components/Footer';
-import { useEffect } from 'react';
-import { blogPosts } from '../data/blogPosts';
+import { useParams } from 'next/navigation';
+import { blogPosts } from '../data/posts';
+import { notFound } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-
+export default function BlogPost() {
+  const { slug } = useParams();
   const post = blogPosts.find(p => p.slug === slug);
 
   if (!post) {
     notFound();
   }
 
-  useEffect(() => {
-    document.title = `${post.title} - 4o Image Generator Blog`;
-  }, [post.title]);
-
-  function getCategoryName(category: string): string {
-    switch(category) {
-      case 'updates': return 'Product Updates';
-      case 'tutorials': return 'Tutorials';
-      case 'stories': return 'User Stories';
-      default: return 'All';
-    }
-  }
-
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <main className="flex-grow py-12 px-6">
-        <div className="container mx-auto max-w-3xl bg-white p-8 md:p-12 rounded-2xl shadow-lg">
-          <Link href={`/blog`} className="text-primary hover:underline mb-8 inline-flex items-center gap-2 font-medium">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Back to Blog
-          </Link>
-
-          <h1 className="text-3xl md:text-4xl font-bold font-fredoka mb-4 text-foreground mt-6">
-            {post.title}
-          </h1>
-          
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground mb-8 border-b pb-4">
-            <span>Published on {new Date(post.date).toLocaleDateString()}</span>
-            <span className="hidden md:inline">&bull;</span>
-            <span className="px-2 py-0.5 bg-primary/10 rounded-full text-xs text-primary font-medium">
-              {getCategoryName(post.category)}
-            </span>
-          </div>
-
-          <article
-            className="prose prose-slate prose-lg max-w-none 
-                      prose-headings:font-bold prose-headings:text-gray-800 prose-headings:font-fredoka 
-                      prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6
-                      prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4
-                      prose-p:text-gray-600 prose-p:leading-relaxed prose-p:mb-6 prose-p:mt-4
-                      prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline
-                      prose-strong:text-gray-800 prose-strong:font-bold
-                      prose-ul:my-6 prose-ul:pl-6 prose-li:mb-2 prose-li:text-gray-600
-                      prose-ol:my-6 prose-ol:pl-6
-                      prose-img:rounded-lg prose-img:shadow-md prose-img:my-8"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+    <article className="container mx-auto px-6 py-12 mt-16 max-w-4xl">
+      <header className="mb-12">
+        <h1 className="text-4xl font-bold mb-4 text-foreground">
+          {post.title}
+        </h1>
+        <div className="flex items-center gap-4 text-muted-foreground mb-6">
+          <span>{post.author}</span>
+          <span>•</span>
+          <span>{post.date}</span>
+          <span>•</span>
+          <span>{post.readingTime}</span>
         </div>
-      </main>
-      <Footer />
-    </div>
+        <p className="text-lg text-muted-foreground">
+          {post.description}
+        </p>
+      </header>
+
+      <div className="prose prose-lg max-w-none">
+        <ReactMarkdown
+          components={{
+            h1: ({node, ...props}) => <h1 className="text-3xl font-bold mt-8 mb-4 text-foreground" {...props} />,
+            h2: ({node, ...props}) => <h2 className="text-2xl font-bold mt-6 mb-4 text-foreground" {...props} />,
+            h3: ({node, ...props}) => <h3 className="text-xl font-bold mt-4 mb-3 text-foreground" {...props} />,
+            p: ({node, ...props}) => <p className="text-muted-foreground mb-4" {...props} />,
+            ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4" {...props} />,
+            ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4" {...props} />,
+            li: ({node, ...props}) => <li className="text-muted-foreground mb-2" {...props} />,
+            a: ({node, ...props}) => <a className="text-primary hover:underline" {...props} />,
+          }}
+        >
+          {post.content}
+        </ReactMarkdown>
+      </div>
+    </article>
   );
 } 

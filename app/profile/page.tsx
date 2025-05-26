@@ -21,39 +21,46 @@ import { DownloadIcon, ReloadIcon } from '@radix-ui/react-icons';
 
 // 定义从API获取的用户信息类型
 interface UserApiInfo {
-  google_id: string;
-  avatar: string;
-  name: string;
+  uuid: string;
   email: string;
-  level: 0 | 1 | 2; // 0: none, 1: premium, 2: ultimate
-  api_total_times: number;
-  api_used_times: number;
-  api_left_times: number;
-  subscription_status: string; // 可能为空或有值
-  current_period_end: number; // 时间戳
-  created: number; // 时间戳
+  from_login: string;
+  nickname: string;
+  avatar?: string;
+  free_limit: number;
+  remaining_limit: number;
+  total_limit: number;
+  use_limit: number;
+  vip_last_time: number;
+  level: number;
+  created_at: number;
+  updated_at: number;
+  status: number;
+  id: number;
 }
 
 // 定义图片历史记录项的类型
 interface GenerationHistoryItem {
   id: number;
-  google_id: string;
+  user_id: number;
   task_id: string;
-  prompt: string;
   origin_image: string;
-  dist_image: string; // 我们将主要使用这个图片URL
-  size: string;
-  is_enhance: number;
+  size_image: string;
+  other_image: string;
+  generate_image: string;
+  quality_image: string;
   status: number;
-  created: number;
-  updated: number;
+  status_msg: string;
+  generation_time: number;
+  prompt: string;
+  created_at: number;
+  updated_at: number;
 }
 
 // 定义图片历史记录 API 返回的数据结构
 interface GenerationHistoryResponse {
   count: number;
   list: GenerationHistoryItem[];
-  total_page: number; // API 直接返回了总页数，很好
+  total_page: number;
 }
 
 // 定义用户生成图片的接口
@@ -210,16 +217,17 @@ export default function ProfilePage() {
       setIsLoadingUserInfo(true);
       setUserInfoError(null);
       try {
-        const googleIdToFetch = userId || '';
-        const response = await fetch(`https://svc.4oimagex.com/api/ai4oimagex/user/info?google_id=${googleIdToFetch}`);
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status} ${response.statusText}`);
-        }
+        const response = await fetch(`https://svc.quickmedcert.com/api/user/info`, {
+          headers: {
+            'x-appid': 'quickmedcert',
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || ''
+          }
+        });
         const result = await response.json();
-        if (result.code === 1000 && result.data) {
+        if (result.code === 200 && result.data) {
           setUserApiInfo(result.data);
         } else {
-          console.warn("User info API returned success code but no data for:", googleIdToFetch);
+          console.warn("User info API returned success code but no data");
           setUserApiInfo(null);
         }
       } catch (error) {
@@ -231,9 +239,9 @@ export default function ProfilePage() {
     };
 
     fetchUserInfo();
-  }, [isLoaded, userId]); // 使用userId替换user作为依赖项
+  }, [isLoaded, userId]);
 
-  // API 调用 Effect (获取图片历史记录) - 添加userId监听
+  // 修改获取作品历史记录的useEffect，移除定时器
   useEffect(() => {
     const fetchGenerationHistory = async (page: number) => {
       if (!isLoaded || !userId) {
@@ -248,14 +256,20 @@ export default function ProfilePage() {
       setIsLoadingHistory(true);
       setHistoryError(null);
       try {
-        const googleIdToFetch = userId || '';
-        const response = await fetch(`https://svc.4oimagex.com/api/ai4oimagex/generateImageOpus/list`, {
-          method: 'POST',
-          body: JSON.stringify({
-            page: page,
-            page_size: historyPageSize,
-            google_id: googleIdToFetch,
-          }),
+        // 获取token
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('Token not found');
+        }
+
+        // 调用新的API获取用户作品列表
+        const response = await fetch(`https://svc.aibabytalk.com/api/user/opus_list?page=${page}&page_size=${historyPageSize}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-appid': 'quickmedcert',
+            'Authorization': 'Bearer ' + token
+          }
         });
 
         if (!response.ok) {
@@ -263,7 +277,7 @@ export default function ProfilePage() {
         }
         const result = await response.json();
 
-        if (result.code === 1000 && result.data) {
+        if (result.code === 200 && result.data) {
           setHistoryList(result.data.list || []);
           setTotalPages(result.data.total_page || 0);
           setTotalHistoryCount(result.data.count || 0);
@@ -287,16 +301,6 @@ export default function ProfilePage() {
 
     // 首次加载数据
     fetchGenerationHistory(currentPage);
-    
-    // 设置定时器，每2秒自动刷新数据
-    const intervalId = setInterval(() => {
-      fetchGenerationHistory(currentPage);
-    }, 2000);
-    
-    // 清理函数，组件卸载时清除定时器
-    return () => {
-      clearInterval(intervalId);
-    };
   }, [isLoaded, userId, currentPage]); // 使用userId替换user作为依赖项
 
   // 处理分页变化
@@ -308,6 +312,63 @@ export default function ProfilePage() {
         historySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
+  };
+
+  // 添加一个刷新历史记录的函数
+  const refreshHistory = () => {
+    // 刷新当前页
+    const fetchGenerationHistory = async (page: number) => {
+      if (!isLoaded || !userId) {
+        return;
+      }
+
+      setIsLoadingHistory(true);
+      setHistoryError(null);
+      try {
+        // 获取token
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('Token not found');
+        }
+
+        // 调用新的API获取用户作品列表
+        const response = await fetch(`https://svc.aibabytalk.com/api/user/opus_list?page=${page}&page_size=${historyPageSize}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-appid': 'quickmedcert',
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        }
+        const result = await response.json();
+
+        if (result.code === 200 && result.data) {
+          setHistoryList(result.data.list || []);
+          setTotalPages(result.data.total_page || 0);
+          setTotalHistoryCount(result.data.count || 0);
+        } else {
+          console.error("Failed to fetch history:", result.msg || 'Unknown API error');
+          setHistoryList([]);
+          setTotalPages(0);
+          setTotalHistoryCount(0);
+          setHistoryError(result.msg || 'Failed to fetch generation history');
+        }
+      } catch (error) {
+        console.error("Failed to fetch generation history:", error);
+        setHistoryError(error instanceof Error ? error.message : 'An unknown error occurred fetching history');
+        setHistoryList([]);
+        setTotalPages(0);
+        setTotalHistoryCount(0);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    fetchGenerationHistory(currentPage);
   };
 
   if (!isLoaded) {
@@ -350,52 +411,45 @@ export default function ProfilePage() {
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
 
   // 根据 API 数据计算使用率
-  const usagePercentage = userApiInfo?.api_total_times && userApiInfo.api_total_times > 0
-    ? (userApiInfo.api_used_times / userApiInfo.api_total_times) * 100
+  const usagePercentage = userApiInfo?.total_limit && userApiInfo.total_limit > 0
+    ? (userApiInfo.use_limit / userApiInfo.total_limit) * 100
     : 0;
 
-  // 获取订阅计划名称 (可以从翻译文件获取)
-  const getPlanName = (level: number | undefined) => {
-    switch (level) {
-      case 1: return 'Premium Plan'; // Level 1 -> Basic
-      case 2: return 'Ultimate Plan'; // Level 2 -> Premium
-      // case 3: return 'Ultimate Plan'; // Level 3 -> Ultimate
-      default: return 'No Subscription'; // Level 0 或 undefined -> No Subscription
-    }
+  // 获取订阅计划名称
+  const getPlanName = (vipLastTime: number | undefined) => {
+    return vipLastTime && vipLastTime > 0 ? 'VIP Plan' : 'Free Plan';
   };
-  const currentPlanName = getPlanName(userApiInfo?.level);
+  const currentPlanName = getPlanName(userApiInfo?.vip_last_time);
 
   // Pagination items calculation
   const paginationItems = getPaginationItems(currentPage, totalPages);
 
-  // 用户信息卡片统计项 - 不再使用这个硬编码的数据
+  // 用户信息卡片统计项
   const stats = [
     {
       label: 'Membership Level',
-      value: userApiInfo?.level === 2 ? 'Ultimate Plan' : userApiInfo?.level === 1 ? 'Premium Plan' : 'Free Plan',
+      value: userApiInfo?.level && userApiInfo.level > 0 ? 'VIP Plan' : 'Free Plan',
       key: 'level',
       custom: (
         <span className="px-3 py-1 rounded-lg bg-[#232b3e] text-primary font-bold text-sm">
-          {userApiInfo?.level === 2 ? 'Ultimate Plan' : 
-           userApiInfo?.level === 1 ? 'Premium Plan' : 
-           'Free Plan'}
+          {userApiInfo?.level && userApiInfo.level > 0 ? 'VIP Plan' : 'Free Plan'}
         </span>
       )
     },
     {
       label: 'Points Remaining',
-      value: userApiInfo?.api_left_times?.toString() || '0',
+      value: ((userApiInfo?.remaining_limit || 0) + (userApiInfo?.free_limit || 0)).toString(),
       key: 'points',
     },
     {
-      label: 'Generated Images',
-      value: userApiInfo?.api_used_times?.toString() || '0',
-      key: 'images',
+      label: 'Points Used',
+      value: userApiInfo?.use_limit?.toString() || '0',
+      key: 'pointsUsed',
     },
     {
-      label: 'Total API Calls',
-      value: userApiInfo?.api_total_times?.toString() || '0',
-      key: 'api',
+      label: 'Total Points',
+      value: userApiInfo?.total_limit?.toString() || '0',
+      key: 'pointsTotal',
     },
   ];
 
@@ -433,31 +487,50 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
                   <span>Membership Level</span>
                   <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-bold ml-2">
-                    {userApiInfo?.level === 2 ? 'Ultimate Plan' : 
-                     userApiInfo?.level === 1 ? 'Premium Plan' : 
-                     'Free Plan'}
+                    {userApiInfo?.level && userApiInfo.level > 0 ? 'VIP Plan' : 'Free Plan'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
                   <span>Points Remaining</span>
-                  <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.api_left_times || 0}</span>
+                  <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.remaining_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
-                  <span>Generated Images</span>
-                  <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.api_used_times || 0}</span>
+                  <span>Points Used</span>
+                  <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.use_limit || 0}</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
-                  <span>Total API Calls</span>
-                  <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.api_total_times || 0}</span>
+                  <span>Total Points</span>
+                  <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.total_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Generation History 标题 */}
+        {/* Generation History 标题 - 添加刷新按钮 */}
         <div className="container mx-auto mb-4">
-          <h2 className="text-primary text-2xl font-bold mb-4 font-space-grotesk">Generation History</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-primary text-2xl font-bold mb-4 font-space-grotesk">Generation History</h2>
+            <Button 
+              onClick={refreshHistory} 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2"
+              disabled={isLoadingHistory}
+            >
+              {isLoadingHistory ? (
+                <>
+                  <ReloadIcon className="h-4 w-4 animate-spin" />
+                  <span>Refreshing...</span>
+                </>
+              ) : (
+                <>
+                  <ReloadIcon className="h-4 w-4" />
+                  <span>Refresh</span>
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* 图片历史区域 */}
@@ -465,51 +538,35 @@ export default function ProfilePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {historyList.length > 0 ? (
               historyList
-                .filter(item => item.status !== -1) // 过滤掉状态为-1的作品
+                .filter(item => item.status !== -1 && item.generate_image) // 过滤掉状态为-1的作品和没有generate_image的记录
                 .map((item) => (
                 <div key={item.id} className="bg-card rounded-xl overflow-hidden relative flex flex-col shadow-lg border border-border">
-                  {/* 下载按钮 - 只在有dist_image时才显示 */}
-                  {item.dist_image && (
-                    <button 
-                      className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-primary p-2 rounded-full text-white transition-colors"
-                      onClick={() => downloadImageWithCors(item.dist_image, `outfit-${item.id}.png`, setIsDownloading, item.id)}
-                    >
-                      <DownloadIcon className="h-4 w-4" />
-                    </button>
-                  )}
+                  {/* 下载按钮 - 只在有generate_image时才显示 */}
+                  <button 
+                    className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-primary p-2 rounded-full text-white transition-colors"
+                    onClick={() => downloadImageWithCors(item.generate_image, `certificate-${item.id}.png`, setIsDownloading, item.id)}
+                  >
+                    <DownloadIcon className="h-4 w-4" />
+                  </button>
                   
                   {/* 图片内容 - 修改为完全占满区域 */}
                   <div className="relative w-full aspect-[3/4] overflow-hidden">
-                    {item.dist_image ? (
-                      // 有dist_image时显示图片
-                      <Image
-                        src={item.dist_image}
-                        alt={`Generated image ${item.id}`}
-                        fill
-                        className="object-cover w-full h-full"
-                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
-                        priority={false}
-                        loading="lazy"
-                        draggable="false"
-                        unoptimized={true}
-                      />
-                    ) : (
-                      // 没有dist_image时显示loading状态
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/30">
-                        <ReloadIcon className="animate-spin h-8 w-8 text-primary mb-2" />
-                        <p className="text-xs text-center text-muted-foreground px-2">
-                          Generating your outfit...
-                        </p>
-                        <p className="text-xs mt-1 text-center text-muted-foreground/80 px-2">
-                          This may take 1-2 minutes
-                        </p>
-                      </div>
-                    )}
+                    <Image
+                      src={item.generate_image}
+                      alt={`Generated image ${item.id}`}
+                      fill
+                      className="object-cover w-full h-full"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                      priority={false}
+                      loading="lazy"
+                      draggable="false"
+                      unoptimized={true}
+                    />
                   </div>
                   
                   {/* 日期 - 减少内边距使其更紧凑 */}
                   <div className="px-3 py-1.5 text-xs text-muted-foreground font-inter bg-muted">
-                    {formatTimestamp(item.created)}
+                    {formatTimestamp(item.created_at)}
                   </div>
                 </div>
               ))

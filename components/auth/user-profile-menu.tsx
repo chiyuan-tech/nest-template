@@ -39,18 +39,23 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
       syncStatusByUser[effectUserId] = true;
 
       const userData = {
-        google_id: effectUserId,
+        uuid: effectUserId,
         email: userEmail,
-        name: user.fullName,
+        nickname: user.fullName,
         avatar: user.imageUrl,
+        from_login: "google"
       };
 
-      const apiUrl = 'https://cartoon.framepola.com/api/user/registerOrUpdate';
+      const apiUrl = 'https://svc.aibabytalk.com/api/user/auth';
 
       const syncUser = async () => {
         try {
           const response = await fetch(apiUrl, {
             method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-appid': 'quickmedcert',
+            },
             body: JSON.stringify(userData),
           });
 
@@ -59,7 +64,15 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
             throw new Error(`API Error ${response.status}: ${errorData || response.statusText}`);
           }
 
-          console.log('用户数据同步 API 调用成功:', await response.json());
+          const responseData = await response.json();
+          console.log('用户数据同步 API 调用成功:', responseData);
+          
+          // 保存token到localStorage
+          if (responseData.code === 200 && responseData.data) {
+            localStorage.setItem('access_token', responseData.data.access_token);
+            localStorage.setItem('refresh_token', responseData.data.refresh_token);
+            localStorage.setItem('token_expire_at', responseData.data.expire_at.toString());
+          }
 
         } catch (error) {
           console.error('用户数据同步 API 调用失败:', error);
@@ -87,9 +100,9 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
             <p className="text-xs leading-none text-muted-foreground">
               {user.primaryEmailAddress?.emailAddress}
             </p>
-            <p className="text-xs leading-none text-muted-foreground mt-1">
+            {/* <p className="text-xs leading-none text-muted-foreground mt-1">
               ID: {user.id.substring(0, 8)}...
-            </p>
+            </p> */}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

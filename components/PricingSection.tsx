@@ -7,7 +7,7 @@ import { useUser, useClerk } from '@clerk/nextjs';
 import { cn } from '@/lib/utils';
 
 // 定义接口地址
-const STRIPE_API_ENDPOINT = 'https://cartoon.framepola.com/api/stripe/subscription/create';
+const STRIPE_API_ENDPOINT = 'https://svc.quickmedcert.com/api/pay/stripe';
 
 // 定义 Plan 结构
 interface PricingPlan {
@@ -35,21 +35,21 @@ export default function PricingSection() {
       price: '$0',
       buttonText: 'Try for Free',
       features: [
-        'Generate 2 images total',
+        'Generate 2 AI total',
         'Standard generation speed',
         'Download enabled'
       ]
     },
     {
       key: 'premium',
-      priceId: 'price_1RHh3OP6KzD2PGCtXNVWN1lm', 
+      priceId: 'price_1RRSlvBTlYgHUE88w1CCLNmM', 
       popular: true,
       title: 'Premium',
       price: '$1',
       buttonText: 'Upgrade Plan',
       features: [
-        'Generate 5 images total',
-        'HD image download',
+        'Generate 5 AI total',
+        'Medical Certificate Download enabled',
         'Faster AI generation',
         'Commercial use',
         'Remove watermark'
@@ -57,7 +57,7 @@ export default function PricingSection() {
     },
     {
       key: 'ultimate',
-      priceId: 'price_1RHMGnP6KzD2PGCtEbKByaGm', 
+      priceId: 'price_1RRSmiBTlYgHUE88ptTMrxKj', 
       popular: false,
       title: 'Ultimate',
       price: '$10',
@@ -94,10 +94,13 @@ export default function PricingSection() {
       // 3. 使用真实的用户 ID 调用 API
       const response = await fetch(STRIPE_API_ENDPOINT, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-appid': 'quickmedcert',
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || ''
+        },
         body: JSON.stringify({
-          google_id: userId, // 使用 Clerk user.id 作为 google_id 发送给后端
-          price_id: priceId,
-          website: "ai_polaroid" //站点标识,默认现在站点ai_polaroid，其他站点的以后增加
+          price_id: priceId
         }),
       });
 
@@ -130,16 +133,16 @@ export default function PricingSection() {
   };
 
   return (
-    <section id="pricing" className="py-20 px-6 bg-gray-100 dark:bg-gray-900">
-      <div className="container mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold font-fredoka text-center mb-6 text-foreground">
+    <section id="pricing" className="pricing-section">
+      <div className="pricing-container">
+        <h2 className="pricing-title">
           Choose Your Perfect Plan
         </h2>
-        <p className="text-lg text-muted-foreground text-center mb-16 max-w-3xl mx-auto">
+        <p className="pricing-subtitle">
           All plans include HD image download and fast AI generation.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="pricing-grid">
             {pricingPlans.map((plan) => {
               const isFree = plan.key === 'free';
 
@@ -147,36 +150,35 @@ export default function PricingSection() {
                 <div
                   key={plan.key}
                   className={cn(
-                    'rounded-2xl p-8 flex flex-col h-full relative shadow-xl',
-                    plan.popular ? 'bg-gray-900 text-gray-100 border-2 border-secondary' 
-                    : 'bg-gray-800 text-gray-200'
+                    'pricing-card',
+                    plan.popular ? 'pricing-card-popular' : 'pricing-card-regular'
                   )}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-secondary text-secondary-foreground px-4 py-1 rounded-full text-sm font-bold shadow-md">
+                    <div className="pricing-badge">
                       Most Popular
                     </div>
                   )}
 
-                  <h3 className="text-2xl font-semibold mb-2 text-center text-white">
+                  <h3 className="pricing-card-title">
                     {plan.title}
                   </h3>
       
-                  <div className="text-center mb-8">
-                    <span className="text-5xl font-bold text-white">
+                  <div className="pricing-card-price">
+                    <span className="pricing-price-value">
                       {plan.price}
                     </span>
-                    {!isFree && (<span className="text-gray-400 text-lg ml-1">/month</span>)}
+                    {!isFree && (<span className="pricing-price-period">/month</span>)}
                   </div>
 
                   <Button 
                     className={cn(
                       'w-full mb-6',
                       plan.popular
-                        ? 'bg-secondary text-secondary-foreground hover:bg-secondary/90'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : isFree
-                          ? 'bg-gray-600 text-white hover:bg-gray-500'
-                          : 'bg-gray-700 text-white hover:bg-gray-600'
+                          ? 'bg-muted text-muted-foreground hover:bg-muted/90'
+                          : 'bg-secondary text-secondary-foreground hover:bg-secondary/90'
                     )}
                     onClick={() => !isFree && handleUpgradeClick(plan.priceId, plan.key)}
                     disabled={loadingPlan === plan.key}
@@ -187,12 +189,15 @@ export default function PricingSection() {
                     }
                   </Button>
 
-                  <div className="flex-grow border-t border-gray-700 pt-6">
+                  <div className="pricing-features">
                     <ul className="space-y-3">
                       {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start">
-                          <Check className={`w-5 h-5 mr-2 flex-shrink-0 ${plan.popular ? 'text-secondary' : 'text-gray-400'}`} />
-                          <span className="text-sm">
+                        <li key={featureIndex} className="pricing-feature-item">
+                          <Check className={cn(
+                            'pricing-feature-icon',
+                            plan.popular ? 'text-primary' : 'text-muted-foreground'
+                          )} />
+                          <span className="pricing-feature-text">
                             {feature}
                           </span>
                         </li>

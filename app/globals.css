@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: 'HomemadeApple';
+  src: url('/font/HomemadeApple-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -45,105 +53,83 @@
 
 :root {
   --radius: 0.625rem;
-  /* 拍立得风格配色 */
-  --background: #FFFDF5; /* 柔和奶油白背景 */
-  --foreground: #212121; /* 深灰色文本 */
-  
-  --card: #FFFFFF; /* 卡片背景 */
-  --card-foreground: #212121; /* 卡片文本 */
-  
-  --popover: #FFFFFF; /* 弹出框背景 */
-  --popover-foreground: #212121; /* 弹出框文本 */
-  
-  --primary: #FF6B6B; /* 樱桃红，主按钮 */
-  --primary-foreground: #FFFFFF; /* 按钮文本 */
-  
-  --secondary: #FFD93D; /* 明黄色，次要按钮 */
-  --secondary-foreground: #212121; /* 次要按钮文本 */
-  
-  --muted: #EAEAEA; /* 淡灰色，边框 */
-  --muted-foreground: #4E4E4E; /* 次要文本 */
-  
-  --accent: #FFFFFF; /* 强调背景 */
-  --accent-foreground: #212121; /* 强调文本 */
-  
-  --destructive: #E63946; /* 错误色 */
-  --border: #EAEAEA; /* 边框色 */
-  --input: #EAEAEA; /* 输入框边框 */
-  --ring: #3A86FF; /* 聚焦环 */
-  
-  /* 其他颜色 */
-  --info: #3A86FF; /* 信息色 */
-  --success: #32CD32; /* 成功色 */
-  --warning: #FFA500; /* 警告色 */
-  
-  /* 其他默认变量保持不变 */
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --background: #FFFFFF;
+  --foreground: #212121;
+  --card: #FFFFFF;
+  --card-foreground: #212121;
+  --popover: #FFFFFF;
+  --popover-foreground: #212121;
+  --primary: rgba(0, 151, 167, 1);
+  --primary-foreground: rgba(255, 255, 255, 1);
+  --secondary: #F5F5F5;
+  --secondary-foreground: #212121;
+  --muted: #E0E0E0;
+  --muted-foreground: #757575;
+  --accent: #FFFFFF;
+  --accent-foreground: #212121;
+  --destructive: #E63946;
+  --border: #E0E0E0;
+  --input: #E0E0E0;
+  --ring: rgba(0, 151, 167, 0.8);
+  --info: #2196F3;
+  --success: #4CAF50;
+  --warning: #FFC107;
+  --chart-1: #3498db;
+  --chart-2: #2ecc71;
+  --chart-3: #9b59b6;
+  --chart-4: #f1c40f;
+  --chart-5: #e74c3c;
   --sidebar: #FFFFFF;
   --sidebar-foreground: #212121;
-  --sidebar-primary: #FF6B6B;
+  --sidebar-primary: rgba(0, 151, 167, 0.8);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FFD93D;
+  --sidebar-accent: #F5F5F5;
   --sidebar-accent-foreground: #212121;
-  --sidebar-border: #EAEAEA;
-  --sidebar-ring: #3A86FF;
+  --sidebar-border: #E0E0E0;
+  --sidebar-ring: rgba(0, 151, 167, 0.8);
 }
 
 .dark {
-  /* 暗色模式下的拍立得风格 */
-  --background: #222222;
-  --foreground: #F5F5F5;
-  
-  --card: #333333;
-  --card-foreground: #F5F5F5;
-  
-  --popover: #333333;
-  --popover-foreground: #F5F5F5;
-  
-  --primary: #FF6B6B; /* 保持主色调 */
+  --background: #121212;
+  --foreground: #FFFFFF;
+  --card: #1E1E1E;
+  --card-foreground: #FFFFFF;
+  --popover: #1E1E1E;
+  --popover-foreground: #FFFFFF;
+  --primary: rgba(0, 151, 167, 0.8);
   --primary-foreground: #FFFFFF;
-  
-  --secondary: #FFD93D; /* 保持次色调 */
-  --secondary-foreground: #212121;
-  
-  --muted: #444444;
-  --muted-foreground: #B0B0B0;
-  
-  --accent: #333333; /* 深色卡纸感 */
-  --accent-foreground: #F5F5F5;
-  
+  --secondary: #2D2D2D;
+  --secondary-foreground: #FFFFFF;
+  --muted: #424242;
+  --muted-foreground: #BDBDBD;
+  --accent: #1E1E1E;
+  --accent-foreground: #FFFFFF;
   --destructive: #E63946;
-  --border: #555555;
-  --input: #555555;
-  --ring: #3A86FF;
-  
-  /* 其他默认暗色变量 */
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #333333;
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-primary: #FF6B6B;
+  --border: #424242;
+  --input: #424242;
+  --ring: rgba(0, 151, 167, 0.8);
+  --chart-1: #7b68ee;
+  --chart-2: #00bcd4;
+  --chart-3: #ffa500;
+  --chart-4: #9c27b0;
+  --chart-5: #ff5722;
+  --sidebar: #1E1E1E;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: rgba(0, 151, 167, 0.8);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #333333;
-  --sidebar-accent-foreground: #F5F5F5;
-  --sidebar-border: #555555;
-  --sidebar-ring: #3A86FF;
+  --sidebar-accent: #2D2D2D;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #424242;
+  --sidebar-ring: rgba(0, 151, 167, 0.8);
 }
 
 @layer base {
   html {
-    scroll-behavior: smooth; /* 添加平滑滚动 */
+    scroll-behavior: smooth;
   }
 
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
@@ -188,5 +174,458 @@
   .rounded-2xl {
     border-radius: 1.5rem;
   }
+}
+
+@layer components {
+  .nav-container {
+    @apply fixed top-0 z-50 w-full bg-white border-b border-muted shadow-md;
+  }
+
+  .nav-content {
+    @apply container mx-auto px-6 h-16 flex items-center max-w-7xl;
+  }
+
+  .nav-logo {
+    @apply w-[180px] flex-none 2xl:w-[200px];
+  }
+
+  .nav-logo-text {
+    @apply text-xl font-bold text-primary;
+    font-family: var(--font-fredoka);
+  }
+
+  .nav-links {
+    @apply hidden lg:flex flex-1 items-center justify-center gap-8 px-4;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 text-foreground hover:text-primary transition-colors rounded-md whitespace-nowrap;
+    font-family: var(--font-nunito);
+  }
+
+  .nav-link.active {
+    @apply text-primary font-semibold;
+  }
+
+  .nav-auth {
+    @apply hidden lg:flex w-[180px] flex-none items-center justify-end 2xl:w-[200px];
+  }
+
+  .nav-mobile {
+    @apply lg:hidden;
+  }
+
+  .footer-container {
+    @apply bg-white border-t border-muted;
+  }
+
+  .footer-content {
+    @apply container mx-auto px-6 py-12;
+  }
+
+  .footer-grid {
+    @apply grid grid-cols-1 md:grid-cols-4 gap-8;
+  }
+
+  .footer-logo {
+    @apply flex items-center space-x-2 mb-4;
+  }
+
+  .footer-copyright {
+    @apply mt-4 text-sm text-muted-foreground;
+  }
+
+  .footer-email {
+    @apply text-sm text-primary hover:text-primary/80 transition-colors;
+  }
+
+  .footer-section-title {
+    @apply font-semibold text-lg mb-4 text-foreground;
+  }
+
+  .footer-link {
+    @apply text-sm text-muted-foreground hover:text-primary transition-colors;
+  }
+
+  .pricing-section {
+    @apply py-20 px-6 relative;
+    background-color: #f8f9fa;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .pricing-section::before,
+  .pricing-section::after {
+    display: none;
+  }
+
+  .pricing-container {
+    @apply container mx-auto;
+  }
+
+  .pricing-title {
+    @apply text-3xl md:text-4xl font-bold text-center mb-6 text-foreground;
+    font-family: var(--font-fredoka);
+  }
+
+  .pricing-subtitle {
+    @apply text-lg text-muted-foreground text-center mb-16 max-w-3xl mx-auto;
+  }
+
+  .pricing-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto;
+  }
+
+  .pricing-card {
+    @apply rounded-2xl p-8 flex flex-col h-full relative bg-white shadow-lg;
+  }
+
+  .pricing-card.popular {
+    @apply bg-foreground text-background border-2 border-primary;
+  }
+
+  .pricing-badge {
+    @apply absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold shadow-md;
+  }
+
+  .pricing-card-title {
+    @apply text-2xl font-semibold mb-2 text-center;
+  }
+
+  .pricing-card-price {
+    @apply text-center mb-8;
+  }
+
+  .pricing-price-value {
+    @apply text-5xl font-bold;
+  }
+
+  .pricing-price-period {
+    @apply text-muted-foreground text-lg ml-1;
+  }
+
+  .pricing-features {
+    @apply flex-grow border-t border-muted pt-6;
+  }
+
+  .pricing-feature-item {
+    @apply flex items-start space-y-3;
+  }
+
+  .pricing-feature-icon {
+    @apply w-5 h-5 mr-2 flex-shrink-0;
+  }
+
+  .pricing-feature-text {
+    @apply text-sm;
+  }
+
+  .disclaimer-bg {
+    @apply w-full min-h-[320px] bg-gradient-to-br from-[#f8fafc] via-[#e0e7ef] to-[#f0f4ff] flex items-center justify-center py-12 px-4;
+  }
+
+  .disclaimer-container {
+    @apply max-w-2xl w-full mx-auto;
+  }
+
+  .disclaimer-card {
+    @apply rounded-2xl shadow-2xl bg-white/80 backdrop-blur-md border border-blue-100 p-10;
+  }
+
+  .disclaimer-title {
+    @apply text-2xl font-extrabold text-blue-800 mb-5 font-sans tracking-wide text-center drop-shadow-sm;
+  }
+
+  .disclaimer-content {
+    @apply text-gray-700 text-base leading-relaxed font-sans space-y-4 text-center;
+  }
+
+  .disclaimer-note {
+    @apply text-sm text-blue-500 mt-6 italic;
+  }
+
+  .howtowork-section {
+    @apply py-16 relative;
+    background-color: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .howtowork-section::before,
+  .howtowork-section::after {
+    display: none;
+  }
+
+  .howtowork-title {
+    @apply text-3xl md:text-4xl font-bold text-center mb-10 text-foreground drop-shadow-sm;
+    font-family: 'Fredoka', 'Fredoka One', cursive, sans-serif;
+  }
+  .howtowork-list {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-8;
+  }
+  .howtowork-step {
+    @apply bg-white/90 rounded-2xl shadow-card p-8 flex flex-col items-center text-center border border-blue-100 transition-transform hover:-translate-y-2 hover:shadow-2xl duration-200;
+  }
+  .howtowork-icon {
+    @apply text-5xl mb-4;
+  }
+  .howtowork-step-title {
+    @apply text-xl font-semibold mb-2 text-primary;
+    font-family: 'Fredoka', 'Fredoka One', cursive, sans-serif;
+  }
+  .howtowork-step-desc {
+    @apply text-gray-600 text-base leading-relaxed;
+  }
+
+  .shadow-nav {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  /* 自定义 react-datepicker 样式 */
+  .react-datepicker {
+    font-family: var(--font-nunito) !important;
+    border-radius: 0.75rem !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .react-datepicker__header {
+    background-color: var(--accent) !important;
+    border-bottom: 1px solid var(--border) !important;
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+    padding-top: 0.8rem !important;
+  }
+
+  .react-datepicker__current-month {
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: var(--foreground) !important;
+  }
+
+  .react-datepicker__day-name {
+    color: var(--muted-foreground) !important;
+    font-weight: 500 !important;
+  }
+
+  .react-datepicker__day {
+    border-radius: 50% !important;
+    transition: all 0.2s !important;
+  }
+
+  .react-datepicker__day:hover {
+    background-color: var(--secondary) !important;
+    border-radius: 50% !important;
+  }
+
+  .react-datepicker__day--selected {
+    background-color: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+    font-weight: 600 !important;
+  }
+
+  .react-datepicker__day--today {
+    font-weight: 600 !important;
+    color: var(--primary) !important;
+  }
+
+  .react-datepicker__navigation {
+    top: 1rem !important;
+  }
+
+  .react-datepicker__navigation-icon::before {
+    border-color: var(--foreground) !important;
+  }
+
+  .react-datepicker__input-container input {
+    width: 100% !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.75rem !important;
+    border: 1px solid var(--border) !important;
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+    outline: none !important;
+  }
+
+  .react-datepicker__input-container input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px rgba(0, 151, 167, 0.2) !important;
+  }
+
+  .react-datepicker__triangle {
+    display: none !important;
+  }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 自定义动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Custom styles for Medical Certificate Preview */
+.medical-certificate-container {
+  background-color: #FFFFFF;
+  padding: 2rem; /* p-8 */
+  border-radius: 1.5rem; /* rounded-2xl */
+  border: 1px solid #F3F4F6; /* border-gray-100 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+  flex-grow: 1; /* flex-1 */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cert-header {
+  text-align: center;
+  margin-bottom: 1.5rem; /* mb-6 */
+  padding-bottom: 1rem; /* pb-4 */
+  border-bottom: 1px solid #E5E7EB; /* border-gray-200 */
+}
+
+.cert-title {
+  font-size: 1.5rem; /* text-2xl */
+  line-height: 2rem;
+  font-weight: 700; /* font-bold */
+  color: rgba(0, 151, 167, 0.8); /* text-primary */
+  margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.cert-clinic-name {
+  color: #6B7280; /* text-gray-500 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+}
+
+.cert-section {
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.cert-assessment-wrapper { /* Combined with cert-section for medical assessment */
+  flex-grow: 1; /* flex-grow */
+}
+
+.cert-section-title {
+  font-size: 1.125rem; /* text-lg */
+  line-height: 1.75rem;
+  font-weight: 600; /* font-semibold */
+  margin-bottom: 0.75rem; /* mb-3 */
+  color: #374151; /* text-gray-700 */
+}
+
+.cert-info-grid {
+  display: grid;
+  grid-template-columns: auto 1fr; /* 标签列自适应宽度，内容列占剩余空间 */
+  gap: 1rem 1rem; /* 减少列间距，让右侧内容更靠左 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+}
+
+.cert-info-label {
+  font-weight: 500; /* font-medium */
+}
+
+.cert-info-value {
+  font-family: 'HomemadeApple', cursive;
+  text-align: left;
+  font-weight: 400;
+  border-bottom: 1px solid #000;
+  padding-bottom: 2px;
+  max-width: 150px;
+  display: inline-block;
+}
+
+.cert-assessment-block {
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.cert-assessment-subtitle {
+  font-weight: 500; /* font-medium */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.cert-assessment-text {
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  padding: 0.75rem; /* p-3 */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-family: 'HomemadeApple', cursive;
+  font-weight: 400;
+}
+
+.cert-diagnosis-text {
+  min-height: 60px;
+}
+
+.cert-recommendations-text {
+  min-height: 80px;
+}
+
+.cert-footer {
+  margin-top: auto; /* mt-auto */
+  border-top: 1px solid #E5E7EB; /* border-gray-200 */
+  padding-top: 1rem; /* pt-4 */
+}
+
+.cert-footer-content {
+  display: flex;
+  justify-content: space-between; /* justify-between */
+  align-items: flex-end; /* items-end */
+}
+
+.cert-footer-left {
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+}
+
+.cert-footer-text { 
+  /* Base for footer texts, specific overrides below */
+}
+
+.cert-footer-issued-on {
+  font-weight: 500; /* font-medium */
+  font-family: 'HomemadeApple', cursive;
+  border-bottom: 1px solid #000;
+  padding-bottom: 2px;
+  display: inline-block;
+  min-width: 150px;
+}
+
+.cert-footer-contact {
+  color: #6B7280; /* text-gray-500 */
+  margin-top: 0.25rem; /* mt-1 */
+}
+
+.cert-footer-right {
+  text-align: right; /* text-right */
+}
+
+.cert-signature-line {
+  height: 3rem; /* h-12 */
+  margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.cert-doctor-name {
+  font-weight: 500; /* font-medium */
+  font-family: 'HomemadeApple', cursive;
+  border-bottom: 1px solid #000;
+  padding-bottom: 2px;
+  display: inline-block;
+  min-width: 180px;
+}
+
+.cert-license-no {
+  font-size: 0.75rem; /* text-xs */
+  line-height: 1rem;
+  color: #6B7280; /* text-gray-500 */
 }
 

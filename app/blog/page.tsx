@@ -1,35 +1,44 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { blogPosts } from './data/blogPosts';
+import { blogPosts } from './data/posts';
+import Link from 'next/link';
 
-type BlogCategory = 'all' | 'updates' | 'tutorials' | 'stories';
+type BlogCategory = 'all' | 'medical' | 'tech' | 'legal' | 'innovation';
 
 export default function Blog() {
   const [activeCategory, setActiveCategory] = useState<BlogCategory>('all');
   
   const categories = [
-    { id: 'all', name: 'All' },
-    { id: 'updates', name: 'Product Updates' },
-    { id: 'tutorials', name: 'Tutorials' },
-    { id: 'stories', name: 'User Stories' },
+    { id: 'all', name: 'All Posts' },
+    { id: 'medical', name: 'Medical Practice' },
+    { id: 'tech', name: 'Technology' },
+    { id: 'legal', name: 'Legal' },
+    { id: 'innovation', name: 'Innovation' },
   ];
-  
-  const filteredPosts = blogPosts.filter(post => 
-    activeCategory === 'all' || post.category === activeCategory
-  );
-  
-  // Sort posts by date (newest first)
-  const sortedPosts = [...filteredPosts].sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+
+  const filteredPosts = activeCategory === 'all' 
+    ? blogPosts 
+    : blogPosts.filter(post => {
+        switch(activeCategory) {
+          case 'medical':
+            return post.title.toLowerCase().includes('medical');
+          case 'tech':
+            return post.title.toLowerCase().includes('chatgpt') || post.title.toLowerCase().includes('digital');
+          case 'legal':
+            return post.title.toLowerCase().includes('legal');
+          case 'innovation':
+            return post.title.toLowerCase().includes('innovation') || post.title.toLowerCase().includes('digital');
+          default:
+            return true;
+        }
+      });
 
   return (
-    <div className="container mx-auto px-6 py-12">
+    <div className="container mx-auto px-6 py-12 mt-16">
       <h1 className="text-4xl font-bold mb-8 text-center font-fredoka text-foreground">
-        Blog
+        Professional Blog
       </h1>
       
       {/* Categories Filter */}
@@ -52,51 +61,30 @@ export default function Blog() {
       
       {/* Blog Posts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {sortedPosts.length > 0 ? (
-          sortedPosts.map(post => (
-            <div key={post.slug} className="flex flex-col bg-white rounded-xl shadow-md border border-muted overflow-hidden hover:shadow-lg transition-shadow duration-200">
-              <div className="p-6 flex-grow">
-                <div className="mb-3">
-                  <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-accent text-accent-foreground">
-                    {getCategoryName(post.category)}
-                  </span>
-                  <span className="text-muted-foreground text-sm ml-2">
-                    Published on {new Date(post.date).toLocaleDateString()}
-                  </span>
+        {filteredPosts.map(post => (
+          <Link href={`/blog/${post.slug}`} key={post.id}>
+            <article className="bg-white rounded-xl shadow-card p-6 hover:shadow-lg transition-shadow duration-200">
+              <div className="flex flex-col h-full">
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold mb-2 text-foreground line-clamp-2">
+                    {post.title}
+                  </h2>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                    {post.description}
+                  </p>
                 </div>
-                <h2 className="text-xl font-bold mb-3 text-foreground">
-                  {post.title}
-                </h2>
-                <p className="text-muted-foreground mb-4 line-clamp-3">
-                  {post.excerpt}
-                </p>
+                
+                <div className="mt-auto">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>{post.author}</span>
+                    <span>{post.date}</span>
+                  </div>
+                </div>
               </div>
-              <div className="px-6 pb-6 mt-auto">
-                <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-primary hover:text-primary/80 font-medium transition-colors duration-200">
-                  Read More
-                  <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="col-span-full text-center py-12 text-muted-foreground">
-            No posts in this category yet
-          </div>
-        )}
+            </article>
+          </Link>
+        ))}
       </div>
     </div>
   );
-}
-
-// Helper function: Get category name in English
-function getCategoryName(category: string): string {
-  switch(category) {
-    case 'updates': return 'Product Updates';
-    case 'tutorials': return 'Tutorials';
-    case 'stories': return 'User Stories';
-    default: return 'All';
-  }
 } 
