@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { blogPostMetadata } from '@/lib/blogData';
+import { blogPosts } from '@/app/blog/data/posts';
 
 // !!! IMPORTANT: Replace with your actual production domain !!!
 // You can use environment variables like process.env.NEXT_PUBLIC_SITE_URL
@@ -19,7 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // Get blog post slugs from the actual data source
-  const blogPostSlugs = blogPostMetadata.map(post => post.slug);
+  const blogPostSlugs = blogPosts.map(post => post.slug);
 
   const sitemapEntries: MetadataRoute.Sitemap = [];
 

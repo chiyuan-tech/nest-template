@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/pagination";
 import Link from 'next/link';
 import { DownloadIcon, ReloadIcon } from '@radix-ui/react-icons';
+import { api } from '@/lib/api';
 
 // 定义从API获取的用户信息类型
 interface UserApiInfo {
@@ -217,13 +218,7 @@ export default function ProfilePage() {
       setIsLoadingUserInfo(true);
       setUserInfoError(null);
       try {
-        const response = await fetch(`https://svc.quickmedcert.com/api/user/info`, {
-          headers: {
-            'x-appid': 'quickmedcert',
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || ''
-          }
-        });
-        const result = await response.json();
+        const result = await api.user.getUserInfo();
         if (result.code === 200 && result.data) {
           setUserApiInfo(result.data);
         } else {
@@ -256,26 +251,7 @@ export default function ProfilePage() {
       setIsLoadingHistory(true);
       setHistoryError(null);
       try {
-        // 获取token
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          throw new Error('Token not found');
-        }
-
-        // 调用新的API获取用户作品列表
-        const response = await fetch(`https://svc.aibabytalk.com/api/user/opus_list?page=${page}&page_size=${historyPageSize}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-appid': 'quickmedcert',
-            'Authorization': 'Bearer ' + token
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status} ${response.statusText}`);
-        }
-        const result = await response.json();
+        const result = await api.user.getUserOpusList(page, historyPageSize);
 
         if (result.code === 200 && result.data) {
           setHistoryList(result.data.list || []);
@@ -325,26 +301,7 @@ export default function ProfilePage() {
       setIsLoadingHistory(true);
       setHistoryError(null);
       try {
-        // 获取token
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          throw new Error('Token not found');
-        }
-
-        // 调用新的API获取用户作品列表
-        const response = await fetch(`https://svc.aibabytalk.com/api/user/opus_list?page=${page}&page_size=${historyPageSize}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-appid': 'quickmedcert',
-            'Authorization': 'Bearer ' + token
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status} ${response.statusText}`);
-        }
-        const result = await response.json();
+        const result = await api.user.getUserOpusList(page, historyPageSize);
 
         if (result.code === 200 && result.data) {
           setHistoryList(result.data.list || []);
@@ -455,7 +412,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <main className="flex-grow">
+      <main className="flex-grow pt-20">
         {/* 顶部用户信息卡片 */}
         <div className="container mx-auto mt-8 mb-8">
           <div className="bg-card rounded-2xl px-10 py-8 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-xl">

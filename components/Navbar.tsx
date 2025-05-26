@@ -18,6 +18,7 @@ import {
 } from "../components/ui/sheet";
 import { useUser } from '@clerk/nextjs';
 import { cn } from '../lib/utils';
+import { api } from '../lib/api';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -28,39 +29,28 @@ export function Navbar() {
   const [isLoadingCredits, setIsLoadingCredits] = useState(false);
   const isHomePage = pathname === '/';
 
-  // 获取用户积分信息
+  // 获取用户积分信息 - 等待token可用后再调用
   useEffect(() => {
     const fetchUserCredits = async () => {
-      if (!isSignedIn || !user?.id) return;
+      if (!isSignedIn || !user?.id) {
+        setUserCredits(null);
+        return;
+      }
       
-      // 检查token是否存在，避免在token未设置好时发起请求
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        console.log('Token not found, delaying API request');
-        // 如果token不存在，延迟100ms后再次尝试
-        setTimeout(fetchUserCredits, 1000);
+      // 检查token是否可用
+      if (!api.auth.isTokenValid()) {
+        console.log('Token not available yet, waiting...');
         return;
       }
       
       setIsLoadingCredits(true);
       try {
-        const userId = user.id;
-        const response = await fetch(`https://svc.quickmedcert.com/api/user/info`, {
-          headers: {
-            'x-appid': 'quickmedcert',
-            'Authorization': 'Bearer ' + token
-          }
-        })
+        const result = await api.user.getUserInfo();
         
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status} ${response.statusText}`);
-        }
-        
-        const result = await response.json();
         if (result.code === 200 && result.data) {
           setUserCredits(result.data.free_limit + result.data.remaining_limit);
         } else {
-          console.warn("User info API returned success code but no data for:", userId);
+          console.warn("User info API returned success code but no data for:", user.id);
           setUserCredits(null);
         }
       } catch (error) {
@@ -70,15 +60,31 @@ export function Navbar() {
         setIsLoadingCredits(false);
       }
     };
-    
+
+    // 延迟获取积分信息，给auth接口时间完成
+    const delayedFetch = () => {
+      if (isSignedIn && user?.id) {
+        // 检查token，如果没有则等待
+        const checkTokenAndFetch = () => {
+          if (api.auth.isTokenValid()) {
+            fetchUserCredits();
+          } else {
+            // 如果token还没准备好，1秒后重试
+            setTimeout(checkTokenAndFetch, 1000);
+          }
+        };
+        
+        // 首次尝试
+        checkTokenAndFetch();
+      }
+    };
+
     // 首次加载获取用户积分
-    if (isSignedIn) {
-      fetchUserCredits();
-    }
+    delayedFetch();
     
     // 设置定时器，每60秒更新一次用户积分
     const intervalId = setInterval(() => {
-      if (isSignedIn) {
+      if (isSignedIn && api.auth.isTokenValid()) {
         fetchUserCredits();
       }
     }, 60000);

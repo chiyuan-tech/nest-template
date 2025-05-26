@@ -5,9 +5,7 @@ import { Check, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { cn } from '@/lib/utils';
-
-// 定义接口地址
-const STRIPE_API_ENDPOINT = 'https://svc.quickmedcert.com/api/pay/stripe';
+import { api } from '@/lib/api';
 
 // 定义 Plan 结构
 interface PricingPlan {
@@ -91,28 +89,7 @@ export default function PricingSection() {
 
     setLoadingPlan(planKey); // 设置当前加载的计划
     try {
-      // 3. 使用真实的用户 ID 调用 API
-      const response = await fetch(STRIPE_API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-appid': 'quickmedcert',
-          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || ''
-        },
-        body: JSON.stringify({
-          price_id: priceId
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'An error occurred. Please try again later.' })); 
-        console.error('Stripe subscription creation failed:', response.status, errorData);
-        alert(errorData.message || 'An error occurred. Please try again later.');
-        setLoadingPlan(null); 
-        return; 
-      }
-
-      const data = await response.json();
+      const data = await api.payment.createStripeSession(priceId);
 
       // 检查返回的数据结构是否符合预期
       const checkoutUrl = data?.data?.url || data?.url;
@@ -127,7 +104,11 @@ export default function PricingSection() {
 
     } catch (error) {
       console.error('Error during subscription creation request:', error);
-      alert('Network error. Please check your connection and try again.');
+      if (error instanceof Error) {
+        alert(error.message || 'An error occurred. Please try again later.');
+      } else {
+        alert('Network error. Please check your connection and try again.');
+      }
       setLoadingPlan(null);
     } 
   };

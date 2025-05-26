@@ -15,6 +15,7 @@ import { UserResource } from "@clerk/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { api } from "@/lib/api";
 
 interface UserProfileMenuProps {
   user: UserResource;
@@ -41,39 +42,15 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
       const userData = {
         uuid: effectUserId,
         email: userEmail,
-        nickname: user.fullName,
-        avatar: user.imageUrl,
+        nickname: user.fullName || undefined,
+        avatar: user.imageUrl || undefined,
         from_login: "google"
       };
 
-      const apiUrl = 'https://svc.aibabytalk.com/api/user/auth';
-
       const syncUser = async () => {
         try {
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-appid': 'quickmedcert',
-            },
-            body: JSON.stringify(userData),
-          });
-
-          if (!response.ok) {
-            const errorData = await response.text();
-            throw new Error(`API Error ${response.status}: ${errorData || response.statusText}`);
-          }
-
-          const responseData = await response.json();
+          const responseData = await api.auth.syncUser(userData);
           console.log('用户数据同步 API 调用成功:', responseData);
-          
-          // 保存token到localStorage
-          if (responseData.code === 200 && responseData.data) {
-            localStorage.setItem('access_token', responseData.data.access_token);
-            localStorage.setItem('refresh_token', responseData.data.refresh_token);
-            localStorage.setItem('token_expire_at', responseData.data.expire_at.toString());
-          }
-
         } catch (error) {
           console.error('用户数据同步 API 调用失败:', error);
         }
@@ -121,6 +98,7 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
           className="cursor-pointer focus:bg-muted hover:bg-muted"
           onClick={() => {
             console.log('用户登出');
+            api.auth.clearTokens(); // 清除存储的token
             signOut();
           }}
         >
