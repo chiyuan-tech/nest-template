@@ -1,9 +1,4 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from 'next-intl/plugin'; // Import the plugin
-
-// Create the plugin instance. 
-// By default, it looks for `./i18n/request.ts` but we'll create that next.
-const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -26,5 +21,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Apply the plugin to the Next.js configuration
-export default withNextIntl(nextConfig);
+export default nextConfig;
