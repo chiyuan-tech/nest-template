@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '../components/ui/button';
 import AuthButton from './auth/auth-button';
-import { ChevronDown, Menu, Coins } from 'lucide-react';
+import { Menu, Coins } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -18,80 +18,13 @@ import {
 } from "../components/ui/sheet";
 import { useUser } from '@clerk/nextjs';
 import { cn } from '../lib/utils';
-import { api } from '../lib/api';
+import { useUserInfo } from '../lib/providers';
 
 export function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, isSignedIn } = useUser();
-  const [userCredits, setUserCredits] = useState<number | null>(null);
-  const [isLoadingCredits, setIsLoadingCredits] = useState(false);
-  const isHomePage = pathname === '/';
-
-  // 获取用户积分信息 - 等待token可用后再调用
-  useEffect(() => {
-    const fetchUserCredits = async () => {
-      if (!isSignedIn || !user?.id) {
-        setUserCredits(null);
-        return;
-      }
-      
-      // 检查token是否可用
-      if (!api.auth.isTokenValid()) {
-        console.log('Token not available yet, waiting...');
-        return;
-      }
-      
-      setIsLoadingCredits(true);
-      try {
-        const result = await api.user.getUserInfo();
-        
-        if (result.code === 200 && result.data) {
-          setUserCredits(result.data.free_limit + result.data.remaining_limit);
-        } else {
-          console.warn("User info API returned success code but no data for:", user.id);
-          setUserCredits(null);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user credits:", error);
-        setUserCredits(null);
-      } finally {
-        setIsLoadingCredits(false);
-      }
-    };
-
-    // 延迟获取积分信息，给auth接口时间完成
-    const delayedFetch = () => {
-      if (isSignedIn && user?.id) {
-        // 检查token，如果没有则等待
-        const checkTokenAndFetch = () => {
-          if (api.auth.isTokenValid()) {
-            fetchUserCredits();
-          } else {
-            // 如果token还没准备好，1秒后重试
-            setTimeout(checkTokenAndFetch, 1000);
-          }
-        };
-        
-        // 首次尝试
-        checkTokenAndFetch();
-      }
-    };
-
-    // 首次加载获取用户积分
-    delayedFetch();
-    
-    // 设置定时器，每60秒更新一次用户积分
-    const intervalId = setInterval(() => {
-      if (isSignedIn && api.auth.isTokenValid()) {
-        fetchUserCredits();
-      }
-    }, 60000);
-    
-    // 组件卸载时清除定时器
-    return () => clearInterval(intervalId);
-  }, [isSignedIn, user?.id]);
+  const { isSignedIn } = useUser();
+  const { userInfo, isLoadingUserInfo } = useUserInfo();
 
   const handleMobileLinkClick = (action: () => void) => {
     action();
@@ -151,7 +84,7 @@ export function Navbar() {
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Coins className="h-4 w-4" />
                   <span>
-                    {isLoadingCredits ? '...' : userCredits !== null ? userCredits : '0'}
+                    {isLoadingUserInfo ? '...' : userInfo?.total_credits || '0'}
                   </span>
                 </div>
               )}
@@ -165,7 +98,7 @@ export function Navbar() {
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Coins className="h-3 w-3" />
                   <span>
-                    {isLoadingCredits ? '...' : userCredits !== null ? userCredits : '0'}
+                    {isLoadingUserInfo ? '...' : userInfo?.total_credits || '0'}
                   </span>
                 </div>
               )}

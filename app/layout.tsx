@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import { Navbar } from '@/components/Navbar';
 import ClerkProviderWithLocale from '@/components/auth/clerk-provider';
 import { ToastProvider } from '@/components/ui/toast-provider';
+import { UserProvider } from '@/lib/providers';
 import { metadata, schemaData } from '@/lib/seo-config';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -32,15 +33,17 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
         />
         <ClerkProviderWithLocale>
-          <ToastProvider>
-            <main className="min-h-screen">
-               <Navbar />
-               {children}
-            </main>
-            <Suspense fallback={null}>
-              <PaymentStatusModal />
-            </Suspense>
-          </ToastProvider>
+          <UserProvider>
+            <ToastProvider>
+              <main className="min-h-screen">
+                 <Navbar />
+                 {children}
+              </main>
+              <Suspense fallback={null}>
+                <PaymentStatusModal />
+              </Suspense>
+            </ToastProvider>
+          </UserProvider>
         </ClerkProviderWithLocale>
         <Script
           id="analytics"

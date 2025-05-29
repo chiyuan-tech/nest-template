@@ -8,6 +8,7 @@
 - 💎 **TypeScript** - 类型安全的开发体验
 - 🎨 **Tailwind CSS** - 现代化的 CSS 框架
 - 🔐 **Clerk 认证** - 完整的用户认证系统
+- 🌐 **全局状态管理** - 基于 Context API 的用户信息管理
 - 📝 **博客系统** - 支持 Markdown 的博客功能
 - 💳 **支付集成** - 支付状态处理和用户积分系统
 - 🔍 **SEO 优化** - 自动生成 sitemap 和 meta 标签
@@ -51,6 +52,10 @@ nest-template/
 │       └── clerk-provider.tsx # Clerk 认证提供者
 │
 ├── lib/                       # 工具库目录
+│   ├── providers/             # 全局状态管理 ✨
+│   │   ├── index.ts          # 统一导出文件
+│   │   ├── UserProvider.tsx  # 用户信息Provider
+│   │   └── README.md         # Provider使用说明
 │   ├── utils.ts              # 通用工具函数
 │   ├── api.ts                # API 请求封装
 │   ├── seo-config.js         # SEO 配置
@@ -70,7 +75,7 @@ nest-template/
 ## 🔧 核心文件说明
 
 ### 应用入口
-- **`app/layout.tsx`** - 根布局，包含全局字体、认证提供者和 SEO 配置
+- **`app/layout.tsx`** - 根布局，包含全局字体、认证提供者、用户状态管理和 SEO 配置
 - **`app/page.tsx`** - 网站首页
 - **`app/globals.css`** - 全局样式和 Tailwind CSS 配置
 
@@ -78,6 +83,12 @@ nest-template/
 - **`components/Navbar.tsx`** - 响应式导航栏，集成用户认证和积分显示
 - **`components/Footer.tsx`** - 网站页脚，包含导航链接和友情链接
 - **`components/ui/`** - 基于 Radix UI 的组件库，使用 Tailwind CSS 样式
+
+### 全局状态管理
+- **`lib/providers/`** - 统一的状态管理目录
+  - **`UserProvider.tsx`** - 用户信息全局管理，提供 `useUserInfo` hook
+  - **`index.ts`** - 统一导出所有 Providers 和 hooks
+  - **`README.md`** - 详细的使用说明和扩展指南
 
 ### 工具库
 - **`lib/utils.ts`** - 包含 `cn()` 函数，用于合并 Tailwind CSS 类名
@@ -88,7 +99,37 @@ nest-template/
 ### 认证系统
 - 使用 **Clerk** 提供完整的用户认证功能
 - 支持登录、注册、用户资料管理
-- 集成用户积分系统
+- 集成用户积分系统和全局用户状态管理
+
+## 🌐 全局状态管理特性
+
+### UserProvider
+提供全局用户信息管理功能：
+
+```tsx
+// 在任何组件中使用
+import { useUserInfo } from '@/lib/providers';
+
+function MyComponent() {
+  const { userInfo, isLoadingUserInfo, refreshUserInfo } = useUserInfo();
+  
+  return (
+    <div>
+      <p>用户: {userInfo?.nickname}</p>
+      <p>积分: {userInfo?.total_credits}</p>
+      <button onClick={refreshUserInfo}>刷新</button>
+    </div>
+  );
+}
+```
+
+**特性：**
+- ✅ 自动获取用户信息（登录后）
+- ✅ 定时更新（每60秒）
+- ✅ 错误处理和重试机制
+- ✅ 登录状态变化时自动更新
+- ✅ 全局共享，避免重复请求
+- ✅ 完整的 TypeScript 类型支持
 
 ## 🚀 快速开始
 
@@ -142,6 +183,7 @@ pnpm dev
 - **前端框架**: Next.js 15 (App Router)
 - **开发语言**: TypeScript
 - **样式框架**: Tailwind CSS
+- **状态管理**: Context API + Custom Hooks
 - **UI 组件**: Radix UI + shadcn/ui
 - **用户认证**: Clerk
 - **图标库**: Lucide React
@@ -156,6 +198,9 @@ pnpm dev
 
 ### SEO 配置
 在 `lib/seo-config.js` 中修改网站的 meta 信息、OpenGraph 和 Twitter 卡片配置。
+
+### 添加新的 Provider
+按照 `lib/providers/README.md` 中的说明添加新的全局状态管理功能。
 
 ### 组件扩展
 使用 shadcn/ui CLI 添加新的 UI 组件：

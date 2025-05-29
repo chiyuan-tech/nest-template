@@ -4,18 +4,27 @@ import Link from 'next/link';
 
 export function Footer() {
   const friendlyLinks = [
-    { url: 'https://ghiblimagicmaker.com', name: 'GhibliMagicMaker' },
+    { url: 'https://www.framepola.com', name: 'AI Polaroid' },
+    { url: 'https://www.ghiblimagicmaker.com', name: 'GhibliImage' },
+    { url: 'https://www.imagefusionai.com', name: 'AI Image Fusion' },
     { url: 'https://www.ghiblitattoo.com', name: 'GhibliTattoo' },
-    { url: 'https://www.girlaniai.com', name: 'GirlAniAI' },
-    { url: 'https://www.framepola.com', name: 'FramePola' },
-    { url: 'https://www.imagefusionai.com', name: 'ImageFusionAI' },
-    { url: 'https://www.aioutfitgen.com', name: 'AIOutfitGen' },
+    { url: 'https://www.aioutfitgen.com', name: 'OutfitAI' },
+    { url: 'https://www.girlaniai.com', name: 'Girl Cool Anime Wallpaper' },
+    { url: 'https://www.4oimagex.com', name: '4o lmage X' },
+    { url: 'https://www.invictgen.com', name: 'Invincible Title Card Generator' },
+    { url: 'https://www.aibabytalk.com', name: 'ai baby podcast' },
+    { url: 'https://www.pencilartai.com', name: 'PencilArtMagic' },
+    { url: 'https://www.quickmedcert.com', name: 'QuickMedCert' },
+    { url: 'https://www.imginpaint.com', name: 'AiInpainting' },
+    { url: 'https://www.xbgremove.com', name: 'EraseBG' },
+    { url: 'https://www.aithumbgen.com', name: 'AiThumbGen' },
+    { url: 'https://www.genbabyname.com', name: 'NamiGenie' },
   ];
   
   return (
     <footer className="bg-white border-t border-muted py-12">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo & Copyright */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-4">
@@ -88,26 +97,25 @@ export function Footer() {
               </li>
             </ul>
           </div>
-          
-          {/* Friendly Links */}
-          <div className="md:col-span-1">
-            <h3 className="font-semibold text-lg mb-4 text-foreground">
-              Friendly Links
-            </h3>
-            <ul className="space-y-2">
-              {friendlyLinks.map((link, index) => (
-                <li key={index}>
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
+        </div>
+        
+        {/* Partner Sites - Horizontal Layout at Bottom */}
+        <div className="mt-12 pt-8 border-t border-muted">
+          <h3 className="font-semibold text-lg mb-6 text-foreground text-center">
+            partnersites
+          </h3>
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+            {friendlyLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm px-2 py-1 hover:bg-muted/50 rounded"
+              >
+                {link.name}
+              </a>
+            ))}
           </div>
         </div>
       </div>
