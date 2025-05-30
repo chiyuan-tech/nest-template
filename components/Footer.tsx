@@ -24,6 +24,26 @@ export function Footer() {
   return (
     <footer className="bg-white border-t border-muted py-12">
       <div className="container mx-auto px-6">
+        {/* Partner Sites - Moved to Top */}
+        <div className="mb-10 pb-6 border-b border-muted">
+          <h3 className="font-semibold text-base text-foreground mb-4">
+            PartnerSites
+          </h3>
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            {friendlyLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors duration-200 text-xs hover:underline decoration-primary decoration-1 underline-offset-2"
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo & Copyright */}
           <div className="md:col-span-1">
@@ -96,26 +116,6 @@ export function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
-        </div>
-        
-        {/* Partner Sites - Horizontal Layout at Bottom */}
-        <div className="mt-12 pt-8 border-t border-muted">
-          <h3 className="font-semibold text-lg mb-6 text-foreground text-center">
-            partnersites
-          </h3>
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-            {friendlyLinks.map((link, index) => (
-              <a
-                key={index}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm px-2 py-1 hover:bg-muted/50 rounded"
-              >
-                {link.name}
-              </a>
-            ))}
           </div>
         </div>
       </div>
