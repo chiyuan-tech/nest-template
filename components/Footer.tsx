@@ -1,26 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { FriendLink } from '../lib/server-api';
 
-export function Footer() {
-  const friendlyLinks = [
-    { url: 'https://www.framepola.com', name: 'AI Polaroid' },
-    { url: 'https://www.ghiblimagicmaker.com', name: 'GhibliImage' },
-    { url: 'https://www.imagefusionai.com', name: 'AI Image Fusion' },
-    { url: 'https://www.ghiblitattoo.com', name: 'GhibliTattoo' },
-    { url: 'https://www.aioutfitgen.com', name: 'OutfitAI' },
-    { url: 'https://www.girlaniai.com', name: 'Girl Cool Anime Wallpaper' },
-    { url: 'https://www.4oimagex.com', name: '4o lmage X' },
-    { url: 'https://www.invictgen.com', name: 'Invincible Title Card Generator' },
-    { url: 'https://www.aibabytalk.com', name: 'ai baby podcast' },
-    { url: 'https://www.pencilartai.com', name: 'PencilArtMagic' },
-    { url: 'https://www.quickmedcert.com', name: 'QuickMedCert' },
-    { url: 'https://www.imginpaint.com', name: 'AiInpainting' },
-    { url: 'https://www.xbgremove.com', name: 'EraseBG' },
-    { url: 'https://www.aithumbgen.com', name: 'AiThumbGen' },
-    { url: 'https://www.genbabyname.com', name: 'NamiGenie' },
-  ];
-  
+interface FooterProps {
+  friendlyLinks?: FriendLink[];
+}
+
+export function Footer({ friendlyLinks = [] }: FooterProps) {
   return (
     <footer className="bg-white border-t border-muted py-12">
       <div className="container mx-auto px-6">
@@ -30,9 +17,9 @@ export function Footer() {
             PartnerSites
           </h3>
           <div className="flex flex-wrap gap-x-3 gap-y-1">
-            {friendlyLinks.map((link, index) => (
+            {friendlyLinks.map((link) => (
               <a
-                key={index}
+                key={link.id}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"

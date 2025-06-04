@@ -15,8 +15,8 @@ Allow: /#testimonials
 Allow: /#pricing
 Allow: /#faq
 Allow: /blog
-Allow: /blog/ai-art-generation-guide
-Allow: /blog/how-to-create-perfect-ai-illustrations
+Allow: /blog/*
+
 
 # -------------------------------------
 # ✅ Important Legal Pages

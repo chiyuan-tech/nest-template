@@ -1,7 +1,7 @@
 // API 基础配置
 const API_CONFIG = {
-  QUICK_MED_BASE: 'https://svc.quickmedcert.com',
-  APP_ID: 'quickmedcert',
+  BASE: 'https://svc.vidorai.com',
+  APP_ID: 'ai_video',
 };
 
 // 通用请求头
@@ -40,7 +40,7 @@ export const authApi = {
     avatar?: string;
     from_login: string;
   }) => {
-    const response = await fetch(`${API_CONFIG.QUICK_MED_BASE}/api/user/auth`, {
+    const response = await fetch(`${API_CONFIG.BASE}/api/user/auth`, {
       method: 'POST',
       headers: getHeaders(false), // 登录接口不需要Authorization
       body: JSON.stringify(userData),
@@ -81,7 +81,7 @@ export const authApi = {
 export const userApi = {
   // 获取用户信息
   getUserInfo: async () => {
-    const response = await fetch(`${API_CONFIG.QUICK_MED_BASE}/api/user/info`, {
+    const response = await fetch(`${API_CONFIG.BASE}/api/user/info`, {
       headers: getHeaders(),
     });
 
@@ -91,7 +91,7 @@ export const userApi = {
   // 获取用户作品列表
   getUserOpusList: async (page: number = 1, pageSize: number = 30) => {
     const response = await fetch(
-      `${API_CONFIG.QUICK_MED_BASE}/api/user/opus_list?page=${page}&page_size=${pageSize}`,
+      `${API_CONFIG.BASE}/api/user/opus_list?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
         headers: getHeaders(),
@@ -106,7 +106,7 @@ export const userApi = {
 export const paymentApi = {
   // 创建Stripe支付会话
   createStripeSession: async (priceId: string) => {
-    const response = await fetch(`${API_CONFIG.QUICK_MED_BASE}/api/pay/stripe`, {
+    const response = await fetch(`${API_CONFIG.BASE}/api/pay/stripe`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({

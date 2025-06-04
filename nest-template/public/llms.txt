@@ -1,0 +1,37 @@
+# llms.txt for https://www.quickmedcert.com
+# This file provides guidance to LLM crawlers on allowed content
+
+# -------------------------------------
+# ✅ Website Information
+Website: https://www.quickmedcert.com
+Name: QuickMedCert
+Description: Medical Certificate Automation Platform | Streamline healthcare documentation with our AI-powered medical certificate generation system. Transform medical workflows with automated, accurate, and efficient certificate processing for healthcare providers.
+
+# -------------------------------------
+# ✅ Core Content Sections
+Allow: /
+Allow: /#pricing
+Allow: /#features
+Allow: /#how-it-works
+Allow: /blog/*
+
+# -------------------------------------
+# ✅ Important Legal Pages
+Allow: /terms
+Allow: /privacy
+
+# -------------------------------------
+# ❌ Disallowed API or Internal Paths (implicitly via robots.txt)
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# -------------------------------------
+# 📌 Sitemap for better discovery
+Sitemap: https://www.quickmedcert.com/sitemap.xml
+
+# -------------------------------------
+# 📝 Notes for LLM Crawlers
+# - Blog content is dynamically generated via API
+# - Specific blog post URLs can be found in the sitemap
+# - Medical certificate automation and healthcare technology focused content 
