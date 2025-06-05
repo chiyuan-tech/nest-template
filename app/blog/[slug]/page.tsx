@@ -44,13 +44,13 @@ async function getBlogPosts(): Promise<BlogPost[]> {
 
 
 interface BlogDetailProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function BlogPost({ params }: BlogDetailProps) {
-  const { slug } = params;
+  const { slug } = await params;
   
   // 获取博客文章数据
   const blogPosts = await getBlogPosts();
