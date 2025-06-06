@@ -66,8 +66,8 @@ const SERVER_API_CONFIG = {
         const response = await fetch(`${SERVER_API_CONFIG.BASE}/api/cms/friendLinkList`, {
           method: 'GET',
           headers: getServerHeaders(),
-          // 确保每次都获取最新数据
-          cache: 'no-store',
+          // 使用缓存并设置重新验证时间（1小时）
+          next: { revalidate: 3600 },
         });
   
         const result = await handleServerApiError(response);
@@ -93,7 +93,8 @@ const SERVER_API_CONFIG = {
           {
             method: 'GET',
             headers: getServerHeaders(),
-            cache: 'no-store',
+            // 使用缓存并设置重新验证时间（1小时）
+            next: { revalidate: 3600 },
           }
         );
   

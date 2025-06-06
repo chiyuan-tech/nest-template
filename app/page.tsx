@@ -4,8 +4,8 @@ import PricingSection from '../components/PricingSection';
 import { Footer } from '../components/Footer';
 import { serverCmsApi, FriendLink } from '../lib/server-api';
 
-// 启用ISR，每60秒重新验证数据
-export const revalidate = 60;
+// 启用ISR，每小时重新验证数据
+export const revalidate = 3600;
 
 // 默认友情链接数据（当API失败或返回空数据时使用）
 const defaultFriendLinks: FriendLink[] = [

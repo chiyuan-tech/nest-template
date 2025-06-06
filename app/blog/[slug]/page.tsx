@@ -2,6 +2,9 @@ import { serverCmsApi, type BlogPost } from '../../../lib/server-api';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 
+// 启用ISR，每小时重新验证一次
+export const revalidate = 3600;
+
 // 生成文章slug（与blog列表页面保持一致）
 function generateSlug(title: string): string {
   return title.toLowerCase()
@@ -120,4 +123,18 @@ export default async function BlogPost({ params }: BlogDetailProps) {
       </div>
     </article>
   );
+}
+
+// 生成静态参数
+export async function generateStaticParams() {
+  try {
+    const blogResponse = await serverCmsApi.getBlogList(1, 100, 0);
+    
+    return blogResponse.list.map((post) => ({
+      slug: generateSlug(post.title),
+    }));
+  } catch (error) {
+    console.error('Failed to generate static params:', error);
+    return [];
+  }
 } 
