@@ -27,6 +27,8 @@ import {
 import Link from 'next/link';
 import { DownloadIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { api } from '@/lib/api';
+import { User } from "@clerk/nextjs/server";
+import { cmsApi } from "@/lib/api";
 
 // 友情链接数据类型定义
 interface FriendLink {
@@ -101,6 +103,34 @@ interface TimesLogResponse {
   count: number;
   list: TimesLogItem[];
   total_page: number;
+}
+
+// 定义订阅记录项的类型
+interface SubscriptionItem {
+  id: number;
+  pay_type: string;
+  user_id: number;
+  customer_id: string;
+  subscription_id: string;
+  price_id: string;
+  created_at: number;
+  updated_at: number;
+  price_info: {
+    id: number;
+    appid: string;
+    name: string;
+    description: string;
+    price: number;
+    features: string;
+    is_popular: number;
+    button_text: string;
+    usage_limit: number;
+    level: number;
+    stripe_id: number;
+    prices_id: string;
+    stripe_type: string;
+    status: number;
+  };
 }
 
 // 定义用户生成图片的接口
@@ -251,6 +281,13 @@ export default function ProfilePage() {
   // 友情链接状态
   const [friendlyLinks, setFriendlyLinks] = useState<FriendLink[]>([]);
 
+  // 订阅记录状态
+  const [subscriptionList, setSubscriptionList] = useState<SubscriptionItem[]>([]);
+  const [isLoadingSubscriptions, setIsLoadingSubscriptions] = useState(false);
+  const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
+  const [isSubscriptionDialogOpen, setIsSubscriptionDialogOpen] = useState(false);
+  const [cancellingSubscriptionId, setCancellingSubscriptionId] = useState<number | null>(null);
+
   // 获取积分记录数据的函数
   const fetchTimesLog = async (page: number) => {
     if (!isLoaded || !userId) return;
@@ -306,6 +343,70 @@ export default function ProfilePage() {
       setTimesLogCurrentPage(newPage);
       fetchTimesLog(newPage);
     }
+  };
+
+  // 获取订阅记录数据的函数
+  const fetchSubscriptions = async () => {
+    if (!isLoaded || !userId) return;
+
+    setIsLoadingSubscriptions(true);
+    setSubscriptionError(null);
+    try {
+      const result = await api.payment.getSubscriptions();
+
+      if (result.code === 200 && Array.isArray(result.data)) {
+        setSubscriptionList(result.data);
+      } else {
+        console.error("Failed to fetch subscriptions:", result.msg || 'Unknown API error');
+        setSubscriptionList([]);
+        setSubscriptionError(result.msg || 'Failed to fetch subscriptions');
+      }
+    } catch (error) {
+      console.error("Failed to fetch subscriptions:", error);
+      setSubscriptionError(error instanceof Error ? error.message : 'An unknown error occurred fetching subscriptions');
+      setSubscriptionList([]);
+    } finally {
+      setIsLoadingSubscriptions(false);
+    }
+  };
+
+  // 取消订阅函数
+  const handleCancelSubscription = async (subscriptionId: number) => {
+    setCancellingSubscriptionId(subscriptionId);
+    try {
+      const result = await api.payment.cancelSubscription(subscriptionId);
+
+      if (result.code === 200) {
+        // 取消成功，刷新订阅记录
+        await fetchSubscriptions();
+        // 可以添加成功提示
+        console.log('Subscription cancelled successfully');
+      } else {
+        console.error("Failed to cancel subscription:", result.msg || 'Unknown API error');
+        alert('Failed to cancel subscription: ' + (result.msg || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error("Failed to cancel subscription:", error);
+      alert('Failed to cancel subscription: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setCancellingSubscriptionId(null);
+    }
+  };
+
+  // 打开订阅记录弹窗
+  const handleOpenSubscriptionDialog = () => {
+    setIsSubscriptionDialogOpen(true);
+    fetchSubscriptions();
+  };
+
+  // 格式化价格显示
+  const formatPrice = (price: number): string => {
+    return `$${price.toFixed(2)}`;
+  };
+
+  // 格式化特性列表
+  const formatFeatures = (features: string): string[] => {
+    return features.split(',').map(feature => feature.trim());
   };
 
   // 修改useEffect，添加userId作为依赖项以确保登录时触发
@@ -588,54 +689,63 @@ export default function ProfilePage() {
                   <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.total_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
               </div>
-              {/* Points Log Button */}
-              <div className="mt-4">
+              {/* Action Buttons */}
+              <div className="mt-6 flex gap-3">
                 <Dialog open={isTimesLogDialogOpen} onOpenChange={setIsTimesLogDialogOpen}>
                   <DialogTrigger asChild>
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 rounded-full border-gray-200 bg-white/50 hover:bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
                       onClick={handleOpenTimesLogDialog}
                     >
-                      <span>Points Log</span>
+                      <span className="text-gray-700">Points Log</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Points Log</DialogTitle>
-                      <DialogDescription>
+                  <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border-0 shadow-2xl bg-white/95 backdrop-blur-xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-400 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300">
+                    <DialogHeader className="text-center pb-6 border-b border-gray-100">
+                      <DialogTitle className="text-2xl font-semibold text-gray-900 tracking-tight">Points Log</DialogTitle>
+                      <DialogDescription className="text-gray-500 mt-2">
                         View your points transaction history
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="pt-6">
                       {isLoadingTimesLog ? (
-                        <div className="text-center py-8">
-                          <ReloadIcon className="animate-spin h-6 w-6 text-primary mx-auto mb-2" />
-                          <p className="text-muted-foreground">Loading...</p>
+                        <div className="text-center py-12">
+                          <ReloadIcon className="animate-spin h-8 w-8 text-blue-500 mx-auto mb-4" />
+                          <p className="text-gray-500 font-medium">Loading...</p>
                         </div>
                       ) : timesLogError ? (
-                        <div className="text-center py-8 text-red-500">
-                          <p>Failed to load: {timesLogError}</p>
+                        <div className="text-center py-12">
+                          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-red-500 text-2xl">⚠️</span>
+                          </div>
+                          <p className="text-red-600 font-medium">Failed to load: {timesLogError}</p>
                         </div>
                       ) : timesLogList.length > 0 ? (
                         <>
                                                      {/* Points Log List */}
-                          <div className="space-y-2">
+                          <div className="space-y-3">
                             {timesLogList.map((item) => (
-                              <div key={item.id} className="flex items-center justify-between p-4 rounded-lg border bg-card">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-3">
-                                    <span className="font-medium text-card-foreground">
-                                      {formatChangeType(item.change_type)}
-                                    </span>
-                                    <span className={`font-bold ${item.use_limit > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                      {item.use_limit > 0 ? '+' : ''}{item.use_limit}
-                                    </span>
+                              <div key={item.id} className="group p-6 rounded-2xl bg-gray-50/80 hover:bg-white hover:shadow-lg transition-all duration-200 border border-gray-100/50">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-4 mb-2">
+                                      <span className="font-semibold text-gray-900 text-lg">
+                                        {formatChangeType(item.change_type)}
+                                      </span>
+                                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
+                                        item.use_limit > 0 
+                                          ? 'bg-green-100 text-green-700' 
+                                          : 'bg-red-100 text-red-700'
+                                      }`}>
+                                        {item.use_limit > 0 ? '+' : ''}{item.use_limit}
+                                      </span>
+                                    </div>
+                                    <p className="text-gray-500 text-sm font-medium">
+                                      {formatTimestamp(item.created_at)}
+                                    </p>
                                   </div>
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    {formatTimestamp(item.created_at)}
-                                  </p>
                                 </div>
                               </div>
                             ))}
@@ -692,8 +802,135 @@ export default function ProfilePage() {
                           )}
                         </>
                       ) : (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <p>No points records yet</p>
+                        <div className="text-center py-16">
+                          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-gray-400 text-3xl">📊</span>
+                          </div>
+                          <p className="text-gray-500 font-medium text-lg">No points records yet</p>
+                          <p className="text-gray-400 text-sm mt-1">Your transaction history will appear here</p>
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={isSubscriptionDialogOpen} onOpenChange={setIsSubscriptionDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex items-center gap-2 rounded-full border-gray-200 bg-white/50 hover:bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
+                      onClick={handleOpenSubscriptionDialog}
+                    >
+                      <span className="text-gray-700">Subscriptions</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto rounded-3xl border-0 shadow-2xl bg-white/95 backdrop-blur-xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-400 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300">
+                    <DialogHeader className="text-center pb-6 border-b border-gray-100">
+                      <DialogTitle className="text-2xl font-semibold text-gray-900 tracking-tight">Subscription Records</DialogTitle>
+                      <DialogDescription className="text-gray-500 mt-2">
+                        Manage your active subscriptions
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="pt-6">
+                      {isLoadingSubscriptions ? (
+                        <div className="text-center py-12">
+                          <ReloadIcon className="animate-spin h-8 w-8 text-blue-500 mx-auto mb-4" />
+                          <p className="text-gray-500 font-medium">Loading...</p>
+                        </div>
+                      ) : subscriptionError ? (
+                        <div className="text-center py-12">
+                          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-red-500 text-2xl">⚠️</span>
+                          </div>
+                          <p className="text-red-600 font-medium">Failed to load: {subscriptionError}</p>
+                        </div>
+                      ) : subscriptionList.length > 0 ? (
+                        <div className="grid gap-6">
+                          {subscriptionList.map((subscription) => (
+                            <div key={subscription.id} className="group relative p-8 rounded-3xl bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/60 shadow-lg hover:shadow-xl transition-all duration-300">
+                              {/* Gradient accent */}
+                              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-3xl"></div>
+                              
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-4 mb-4">
+                                    <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
+                                      {subscription.price_info.name}
+                                    </h3>
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-sm font-semibold">
+                                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                      Active
+                                    </span>
+                                    <div className="ml-auto">
+                                      <span className="text-3xl font-bold text-gray-900">
+                                        {formatPrice(subscription.price_info.price)}
+                                      </span>
+                                      <span className="text-gray-500 text-sm font-medium ml-1">/month</span>
+                                    </div>
+                                  </div>
+                                  
+                                  <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                                    {subscription.price_info.description}
+                                  </p>
+                                  
+                                  <div className="mb-6">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">Features</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                      {formatFeatures(subscription.price_info.features).map((feature, index) => (
+                                        <div key={index} className="flex items-center gap-3 text-gray-700">
+                                          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600"></div>
+                                          <span className="font-medium">{feature}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 bg-gray-50/80 rounded-2xl p-4">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-gray-700">ID:</span>
+                                      <span className="font-mono text-xs bg-gray-200 px-2 py-1 rounded">{subscription.subscription_id.slice(-8)}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-gray-700">Started:</span>
+                                      <span>{formatTimestamp(subscription.created_at)}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-gray-700">Usage Limit:</span>
+                                      <span className="font-semibold text-blue-600">{subscription.price_info.usage_limit}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="ml-8 flex flex-col items-end gap-4">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleCancelSubscription(subscription.id)}
+                                    disabled={cancellingSubscriptionId === subscription.id}
+                                    className="min-w-[120px] rounded-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
+                                  >
+                                    {cancellingSubscriptionId === subscription.id ? (
+                                      <>
+                                        <ReloadIcon className="h-4 w-4 animate-spin mr-2" />
+                                        Cancelling...
+                                      </>
+                                    ) : (
+                                      'Cancel Plan'
+                                    )}
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-20">
+                          <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span className="text-blue-500 text-4xl">💳</span>
+                          </div>
+                          <p className="text-gray-600 font-semibold text-xl mb-2">No active subscriptions</p>
+                          <p className="text-gray-400 text-sm">Subscribe to a plan to get started</p>
                         </div>
                       )}
                     </div>

@@ -129,6 +129,29 @@ export const paymentApi = {
 
     return handleApiError(response);
   },
+
+  // 获取订阅记录
+  getSubscriptions: async () => {
+    const response = await fetch(`${API_CONFIG.BASE}/api/pay/subscriptions`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+
+    return handleApiError(response);
+  },
+
+  // 取消订阅
+  cancelSubscription: async (id: number) => {
+    const response = await fetch(`${API_CONFIG.BASE}/api/pay/subscription/cancel`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        id: id,
+      }),
+    });
+
+    return handleApiError(response);
+  },
 };
 
 // CMS相关接口
