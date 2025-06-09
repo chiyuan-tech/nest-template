@@ -100,6 +100,19 @@ export const userApi = {
 
     return handleApiError(response);
   },
+
+  // 获取用户积分记录
+  getTimesLog: async (page: number = 1, pageSize: number = 10) => {
+    const response = await fetch(
+      `${API_CONFIG.BASE}/api/user/times_log?page=${page}&page_size=${pageSize}`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+
+    return handleApiError(response);
+  },
 };
 
 // 支付相关接口
@@ -112,6 +125,19 @@ export const paymentApi = {
       body: JSON.stringify({
         price_id: priceId,
       }),
+    });
+
+    return handleApiError(response);
+  },
+};
+
+// CMS相关接口
+export const cmsApi = {
+  // 获取友情链接列表（客户端版本）
+  getFriendLinkList: async () => {
+    const response = await fetch(`${API_CONFIG.BASE}/api/cms/friendLinkList`, {
+      method: 'GET',
+      headers: getHeaders(false), // 不需要认证
     });
 
     return handleApiError(response);
@@ -153,5 +179,6 @@ export const api = {
   auth: authApi,
   user: userApi,
   payment: paymentApi,
+  cms: cmsApi,
   withRetry: apiWithRetry,
 }; 

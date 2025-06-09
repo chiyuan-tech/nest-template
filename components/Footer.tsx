@@ -11,25 +11,27 @@ export function Footer({ friendlyLinks = [] }: FooterProps) {
   return (
     <footer className="bg-white border-t border-muted py-12">
       <div className="container mx-auto px-6">
-        {/* Partner Sites - Moved to Top */}
-        <div className="mb-10 pb-6 border-b border-muted">
-          <h3 className="font-semibold text-base text-foreground mb-4">
-            PartnerSites
-          </h3>
-          <div className="flex flex-wrap gap-x-3 gap-y-1">
-            {friendlyLinks.map((link) => (
-              <a
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-200 text-xs hover:underline decoration-primary decoration-1 underline-offset-2"
-              >
-                {link.name}
-              </a>
-            ))}
+        {/* Partner Sites - Only show if there are links */}
+        {friendlyLinks && friendlyLinks.length > 0 && (
+          <div className="mb-10 pb-6 border-b border-muted">
+            <h3 className="font-semibold text-base text-foreground mb-4">
+              PartnerSites
+            </h3>
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
+              {friendlyLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-xs hover:underline decoration-primary decoration-1 underline-offset-2"
+                >
+                  {link.name}
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo & Copyright */}

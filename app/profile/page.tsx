@@ -8,6 +8,14 @@ import { Progress } from '../../components/ui/progress';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
@@ -19,6 +27,20 @@ import {
 import Link from 'next/link';
 import { DownloadIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { api } from '@/lib/api';
+
+// 友情链接数据类型定义
+interface FriendLink {
+  id: number;
+  name: string;
+  url: string;
+  is_bright: number;
+  desc: string;
+  image: string;
+  web_type: number;
+  sort: number;
+  appid: string;
+  created_time: number;
+}
 
 // 定义从API获取的用户信息类型
 interface UserApiInfo {
@@ -61,6 +83,23 @@ interface GenerationHistoryItem {
 interface GenerationHistoryResponse {
   count: number;
   list: GenerationHistoryItem[];
+  total_page: number;
+}
+
+// 定义积分记录项的类型
+interface TimesLogItem {
+  id: number;
+  user_id: number;
+  change_type: string;
+  use_limit: number;
+  created_at: number;
+  updated_at: number;
+}
+
+// 定义积分记录 API 返回的数据结构
+interface TimesLogResponse {
+  count: number;
+  list: TimesLogItem[];
   total_page: number;
 }
 
@@ -162,6 +201,20 @@ async function downloadImageWithCors(
   }
 }
 
+// Function to format timestamp based on locale
+const formatTimestamp = (timestamp: number): string => {
+  if (!timestamp) return 'N/A';
+  try {
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric', 
+      hour: '2-digit', minute: '2-digit'
+    }).format(new Date(timestamp * 1000));
+  } catch (e) {
+    console.error("Error formatting date:", e);
+    return new Date(timestamp * 1000).toLocaleDateString(); // Fallback
+  }
+};
+
 export default function ProfilePage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const { userId, sessionId, getToken } = useAuth();
@@ -181,22 +234,77 @@ export default function ProfilePage() {
   const historyPageSize = 30;
   const [isDownloading, setIsDownloading] = useState<number | null>(null); // 跟踪正在下载的图片ID
 
+  // 积分记录状态
+  const [timesLogList, setTimesLogList] = useState<TimesLogItem[]>([]);
+  const [isLoadingTimesLog, setIsLoadingTimesLog] = useState(false);
+  const [timesLogError, setTimesLogError] = useState<string | null>(null);
+  const [timesLogCurrentPage, setTimesLogCurrentPage] = useState(1);
+  const [timesLogTotalPages, setTimesLogTotalPages] = useState(0);
+  const [isTimesLogDialogOpen, setIsTimesLogDialogOpen] = useState(false);
+  const timesLogPageSize = 10;
+
   // New state for generated images
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userImages, setUserImages] = useState<GeneratedImage[]>([]);
 
-  // Function to format timestamp based on locale
-  const formatTimestamp = (timestamp: number): string => {
-    if (!timestamp) return 'N/A';
+  // 友情链接状态
+  const [friendlyLinks, setFriendlyLinks] = useState<FriendLink[]>([]);
+
+  // 获取积分记录数据的函数
+  const fetchTimesLog = async (page: number) => {
+    if (!isLoaded || !userId) return;
+
+    setIsLoadingTimesLog(true);
+    setTimesLogError(null);
     try {
-      return new Intl.DateTimeFormat('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric', 
-        hour: '2-digit', minute: '2-digit'
-      }).format(new Date(timestamp * 1000));
-    } catch (e) {
-      console.error("Error formatting date:", e);
-      return new Date(timestamp * 1000).toLocaleDateString(); // Fallback
+      const result = await api.user.getTimesLog(page, timesLogPageSize);
+
+      if (result.code === 200 && result.data) {
+        setTimesLogList(result.data.list || []);
+        setTimesLogTotalPages(result.data.total_page || 0);
+      } else {
+        console.error("Failed to fetch times log:", result.msg || 'Unknown API error');
+        setTimesLogList([]);
+        setTimesLogTotalPages(0);
+        setTimesLogError(result.msg || 'Failed to fetch times log');
+      }
+    } catch (error) {
+      console.error("Failed to fetch times log:", error);
+      setTimesLogError(error instanceof Error ? error.message : 'An unknown error occurred fetching times log');
+      setTimesLogList([]);
+      setTimesLogTotalPages(0);
+    } finally {
+      setIsLoadingTimesLog(false);
+    }
+  };
+
+  // Format change type
+  const formatChangeType = (changeType: string): string => {
+    const typeMap: Record<string, string> = {
+      'buy_package': 'Buy Package',
+      'create_task_free': 'Free Generation',
+      'month_free': 'Monthly Free',
+      'register_give': 'Registration Gift',
+      'invite_reward': 'Invitation Reward',
+      'daily_check': 'Daily Check-in',
+      'refund': 'Refund',
+    };
+    return typeMap[changeType] || changeType;
+  };
+
+  // Open points log dialog
+  const handleOpenTimesLogDialog = () => {
+    setIsTimesLogDialogOpen(true);
+    setTimesLogCurrentPage(1);
+    fetchTimesLog(1);
+  };
+
+  // Handle points log page change
+  const handleTimesLogPageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= timesLogTotalPages && newPage !== timesLogCurrentPage) {
+      setTimesLogCurrentPage(newPage);
+      fetchTimesLog(newPage);
     }
   };
 
@@ -204,6 +312,26 @@ export default function ProfilePage() {
   useEffect(() => {
     // 删除修改document.title的代码，保持网站原有标题不变
   }, [isLoaded, user]);
+
+  // 获取友情链接数据
+  useEffect(() => {
+    const fetchFriendlyLinks = async () => {
+      try {
+        const result = await api.cms.getFriendLinkList();
+        if (result.code === 200 && result.success && Array.isArray(result.data)) {
+          setFriendlyLinks(result.data);
+        } else {
+          console.warn('Failed to fetch friend links, using defaults');
+          setFriendlyLinks([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch friend links:', error);
+        setFriendlyLinks([]);
+      }
+    };
+
+    fetchFriendlyLinks();
+  }, []); // 只在组件挂载时执行一次
 
   // API 调用 Effect (获取用户信息) - 添加userId监听
   useEffect(() => {
@@ -460,6 +588,118 @@ export default function ProfilePage() {
                   <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.total_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
               </div>
+              {/* Points Log Button */}
+              <div className="mt-4">
+                <Dialog open={isTimesLogDialogOpen} onOpenChange={setIsTimesLogDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex items-center gap-2"
+                      onClick={handleOpenTimesLogDialog}
+                    >
+                      <span>Points Log</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Points Log</DialogTitle>
+                      <DialogDescription>
+                        View your points transaction history
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      {isLoadingTimesLog ? (
+                        <div className="text-center py-8">
+                          <ReloadIcon className="animate-spin h-6 w-6 text-primary mx-auto mb-2" />
+                          <p className="text-muted-foreground">Loading...</p>
+                        </div>
+                      ) : timesLogError ? (
+                        <div className="text-center py-8 text-red-500">
+                          <p>Failed to load: {timesLogError}</p>
+                        </div>
+                      ) : timesLogList.length > 0 ? (
+                        <>
+                                                     {/* Points Log List */}
+                          <div className="space-y-2">
+                            {timesLogList.map((item) => (
+                              <div key={item.id} className="flex items-center justify-between p-4 rounded-lg border bg-card">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-3">
+                                    <span className="font-medium text-card-foreground">
+                                      {formatChangeType(item.change_type)}
+                                    </span>
+                                    <span className={`font-bold ${item.use_limit > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                      {item.use_limit > 0 ? '+' : ''}{item.use_limit}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mt-1">
+                                    {formatTimestamp(item.created_at)}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                                                     {/* Points Log Pagination */}
+                          {timesLogTotalPages > 1 && (
+                            <div className="flex justify-center mt-6">
+                              <Pagination>
+                                <PaginationContent>
+                                  <PaginationItem>
+                                    <PaginationPrevious 
+                                      href="#"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleTimesLogPageChange(timesLogCurrentPage - 1);
+                                      }}
+                                      className={timesLogCurrentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
+                                    />
+                                  </PaginationItem>
+                                  
+                                  {getPaginationItems(timesLogCurrentPage, timesLogTotalPages).map((item, index) => (
+                                    <PaginationItem key={index}>
+                                      {item === '...' ? (
+                                        <PaginationEllipsis />
+                                      ) : (
+                                        <PaginationLink
+                                          href="#"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleTimesLogPageChange(item as number);
+                                          }}
+                                          isActive={item === timesLogCurrentPage}
+                                        >
+                                          {item}
+                                        </PaginationLink>
+                                      )}
+                                    </PaginationItem>
+                                  ))}
+                                  
+                                  <PaginationItem>
+                                    <PaginationNext 
+                                      href="#"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleTimesLogPageChange(timesLogCurrentPage + 1);
+                                      }}
+                                      className={timesLogCurrentPage >= timesLogTotalPages ? 'pointer-events-none opacity-50' : ''}
+                                    />
+                                  </PaginationItem>
+                                </PaginationContent>
+                              </Pagination>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <p>No points records yet</p>
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </div>
         </div>
@@ -533,7 +773,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer friendlyLinks={friendlyLinks} />
     </div>
   );
 } 
