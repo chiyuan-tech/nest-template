@@ -118,8 +118,8 @@ export const userApi = {
 // 支付相关接口
 export const paymentApi = {
   // 创建Stripe支付会话
-  createStripeSession: async (priceId: string) => {
-    const response = await fetch(`${API_CONFIG.BASE}/api/pay/stripe`, {
+  createPaypalSession: async (priceId: string) => {
+    const response = await fetch(`${API_CONFIG.BASE}/api/pay/paypal`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({

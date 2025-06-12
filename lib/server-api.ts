@@ -67,7 +67,7 @@ const SERVER_API_CONFIG = {
           method: 'GET',
           headers: getServerHeaders(),
           // 使用缓存并设置重新验证时间（1小时）
-          next: { revalidate: 3600 },
+          next: { revalidate: 1200 },
         });
   
         const result = await handleServerApiError(response);
@@ -94,7 +94,7 @@ const SERVER_API_CONFIG = {
             method: 'GET',
             headers: getServerHeaders(),
             // 使用缓存并设置重新验证时间（1小时）
-            next: { revalidate: 3600 },
+            next: { revalidate: 1200 },
           }
         );
   
