@@ -25,7 +25,6 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isSignedIn } = useUser();
   const { userInfo, isLoadingUserInfo } = useUserInfo();
-
   const handleMobileLinkClick = (action: () => void) => {
     action();
     setIsMobileMenuOpen(false);

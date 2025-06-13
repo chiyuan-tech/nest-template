@@ -40,7 +40,7 @@ export function UserProvider({ children }: UserProviderProps) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState(false);
 
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = async (isInitialLoad = false) => {
     if (!isSignedIn || !user?.id) {
       setUserInfo(null);
       return;
@@ -52,7 +52,11 @@ export function UserProvider({ children }: UserProviderProps) {
       return;
     }
     
+    // 只在初始加载时显示loading
+    if (isInitialLoad) {
     setIsLoadingUserInfo(true);
+    }
+    
     try {
       const result = await api.user.getUserInfo();
       
@@ -84,12 +88,15 @@ export function UserProvider({ children }: UserProviderProps) {
       console.error("Failed to fetch user info:", error);
       setUserInfo(null);
     } finally {
+      // 只在初始加载时才设置loading为false
+      if (isInitialLoad) {
       setIsLoadingUserInfo(false);
+      }
     }
   };
 
   const refreshUserInfo = async () => {
-    await fetchUserInfo();
+    await fetchUserInfo(true);
   };
 
   // 获取用户信息 - 等待token可用后再调用
@@ -100,7 +107,7 @@ export function UserProvider({ children }: UserProviderProps) {
         // 检查token，如果没有则等待
         const checkTokenAndFetch = () => {
           if (api.auth.isTokenValid()) {
-            fetchUserInfo();
+            fetchUserInfo(true); // 初始加载
           } else {
             // 如果token还没准备好，1秒后重试
             setTimeout(checkTokenAndFetch, 1000);
@@ -118,12 +125,12 @@ export function UserProvider({ children }: UserProviderProps) {
     // 首次加载获取用户信息
     delayedFetch();
     
-    // 设置定时器，每60秒更新一次用户信息
+    // 设置定时器，每10秒更新一次用户信息
     const intervalId = setInterval(() => {
       if (isSignedIn && api.auth.isTokenValid()) {
-        fetchUserInfo();
+        fetchUserInfo(false); // 后续刷新，不是初始加载
       }
-    }, 60000);
+    }, 10000);
     
     // 组件卸载时清除定时器
     return () => clearInterval(intervalId);
