@@ -29,6 +29,7 @@ import { DownloadIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { api } from '@/lib/api';
 import { User } from "@clerk/nextjs/server";
 import { cmsApi } from "@/lib/api";
+import { useToast } from '@/components/ui/toast-provider';
 
 // 友情链接数据类型定义
 interface FriendLink {
@@ -178,20 +179,21 @@ function getPaginationItems(currentPage: number, totalPages: number, siblingCoun
 }
 
 // --- 将下载逻辑定义为独立函数 --- 
-async function downloadImageWithCors(
-  imageUrl: string, 
+async function downloadMediaWithCors(
+  mediaUrl: string, 
   filename: string, 
   setIsDownloading: (id: number | null) => void, // 用于更新加载状态
-  imageId: number // 图片 ID 用于设置加载状态
+  mediaId: number, // 媒体 ID 用于设置加载状态
+  showToast: (message: string, type: 'success' | 'error' | 'info') => void // toast显示函数
 ) {
-  setIsDownloading(imageId); // 开始下载，设置加载状态
+  setIsDownloading(mediaId); // 开始下载，设置加载状态
   try {
     // 1. 发起 fetch 请求
-    const response = await fetch(imageUrl, { mode: 'cors' });
+    const response = await fetch(mediaUrl, { mode: 'cors' });
 
     // 检查响应是否成功并且是 CORS 允许的
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}. Failed to fetch image. Check CORS headers on the server.`);
+      throw new Error(`HTTP error! status: ${response.status}. Failed to fetch media. Check CORS headers on the server.`);
     }
 
     // 2. 将响应体转换为 Blob 对象
@@ -203,7 +205,7 @@ async function downloadImageWithCors(
     // 4. 创建 <a> 标签并触发下载
     const link = document.createElement('a');
     link.href = objectUrl;
-    link.download = filename || `polatoons-image-${imageId}.png`; // 使用传入的 filename 或生成一个
+            link.download = filename || `ideavido-media-${mediaId}.mp4`; // 使用传入的 filename 或生成一个
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -211,20 +213,21 @@ async function downloadImageWithCors(
     // 5. 释放 Object URL 资源
     URL.revokeObjectURL(objectUrl);
 
-    console.log('Image download initiated!');
+    console.log('Media download initiated!');
+    showToast('Video downloaded successfully!', 'success');
 
   } catch (error: any) {
     console.error('Download failed:', error);
     // 使用英文显示错误信息
     const errorMessage = 'Download failed!';
-    const corsMessage = `Could not fetch image from ${imageUrl}. This is often due to missing CORS headers (Access-Control-Allow-Origin) on the server. Check the browser console for details.`;
+    const corsMessage = `Could not fetch media from ${mediaUrl}. This is often due to missing CORS headers (Access-Control-Allow-Origin) on the server. Check the browser console for details.`;
     const genericMessage = `Error: ${error.message}`;
 
     // 检查是否是网络错误或类型错误（通常与 CORS 相关）
     if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-        alert(`${errorMessage}\n\n${corsMessage}`);
+        showToast(`${errorMessage} - CORS error. Check server configuration.`, 'error');
     } else {
-        alert(`${errorMessage} ${genericMessage}`);
+        showToast(`${errorMessage} ${genericMessage}`, 'error');
     }
   } finally {
     setIsDownloading(null); // 结束下载（无论成功或失败），清除加载状态
@@ -248,6 +251,7 @@ const formatTimestamp = (timestamp: number): string => {
 export default function ProfilePage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const { userId, sessionId, getToken } = useAuth();
+  const toast = useToast();
 
   // API 数据状态 (用户信息)
   const [userApiInfo, setUserApiInfo] = useState<UserApiInfo | null>(null);
@@ -379,15 +383,14 @@ export default function ProfilePage() {
       if (result.code === 200) {
         // 取消成功，刷新订阅记录
         await fetchSubscriptions();
-        // 可以添加成功提示
-        console.log('Subscription cancelled successfully');
+        toast.success('Subscription cancelled successfully!');
       } else {
         console.error("Failed to cancel subscription:", result.msg || 'Unknown API error');
-        alert('Failed to cancel subscription: ' + (result.msg || 'Unknown error'));
+        toast.error('Failed to cancel subscription: ' + (result.msg || 'Unknown error'));
       }
     } catch (error) {
       console.error("Failed to cancel subscription:", error);
-      alert('Failed to cancel subscription: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      toast.error('Failed to cancel subscription: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setCancellingSubscriptionId(null);
     }
@@ -578,11 +581,11 @@ export default function ProfilePage() {
       <div className="min-h-screen flex flex-col">
         <main className="flex-grow py-12 px-6">
           <div className="container mx-auto max-w-lg">
-            <div className="bg-white rounded-2xl p-8 text-center shadow-custom">
-              <h1 className="text-2xl font-bold mb-4 font-space-grotesk">Profile</h1>
-              <p className="mb-6 text-gray font-inter">Please sign in to view your profile</p>
+            <div className="bg-card rounded-2xl p-8 text-center shadow-custom border border-border">
+                              <h1 className="text-2xl font-bold mb-4 text-card-foreground">Profile</h1>
+                <p className="mb-6 text-muted-foreground">Please sign in to view your profile</p>
               <Link href="/sign-in">
-                <Button className="bg-primary hover:bg-primary/90 text-white font-inter">
+                                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   Sign In
                 </Button>
               </Link>
@@ -601,11 +604,17 @@ export default function ProfilePage() {
     ? (userApiInfo.use_limit / userApiInfo.total_limit) * 100
     : 0;
 
-  // 获取订阅计划名称
-  const getPlanName = (vipLastTime: number | undefined) => {
-    return vipLastTime && vipLastTime > 0 ? 'VIP Plan' : 'Free Plan';
+  // 获取用户等级名称
+  const getUserLevelName = (level: number | undefined) => {
+    switch (level) {
+      case 0: return 'Free';
+      case 1: return 'Starter';
+      case 2: return 'Pro';
+      case 3: return 'Ultimate';
+      default: return 'Free';
+    }
   };
-  const currentPlanName = getPlanName(userApiInfo?.vip_last_time);
+  const userLevelName = getUserLevelName(userApiInfo?.level);
 
   // Pagination items calculation
   const paginationItems = getPaginationItems(currentPage, totalPages);
@@ -614,11 +623,11 @@ export default function ProfilePage() {
   const stats = [
     {
       label: 'Membership Level',
-      value: userApiInfo?.level && userApiInfo.level > 0 ? 'VIP Plan' : 'Free Plan',
+      value: userLevelName,
       key: 'level',
       custom: (
         <span className="px-3 py-1 rounded-lg bg-[#232b3e] text-primary font-bold text-sm">
-          {userApiInfo?.level && userApiInfo.level > 0 ? 'VIP Plan' : 'Free Plan'}
+          {userLevelName}
         </span>
       )
     },
@@ -665,26 +674,26 @@ export default function ProfilePage() {
             {/* 用户信息和统计 */}
             <div className="flex-1 flex flex-col gap-4">
               <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
-                <span className="text-2xl font-bold text-card-foreground font-space-grotesk">{user.fullName || user.username}</span>
-                <span className="text-muted-foreground text-base font-inter">{user.primaryEmailAddress?.emailAddress}</span>
+                <span className="text-2xl font-bold text-card-foreground">{user.fullName || user.username}</span>
+                <span className="text-muted-foreground text-base">{user.primaryEmailAddress?.emailAddress}</span>
               </div>
               <div className="flex flex-wrap gap-4 mt-2">
                 {/* 会员等级/积分/生成数/API调用数 */}
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
                   <span>Membership Level</span>
                   <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-bold ml-2">
-                    {userApiInfo?.level && userApiInfo.level > 0 ? 'VIP Plan' : 'Free Plan'}
+                    {userLevelName}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm">
                   <span>Points Remaining</span>
                   <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.remaining_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm">
                   <span>Points Used</span>
                   <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.use_limit || 0}</span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm">
                   <span>Total Points</span>
                   <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.total_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
@@ -696,53 +705,53 @@ export default function ProfilePage() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="flex items-center gap-2 rounded-full border-gray-200 bg-white/50 hover:bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
+                      className="flex items-center gap-2 rounded-full border-border bg-card/50 hover:bg-card/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
                       onClick={handleOpenTimesLogDialog}
                     >
-                      <span className="text-gray-700">Points Log</span>
+                      <span className="text-card-foreground">Points Log</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border-0 shadow-2xl bg-white/95 backdrop-blur-xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-400 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300">
-                    <DialogHeader className="text-center pb-6 border-b border-gray-100">
-                      <DialogTitle className="text-2xl font-semibold text-gray-900 tracking-tight">Points Log</DialogTitle>
-                      <DialogDescription className="text-gray-500 mt-2">
+                  <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-border shadow-2xl bg-card/95 backdrop-blur-xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted/80 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
+                                          <DialogHeader className="text-center pb-6 border-b border-border">
+                        <DialogTitle className="text-2xl font-semibold text-card-foreground tracking-tight">Points Log</DialogTitle>
+                        <DialogDescription className="text-muted-foreground mt-2">
                         View your points transaction history
                       </DialogDescription>
                     </DialogHeader>
                     <div className="pt-6">
                       {isLoadingTimesLog ? (
                         <div className="text-center py-12">
-                          <ReloadIcon className="animate-spin h-8 w-8 text-blue-500 mx-auto mb-4" />
-                          <p className="text-gray-500 font-medium">Loading...</p>
+                          <ReloadIcon className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
+                          <p className="text-muted-foreground font-medium">Loading...</p>
                         </div>
                       ) : timesLogError ? (
                         <div className="text-center py-12">
-                          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-red-500 text-2xl">⚠️</span>
+                          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-red-400 text-2xl">⚠️</span>
                           </div>
-                          <p className="text-red-600 font-medium">Failed to load: {timesLogError}</p>
+                          <p className="text-red-400 font-medium">Failed to load: {timesLogError}</p>
                         </div>
                       ) : timesLogList.length > 0 ? (
                         <>
                                                      {/* Points Log List */}
                           <div className="space-y-3">
                             {timesLogList.map((item) => (
-                              <div key={item.id} className="group p-6 rounded-2xl bg-gray-50/80 hover:bg-white hover:shadow-lg transition-all duration-200 border border-gray-100/50">
+                              <div key={item.id} className="group p-6 rounded-2xl bg-secondary/80 hover:bg-card hover:shadow-lg transition-all duration-200 border border-border">
                                 <div className="flex items-center justify-between">
                                   <div className="flex-1">
                                     <div className="flex items-center gap-4 mb-2">
-                                      <span className="font-semibold text-gray-900 text-lg">
+                                      <span className="font-semibold text-card-foreground text-lg">
                                         {formatChangeType(item.change_type)}
                                       </span>
                                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
                                         item.use_limit > 0 
-                                          ? 'bg-green-100 text-green-700' 
-                                          : 'bg-red-100 text-red-700'
+                                          ? 'bg-green-500/20 text-green-400' 
+                                          : 'bg-red-500/20 text-red-400'
                                       }`}>
                                         {item.use_limit > 0 ? '+' : ''}{item.use_limit}
                                       </span>
                                     </div>
-                                    <p className="text-gray-500 text-sm font-medium">
+                                    <p className="text-muted-foreground text-sm font-medium">
                                       {formatTimestamp(item.created_at)}
                                     </p>
                                   </div>
@@ -803,11 +812,11 @@ export default function ProfilePage() {
                         </>
                       ) : (
                         <div className="text-center py-16">
-                          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-gray-400 text-3xl">📊</span>
+                          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-muted-foreground text-3xl">📊</span>
                           </div>
-                          <p className="text-gray-500 font-medium text-lg">No points records yet</p>
-                          <p className="text-gray-400 text-sm mt-1">Your transaction history will appear here</p>
+                          <p className="text-muted-foreground font-medium text-lg">No points records yet</p>
+                          <p className="text-muted-foreground/60 text-sm mt-1">Your transaction history will appear here</p>
                         </div>
                       )}
                     </div>
@@ -819,106 +828,91 @@ export default function ProfilePage() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="flex items-center gap-2 rounded-full border-gray-200 bg-white/50 hover:bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
+                      className="flex items-center gap-2 rounded-full border-border bg-card/50 hover:bg-card/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
                       onClick={handleOpenSubscriptionDialog}
                     >
-                      <span className="text-gray-700">Subscriptions</span>
+                      <span className="text-card-foreground">Subscriptions</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto rounded-3xl border-0 shadow-2xl bg-white/95 backdrop-blur-xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-400 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300">
-                    <DialogHeader className="text-center pb-6 border-b border-gray-100">
-                      <DialogTitle className="text-2xl font-semibold text-gray-900 tracking-tight">Subscription Records</DialogTitle>
-                      <DialogDescription className="text-gray-500 mt-2">
+                  <DialogContent className="max-w-fit min-w-[800px] max-h-[90vh] overflow-y-auto rounded-3xl border border-border shadow-2xl bg-card/95 backdrop-blur-xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted/80 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
+                    <DialogHeader className="text-center pb-6 border-b border-border">
+                      <DialogTitle className="text-2xl font-semibold text-card-foreground tracking-tight">Subscription Records</DialogTitle>
+                      <DialogDescription className="text-muted-foreground mt-2">
                         Manage your active subscriptions
                       </DialogDescription>
                     </DialogHeader>
                     <div className="pt-6">
                       {isLoadingSubscriptions ? (
                         <div className="text-center py-12">
-                          <ReloadIcon className="animate-spin h-8 w-8 text-blue-500 mx-auto mb-4" />
-                          <p className="text-gray-500 font-medium">Loading...</p>
+                          <ReloadIcon className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
+                          <p className="text-muted-foreground font-medium">Loading...</p>
                         </div>
                       ) : subscriptionError ? (
                         <div className="text-center py-12">
-                          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-red-500 text-2xl">⚠️</span>
+                          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-red-400 text-2xl">⚠️</span>
                           </div>
-                          <p className="text-red-600 font-medium">Failed to load: {subscriptionError}</p>
+                          <p className="text-red-400 font-medium">Failed to load: {subscriptionError}</p>
                         </div>
                       ) : subscriptionList.length > 0 ? (
                         <div className="grid gap-6">
                           {subscriptionList.map((subscription) => (
-                            <div key={subscription.id} className="group relative p-8 rounded-3xl bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/60 shadow-lg hover:shadow-xl transition-all duration-300">
-                              {/* Gradient accent */}
-                              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-3xl"></div>
+                            <div key={subscription.id} className="group relative p-6 rounded-3xl bg-gradient-to-br from-card to-secondary/50 border border-border shadow-lg hover:shadow-xl transition-all duration-300">
+                              {/* 顶部彩条 */}
+                              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary/60 rounded-t-3xl"></div>
                               
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-4 mb-4">
-                                    <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                                      {subscription.price_info.name}
-                                    </h3>
-                                    <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-sm font-semibold">
-                                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                                      Active
-                                    </span>
-                                    <div className="ml-auto">
-                                      <span className="text-3xl font-bold text-gray-900">
-                                        {formatPrice(subscription.price_info.price)}
-                                      </span>
-                                      <span className="text-gray-500 text-sm font-medium ml-1">/month</span>
-                                    </div>
-                                  </div>
-                                  
-                                  <p className="text-gray-600 mb-6 text-lg leading-relaxed">
-                                    {subscription.price_info.description}
-                                  </p>
-                                  
-                                  <div className="mb-6">
-                                    <h4 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">Features</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                      {formatFeatures(subscription.price_info.features).map((feature, index) => (
-                                        <div key={index} className="flex items-center gap-3 text-gray-700">
-                                          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600"></div>
-                                          <span className="font-medium">{feature}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 bg-gray-50/80 rounded-2xl p-4">
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-medium text-gray-700">ID:</span>
-                                      <span className="font-mono text-xs bg-gray-200 px-2 py-1 rounded">{subscription.subscription_id.slice(-8)}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-medium text-gray-700">Started:</span>
-                                      <span>{formatTimestamp(subscription.created_at)}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-medium text-gray-700">Usage Limit:</span>
-                                      <span className="font-semibold text-blue-600">{subscription.price_info.usage_limit}</span>
-                                    </div>
-                                  </div>
+                              {/* 简化的头部区域：名称、状态、价格、按钮 */}
+                              <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                  <h3 className="text-2xl font-bold text-card-foreground tracking-tight">
+                                    {subscription.price_info.name}
+                                  </h3>
+                                  <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm font-semibold">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                                    Active
+                                  </span>
                                 </div>
                                 
-                                <div className="ml-8 flex flex-col items-end gap-4">
+                                <div className="flex items-center gap-6">
+                                  <div className="text-3xl font-bold text-card-foreground">
+                                    {formatPrice(subscription.price_info.price)}
+                                  </div>
                                   <Button
-                                    variant="outline"
+                                    variant={subscription.price_info.button_text === 'Contact Sales' ? 'outline' : 'destructive'}
                                     size="sm"
                                     onClick={() => handleCancelSubscription(subscription.id)}
-                                    disabled={cancellingSubscriptionId === subscription.id}
-                                    className="min-w-[120px] rounded-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
+                                    disabled={cancellingSubscriptionId === subscription.id || subscription.price_info.button_text === 'Contact Sales'}
+                                    className={`min-w-[120px] rounded-full transition-all duration-200 ${
+                                      subscription.price_info.button_text === 'Contact Sales' 
+                                        ? 'border-muted-foreground/30 text-muted-foreground cursor-not-allowed opacity-60' 
+                                        : 'bg-red-500 hover:bg-red-600 text-white border-red-500 hover:border-red-600 shadow-md hover:shadow-lg'
+                                    }`}
                                   >
                                     {cancellingSubscriptionId === subscription.id ? (
                                       <>
                                         <ReloadIcon className="h-4 w-4 animate-spin mr-2" />
-                                        Cancelling...
+                                        <span>Cancelling...</span>
                                       </>
                                     ) : (
-                                      'Cancel Plan'
+                                      subscription.price_info.button_text === 'Contact Sales' ? 'Contact Sales' : 'Cancel Plan'
                                     )}
                                   </Button>
+                                </div>
+                              </div>
+                              
+                              {/* 底部信息 */}
+                              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground bg-secondary/80 rounded-2xl p-4 mt-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-card-foreground">ID:</span>
+                                  <span className="font-mono text-xs bg-muted px-2 py-1 rounded">{subscription.subscription_id.slice(-8)}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-card-foreground">Started:</span>
+                                  <span>{formatTimestamp(subscription.created_at)}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-card-foreground">Usage Limit:</span>
+                                  <span className="font-semibold text-primary">{subscription.price_info.usage_limit === 999999 ? 'Unlimited' : subscription.price_info.usage_limit}</span>
                                 </div>
                               </div>
                             </div>
@@ -926,11 +920,11 @@ export default function ProfilePage() {
                         </div>
                       ) : (
                         <div className="text-center py-20">
-                          <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <span className="text-blue-500 text-4xl">💳</span>
+                          <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span className="text-primary text-4xl">💳</span>
                           </div>
-                          <p className="text-gray-600 font-semibold text-xl mb-2">No active subscriptions</p>
-                          <p className="text-gray-400 text-sm">Subscribe to a plan to get started</p>
+                          <p className="text-card-foreground font-semibold text-xl mb-2">No active subscriptions</p>
+                          <p className="text-muted-foreground text-sm">Subscribe to a plan to get started</p>
                         </div>
                       )}
                     </div>
@@ -944,7 +938,7 @@ export default function ProfilePage() {
         {/* Generation History 标题 - 添加刷新按钮 */}
         <div className="container mx-auto mb-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-primary text-2xl font-bold mb-4 font-space-grotesk">Generation History</h2>
+            <h2 className="text-primary text-2xl font-bold mb-4">Video Generation History</h2>
             <Button 
               onClick={refreshHistory} 
               variant="outline" 
@@ -967,45 +961,44 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* 图片历史区域 */}
+        {/* 视频历史区域 */}
         <div className="container mx-auto pb-16">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {historyList.length > 0 ? (
               historyList
-                .filter(item => item.status !== -1 && item.generate_image) // 过滤掉状态为-1的作品和没有generate_image的记录
+                .filter(item => item.status !== -1 && item.quality_image) // 过滤掉状态为-1的作品和没有quality_image的记录
                 .map((item) => (
                 <div key={item.id} className="bg-card rounded-xl overflow-hidden relative flex flex-col shadow-lg border border-border">
-                  {/* 下载按钮 - 只在有generate_image时才显示 */}
+                  {/* 下载按钮 - 只在有quality_image时才显示 */}
                   <button 
                     className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-primary p-2 rounded-full text-white transition-colors"
-                    onClick={() => downloadImageWithCors(item.generate_image, `certificate-${item.id}.png`, setIsDownloading, item.id)}
+                                         onClick={() => downloadMediaWithCors(item.quality_image, `video-${item.id}.mp4`, setIsDownloading, item.id, toast.showToast)}
                   >
                     <DownloadIcon className="h-4 w-4" />
                   </button>
                   
-                  {/* 图片内容 - 修改为完全占满区域 */}
-                  <div className="relative w-full aspect-[3/4] overflow-hidden">
-                    <Image
-                      src={item.generate_image}
-                      alt={`Generated image ${item.id}`}
-                      fill
-                      className="object-cover w-full h-full"
-                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
-                      priority={false}
-                      loading="lazy"
-                      draggable="false"
-                      unoptimized={true}
-                    />
+                  {/* 视频内容 - 16:9比例 */}
+                  <div className="relative w-full aspect-video overflow-hidden">
+                    <video
+                      src={item.quality_image}
+                      controls
+                      muted
+                      preload="metadata"
+                      className="w-full h-full object-cover"
+                      playsInline
+                    >
+                      Your browser does not support the video tag.
+                    </video>
                   </div>
                   
                   {/* 日期 - 减少内边距使其更紧凑 */}
-                  <div className="px-3 py-1.5 text-xs text-muted-foreground font-inter bg-muted">
+                  <div className="px-3 py-1.5 text-xs text-muted-foreground bg-muted">
                     {formatTimestamp(item.created_at)}
                   </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center text-muted-foreground py-12">No images yet.</div>
+              <div className="col-span-full text-center text-muted-foreground py-12">No videos yet.</div>
             )}
           </div>
         </div>
