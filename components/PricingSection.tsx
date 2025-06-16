@@ -89,7 +89,7 @@ export default function PricingSection() {
 
     setLoadingPlan(planKey); // 设置当前加载的计划
     try {
-      const data = await api.payment.createStripeSession(priceId);
+      const data = await api.payment.createPaypalSession(priceId);
 
       // 检查返回的数据结构是否符合预期
       const checkoutUrl = data?.data?.url || data?.url;
