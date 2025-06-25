@@ -2,8 +2,6 @@
 
 import { GoogleOneTap } from '@clerk/nextjs';
 import { useUser } from '@clerk/nextjs';
-import { useEffect, useRef } from 'react';
-import { api } from '@/lib/api';
 
 interface GoogleOneTapAuthProps {
   /** 如果为true，当用户点击提示框外部时会自动关闭One Tap提示框。默认: true */
@@ -18,9 +16,6 @@ interface GoogleOneTapAuthProps {
   signUpForceRedirectUrl?: string;
 }
 
-// 使用模块级变量记录同步状态
-const syncStatusByUser: { [userId: string]: boolean } = {};
-
 export default function GoogleOneTapAuth({
   cancelOnTapOutside = true,
   itpSupport = true,
@@ -29,42 +24,6 @@ export default function GoogleOneTapAuth({
   signUpForceRedirectUrl,
 }: GoogleOneTapAuthProps) {
   const { isSignedIn, user } = useUser();
-  const hasInitialized = useRef(false);
-
-  // 监听用户登录状态变化，在Google One Tap登录成功后同步用户数据
-  useEffect(() => {
-    // 避免重复初始化
-    if (hasInitialized.current) return;
-    
-    const effectUserId = user?.id;
-    const userEmail = user?.primaryEmailAddress?.emailAddress;
-
-    if (isSignedIn && effectUserId && userEmail && !syncStatusByUser[effectUserId]) {
-      hasInitialized.current = true;
-      syncStatusByUser[effectUserId] = true;
-
-      const userData = {
-        uuid: effectUserId,
-        email: userEmail,
-        nickname: user.fullName || undefined,
-        avatar: user.imageUrl || undefined,
-        from_login: "google"
-      };
-
-      const syncUser = async () => {
-        try {
-          console.log('Google One Tap: 开始同步用户数据', userData);
-          const responseData = await api.auth.syncUser(userData);
-          console.log('Google One Tap: 用户数据同步成功', responseData);
-        } catch (error) {
-          console.error('Google One Tap: 用户数据同步失败', error);
-        }
-      };
-
-      // 延迟执行同步，确保用户数据完全加载
-      setTimeout(syncUser, 100);
-    }
-  }, [isSignedIn, user]);
 
   // 如果用户已登录，不显示Google One Tap
   if (isSignedIn) {

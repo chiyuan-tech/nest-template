@@ -14,51 +14,17 @@ import { useClerk } from "@clerk/nextjs";
 import { UserResource } from "@clerk/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 import { api } from "@/lib/api";
 
 interface UserProfileMenuProps {
   user: UserResource;
 }
 
-// 使用模块级变量记录同步状态 (谨慎使用)
-const syncStatusByUser: { [userId: string]: boolean } = {};
-
 export default function UserProfileMenu({ user }: UserProfileMenuProps) {
-  const userId = user?.id;
-
   const { signOut } = useClerk();
   const pathname = usePathname();
 
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`;
-
-  useEffect(() => {
-    const effectUserId = user?.id;
-    const userEmail = user?.primaryEmailAddress?.emailAddress;
-
-    if (effectUserId && userEmail && !syncStatusByUser[effectUserId]) {
-      syncStatusByUser[effectUserId] = true;
-
-      const userData = {
-        uuid: effectUserId,
-        email: userEmail,
-        nickname: user.fullName || undefined,
-        avatar: user.imageUrl || undefined,
-        from_login: "google"
-      };
-
-      const syncUser = async () => {
-        try {
-          const responseData = await api.auth.syncUser(userData);
-          console.log('用户数据同步 API 调用成功:', responseData);
-        } catch (error) {
-          console.error('用户数据同步 API 调用失败:', error);
-        }
-      };
-
-      syncUser();
-    }
-  }, [user]);
 
   return (
     <DropdownMenu>
@@ -77,9 +43,6 @@ export default function UserProfileMenu({ user }: UserProfileMenuProps) {
             <p className="text-xs leading-none text-muted-foreground">
               {user.primaryEmailAddress?.emailAddress}
             </p>
-            {/* <p className="text-xs leading-none text-muted-foreground mt-1">
-              ID: {user.id.substring(0, 8)}...
-            </p> */}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

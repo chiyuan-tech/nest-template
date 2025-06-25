@@ -35,10 +35,51 @@ interface UserProviderProps {
   children: ReactNode;
 }
 
+// 全局同步状态，避免重复同步
+const globalSyncStatus: { [userId: string]: boolean } = {};
+
 export function UserProvider({ children }: UserProviderProps) {
   const { user, isSignedIn } = useUser();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState(false);
+
+  // 同步用户数据到后端
+  const syncUserToBackend = async () => {
+    console.log('User________________', user);
+    if (!isSignedIn || !user?.id || !user?.primaryEmailAddress?.emailAddress) {
+      return;
+    }
+
+    const userId = user.id;
+    
+    // 避免重复同步
+    if (globalSyncStatus[userId]) {
+      return;
+    }
+
+    globalSyncStatus[userId] = true;
+
+    try {
+      const userData = {
+        uuid: userId,
+        email: user.primaryEmailAddress.emailAddress,
+        nickname: user.fullName || undefined,
+        avatar: user.imageUrl || undefined,
+        from_login: "google"
+      };
+
+      console.log('UserProvider: 开始同步用户数据', userData);
+      const responseData = await api.auth.syncUser(userData);
+      console.log('UserProvider: 用户数据同步成功', responseData);
+      
+      // 同步成功后立即获取用户信息
+      await fetchUserInfo(true);
+    } catch (error) {
+      console.error('UserProvider: 用户数据同步失败', error);
+      // 同步失败时重置状态，允许重试
+      delete globalSyncStatus[userId];
+    }
+  };
 
   const fetchUserInfo = async (isInitialLoad = false) => {
     if (!isSignedIn || !user?.id) {
@@ -99,35 +140,29 @@ export function UserProvider({ children }: UserProviderProps) {
     await fetchUserInfo(true);
   };
 
-  // 获取用户信息 - 等待token可用后再调用
+  // 用户登录状态变化时，先同步用户数据，再获取用户信息
   useEffect(() => {
-    // 延迟获取用户信息，给auth接口时间完成
-    const delayedFetch = () => {
-      if (isSignedIn && user?.id) {
-        // 检查token，如果没有则等待
-        const checkTokenAndFetch = () => {
-          if (api.auth.isTokenValid()) {
-            fetchUserInfo(true); // 初始加载
-          } else {
-            // 如果token还没准备好，1秒后重试
-            setTimeout(checkTokenAndFetch, 1000);
-          }
-        };
-        
-        // 首次尝试
-        checkTokenAndFetch();
-      } else {
-        // 用户未登录时清空信息
-        setUserInfo(null);
+    if (isSignedIn && user?.id) {
+      // 清空之前的用户信息
+      setUserInfo(null);
+      
+      // 先同步用户数据，确保token可用
+      syncUserToBackend();
+    } else {
+      // 用户未登录时清空信息和同步状态
+      setUserInfo(null);
+      if (user?.id) {
+        delete globalSyncStatus[user.id];
       }
-    };
+    }
+  }, [isSignedIn, user?.id]);
 
-    // 首次加载获取用户信息
-    delayedFetch();
-    
-    // 设置定时器，每10秒更新一次用户信息
+  // 设置定时器，每10秒更新一次用户信息（仅在有token时）
+  useEffect(() => {
+    if (!isSignedIn || !user?.id) return;
+
     const intervalId = setInterval(() => {
-      if (isSignedIn && api.auth.isTokenValid()) {
+      if (api.auth.isTokenValid()) {
         fetchUserInfo(false); // 后续刷新，不是初始加载
       }
     }, 10000);
