@@ -1,35 +1,20 @@
 import { MetadataRoute } from 'next';
-import { serverCmsApi, type BlogPost } from './server-api';
+import { serverCmsApi } from './server-api';
 
 // !!! IMPORTANT: Replace with your actual production domain !!!
 // You can use environment variables like process.env.NEXT_PUBLIC_SITE_URL
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.quickmedcert.com';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.seedancepro.com';
 
-// 生成文章slug（与blog页面保持一致）
+// 生成博客文章slug
 function generateSlug(title: string): string {
   return title.toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .slice(0, 50)
-    .replace(/^-+|-+$/g, '');
-}
-
-// 获取博客文章数据
-async function getBlogPosts(): Promise<BlogPost[]> {
-  try {
-    const blogResponse = await serverCmsApi.getBlogList(1, 100, 0); // 获取所有文章用于sitemap
-    console.log('Sitemap: Successfully fetched blog posts:', blogResponse.list.length);
-    return blogResponse.list;
-  } catch (error) {
-    console.error('Sitemap: Failed to fetch blog posts:', error);
-    return [];
-  }
+    .replace(/^-+|-+$/g, ''); // 移除开头和结尾的连字符
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Removed locales array as we generate canonical URLs now
-  // const locales = ['en', 'zh'];
-
   // Static pages (relative to root)
   const staticPages = [
     '/',
@@ -37,10 +22,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/terms',
     '/privacy'
   ];
-
-  // Get blog posts from API
-  const blogPosts = await getBlogPosts();
-  const blogPostSlugs = blogPosts.map(post => generateSlug(post.title));
 
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
@@ -54,15 +35,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   });
 
-  // Add dynamic blog post URLs (without locale prefix)
-  blogPostSlugs.forEach(slug => {
-    sitemapEntries.push({
-      url: `${BASE_URL}/blog/${slug}`, // Correct path structure
-      lastModified: new Date(), 
-      changeFrequency: 'monthly', 
-      priority: 0.7,
+  // Get blog posts from API and add dynamic blog post URLs
+  try {
+    const blogResponse = await serverCmsApi.getBlogList(1, 100, 0);
+    
+    blogResponse.list.forEach(post => {
+      const slug = generateSlug(post.title);
+      sitemapEntries.push({
+        url: `${BASE_URL}/blog/${slug}`, // Correct path structure
+        lastModified: new Date(post.updated_time * 1000), // Convert timestamp to Date
+        changeFrequency: 'monthly', 
+        priority: 0.7,
+      });
     });
-  });
+    
+    console.log(`Sitemap: Generated ${blogResponse.list.length} blog post URLs`);
+  } catch (error) {
+    console.error('Sitemap: Failed to fetch blog posts for sitemap:', error);
+    // 继续生成没有博客文章的sitemap
+  }
 
   // Note: This sitemap lists canonical URLs. Search engines will rely on the
   // <html lang="..."> attribute (set dynamically in app/layout.tsx)

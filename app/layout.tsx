@@ -33,24 +33,26 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
         />
         <ClerkProviderWithLocale>
-          <UserProvider>
-            <ToastProvider>
-              <main className="min-h-screen">
-                 <Navbar />
-                 {children}
-              </main>
+          <ToastProvider>
+            <UserProvider>
+              <>
+                <Navbar />
+                <main className="min-h-[calc(100vh-80px)]">
+                  {children}
+                </main>
+              </>
               <Suspense fallback={null}>
                 <PaymentStatusModal />
               </Suspense>
-            </ToastProvider>
-          </UserProvider>
+            </UserProvider>
+          </ToastProvider>
         </ClerkProviderWithLocale>
         <Script
           id="analytics"
           strategy="afterInteractive"
           src="/js/cy1.js"
         />
-  
+
       </body>
     </html>
   )

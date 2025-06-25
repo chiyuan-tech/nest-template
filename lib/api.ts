@@ -1,7 +1,7 @@
 // API 基础配置
 const API_CONFIG = {
-  BASE: 'https://svc.vidorai.com',
-  APP_ID: 'ai_video',
+  VIDOR_AI_BASE: 'https://svc.seedancepro.com',
+  APP_ID: 'seedance',
 };
 
 // 通用请求头
@@ -23,11 +23,21 @@ const getHeaders = (includeAuth = true) => {
 
 // 通用错误处理
 const handleApiError = async (response: Response) => {
+  // 首先检查 HTTP 状态码
   if (!response.ok) {
     const errorData = await response.text();
-    throw new Error(`API Error ${response.status}: ${errorData || response.statusText}`);
+    throw new Error(`HTTP Error ${response.status}: ${errorData || response.statusText}`);
   }
-  return response.json();
+  
+  // 解析 JSON 响应
+  const result = await response.json();
+  
+  // 检查业务错误码
+  if (result.code && result.code !== 200) {
+    throw new Error(`API Business Error ${result.code}: ${result.message || result.msg || 'Unknown error'}`);
+  }
+  
+  return result;
 };
 
 // 用户认证相关接口
@@ -36,11 +46,12 @@ export const authApi = {
   syncUser: async (userData: {
     uuid: string;
     email: string;
+    token: string;
     nickname?: string;
     avatar?: string;
     from_login: string;
   }) => {
-    const response = await fetch(`${API_CONFIG.BASE}/api/user/auth`, {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/loginAuth`, {
       method: 'POST',
       headers: getHeaders(false), // 登录接口不需要Authorization
       body: JSON.stringify(userData),
@@ -81,7 +92,7 @@ export const authApi = {
 export const userApi = {
   // 获取用户信息
   getUserInfo: async () => {
-    const response = await fetch(`${API_CONFIG.BASE}/api/user/info`, {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/info`, {
       headers: getHeaders(),
     });
 
@@ -91,7 +102,7 @@ export const userApi = {
   // 获取用户作品列表
   getUserOpusList: async (page: number = 1, pageSize: number = 30) => {
     const response = await fetch(
-      `${API_CONFIG.BASE}/api/user/opus_list?page=${page}&page_size=${pageSize}`,
+      `${API_CONFIG.VIDOR_AI_BASE}/api/user/opus_list?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
         headers: getHeaders(),
@@ -104,7 +115,7 @@ export const userApi = {
   // 获取用户积分记录
   getTimesLog: async (page: number = 1, pageSize: number = 10) => {
     const response = await fetch(
-      `${API_CONFIG.BASE}/api/user/times_log?page=${page}&page_size=${pageSize}`,
+      `${API_CONFIG.VIDOR_AI_BASE}/api/user/times_log?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
         headers: getHeaders(),
@@ -117,9 +128,9 @@ export const userApi = {
 
 // 支付相关接口
 export const paymentApi = {
-  // 创建Stripe支付会话
-  createPaypalSession: async (priceId: string) => {
-    const response = await fetch(`${API_CONFIG.BASE}/api/pay/paypal`, {
+  // 创建PayPal支付会话
+  createPayPalSession: async (priceId: string) => {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/paypal`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
@@ -132,7 +143,7 @@ export const paymentApi = {
 
   // 获取订阅记录
   getSubscriptions: async () => {
-    const response = await fetch(`${API_CONFIG.BASE}/api/pay/subscriptions`, {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/subscriptions`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -142,7 +153,7 @@ export const paymentApi = {
 
   // 取消订阅
   cancelSubscription: async (id: number) => {
-    const response = await fetch(`${API_CONFIG.BASE}/api/pay/subscription/cancel`, {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/subscription/cancel`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
@@ -154,11 +165,130 @@ export const paymentApi = {
   },
 };
 
+// 视频生成相关接口
+export const videoApi = {
+  // 文生视频接口
+  textToVideo: async (params: {
+    prompt: string;
+    resolution: string;
+    ratio: string;
+    duration: number;
+    framepersecond?: number;
+  }) => {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/text2video`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        prompt: params.prompt,
+        resolution: params.resolution,
+        ratio: params.ratio,
+        duration: params.duration,
+        framepersecond: params.framepersecond || 24,
+      }),
+    });
+
+    return handleApiError(response);
+  },
+
+  // 图生视频接口
+  imageToVideo: async (params: {
+    prompt: string;
+    resolution: string;
+    duration: number;
+    framepersecond?: number;
+    file: File;
+  }) => {
+    console.log(params);
+    const formData = new FormData();
+    formData.append('prompt', params.prompt);
+    formData.append('resolution', params.resolution);
+    formData.append('duration', params.duration.toString());
+    formData.append('framepersecond', (params.framepersecond || 24).toString());
+    formData.append('image_file', params.file);
+
+    console.log(formData);
+
+    // 为FormData请求创建特殊的头部（不包含Content-Type，让浏览器自动设置）
+    const token = localStorage.getItem('access_token');
+    const headers: Record<string, string> = {
+      'x-appid': API_CONFIG.APP_ID,
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/img2video`, {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    });
+
+    return handleApiError(response);
+  },
+
+  // 检查任务状态接口
+  checkTaskStatus: async (taskId: string) => {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/check_task_status?task_id=${taskId}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+
+    return handleApiError(response);
+  },
+
+  // 轮询检查任务状态，直到完成或失败
+  pollTaskStatus: async (
+    taskId: string,
+    onProgress?: (progress: number, statusMsg: string) => void
+  ): Promise<{ video_url: string; status: number; status_msg: string }> => {
+    return new Promise((resolve, reject) => {
+      const poll = async () => {
+        try {
+          const result = await videoApi.checkTaskStatus(taskId);
+          
+          if (result.code !== 200) {
+            reject(new Error(result.msg || 'Task check failed'));
+            return;
+          }
+
+          const { status, status_msg, video_url, progress } = result.data;
+          
+          // 更新进度
+          if (onProgress) {
+            const progressNum = parseFloat(progress) * 100;
+            onProgress(progressNum, status_msg);
+          }
+
+          if (status === 1) {
+            // 任务完成
+            resolve({
+              video_url: video_url,
+              status,
+              status_msg
+            });
+          } else if (status === -1) {
+            // 任务失败
+            reject(new Error(status_msg || 'Task failed'));
+          } else {
+            // 任务进行中，2秒后继续轮询
+            setTimeout(poll, 2000);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      poll();
+    });
+  },
+};
+
 // CMS相关接口
 export const cmsApi = {
   // 获取友情链接列表（客户端版本）
   getFriendLinkList: async () => {
-    const response = await fetch(`${API_CONFIG.BASE}/api/cms/friendLinkList`, {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/cms/friendLinkList`, {
       method: 'GET',
       headers: getHeaders(false), // 不需要认证
     });
@@ -166,6 +296,9 @@ export const cmsApi = {
     return handleApiError(response);
   },
 };
+
+// 重新导出FriendLink类型以保持兼容性
+export type { FriendLink } from './server-api';
 
 // 带重试机制的API调用（用于依赖token的接口）
 export const apiWithRetry = async <T>(
@@ -202,6 +335,7 @@ export const api = {
   auth: authApi,
   user: userApi,
   payment: paymentApi,
+  video: videoApi,
   cms: cmsApi,
   withRetry: apiWithRetry,
 }; 

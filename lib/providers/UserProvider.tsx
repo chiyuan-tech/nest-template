@@ -1,8 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser, useAuth } from '@clerk/nextjs';
 import { api } from '../api';
+import { useToast } from '@/components/ui/toast-provider';
 
 export interface UserInfo {
   uuid: string;
@@ -40,8 +41,10 @@ const globalSyncStatus: { [userId: string]: boolean } = {};
 
 export function UserProvider({ children }: UserProviderProps) {
   const { user, isSignedIn } = useUser();
+  const { getToken } = useAuth();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState(false);
+  const { error: showErrorToast } = useToast();
 
   // 同步用户数据到后端
   const syncUserToBackend = async () => {
@@ -60,24 +63,80 @@ export function UserProvider({ children }: UserProviderProps) {
     globalSyncStatus[userId] = true;
 
     try {
+      // 获取 Clerk JWT token，添加错误处理
+      let clerkToken: string | null = null;
+      try {
+        clerkToken = await getToken();
+        console.log('Clerk Token 获取成功:', clerkToken ? 'Token已获取' : 'Token为空');
+        // console.log('Clerk Token:', clerkToken);
+      } catch (tokenError) {
+        console.error('获取 Clerk Token 失败:', tokenError);
+        // token 获取失败时，重置同步状态并退出
+        delete globalSyncStatus[userId];
+        showErrorToast('Failed to get user token');
+        return;
+      }
+
+      // 如果没有获取到有效的 token，不进行同步
+      if (!clerkToken) {
+        console.warn('Clerk Token 为空，跳过同步');
+        delete globalSyncStatus[userId];
+        showErrorToast('User token is empty, skipping sync');
+        return;
+      }
+
       const userData = {
         uuid: userId,
         email: user.primaryEmailAddress.emailAddress,
         nickname: user.fullName || undefined,
         avatar: user.imageUrl || undefined,
-        from_login: "google"
+        from_login: "google",
+        token: clerkToken // API期望的字段名是token
       };
 
-      console.log('UserProvider: 开始同步用户数据', userData);
+      console.log('UserProvider: 开始同步用户数据', {
+        ...userData,
+        token: '***' // 安全起见，不在日志中显示完整token
+      });
+      
       const responseData = await api.auth.syncUser(userData);
       console.log('UserProvider: 用户数据同步成功', responseData);
+      
+      // 验证同步结果
+      if (!responseData || responseData.code !== 200) {
+        throw new Error(`Sync failed: ${responseData?.message || responseData?.msg || 'Unknown error'}`);
+      }
+      
+      // 验证返回的token数据
+      if (!responseData.data?.access_token) {
+        throw new Error('Sync succeeded but no access_token received');
+      }
+      
+      console.log('UserProvider: 用户数据同步成功，Token已保存');
       
       // 同步成功后立即获取用户信息
       await fetchUserInfo(true);
     } catch (error) {
-      console.error('UserProvider: 用户数据同步失败', error);
-      // 同步失败时重置状态，允许重试
-      delete globalSyncStatus[userId];
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('UserProvider: 用户数据同步失败', {
+        error: errorMessage,
+        userId,
+        email: user.primaryEmailAddress.emailAddress,
+        timestamp: new Date().toISOString()
+      });
+      
+      // 根据错误类型决定是否允许重试
+      if (errorMessage.includes('Business Error 500') || errorMessage.includes('HTTP Error 5')) {
+        // console.warn('UserProvider: 服务器错误，3秒后允许重试');
+        setTimeout(() => {
+          delete globalSyncStatus[userId];
+        }, 3000);
+        showErrorToast(errorMessage);
+      } else {
+        // 其他错误立即重置状态，允许重试
+        delete globalSyncStatus[userId];
+        showErrorToast(`Sync failed: ${errorMessage}`);
+      }
     }
   };
 
@@ -128,6 +187,11 @@ export function UserProvider({ children }: UserProviderProps) {
     } catch (error) {
       console.error("Failed to fetch user info:", error);
       setUserInfo(null);
+      // 只在初始加载时显示错误提示，避免频繁弹窗
+      if (isInitialLoad) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch user info';
+        showErrorToast(errorMessage);
+      }
     } finally {
       // 只在初始加载时才设置loading为false
       if (isInitialLoad) {
