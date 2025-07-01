@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useUser, useAuth } from '@clerk/nextjs';
+import { useUser, useAuth, useClerk } from '@clerk/nextjs';
 import { api } from '../api';
 import { useToast } from '@/components/ui/toast-provider';
 
@@ -42,6 +42,7 @@ const globalSyncStatus: { [userId: string]: boolean } = {};
 export function UserProvider({ children }: UserProviderProps) {
   const { user, isSignedIn } = useUser();
   const { getToken } = useAuth();
+  const { signOut } = useClerk();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState(false);
   const { error: showErrorToast } = useToast();
@@ -70,18 +71,39 @@ export function UserProvider({ children }: UserProviderProps) {
         console.log('Clerk Token 获取成功:', clerkToken ? 'Token已获取' : 'Token为空');
         // console.log('Clerk Token:', clerkToken);
       } catch (tokenError) {
-        console.error('获取 Clerk Token 失败:', tokenError);
-        // token 获取失败时，重置同步状态并退出
+        console.error('获取 Clerk Token 失败，清除登录状态:', tokenError);
+        // 清除同步状态
         delete globalSyncStatus[userId];
-        showErrorToast('Failed to get user token');
+        // 清除用户信息
+        setUserInfo(null);
+        // 显示错误提示
+        showErrorToast('Failed to get user token, please sign in again');
+        // 退出登录状态
+        try {
+          await signOut();
+          console.log('UserProvider: Token获取失败，已清除登录状态');
+        } catch (signOutError) {
+          console.error('UserProvider: 清除登录状态失败:', signOutError);
+        }
         return;
       }
 
-      // 如果没有获取到有效的 token，不进行同步
+      // 如果没有获取到有效的 token，清除登录状态
       if (!clerkToken) {
-        console.warn('Clerk Token 为空，跳过同步');
+        console.warn('Clerk Token 为空，清除登录状态');
+        // 清除同步状态
         delete globalSyncStatus[userId];
-        showErrorToast('User token is empty, skipping sync');
+        // 清除用户信息
+        setUserInfo(null);
+        // 显示错误提示
+        showErrorToast('User token is empty, please sign in again');
+        // 退出登录状态
+        try {
+          await signOut();
+          console.log('UserProvider: Token为空，已清除登录状态');
+        } catch (signOutError) {
+          console.error('UserProvider: 清除登录状态失败:', signOutError);
+        }
         return;
       }
 
@@ -118,25 +140,31 @@ export function UserProvider({ children }: UserProviderProps) {
       await fetchUserInfo(true);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error('UserProvider: 用户数据同步失败', {
+      console.error('UserProvider: 用户数据同步失败，清除登录状态', {
         error: errorMessage,
         userId,
         email: user.primaryEmailAddress.emailAddress,
         timestamp: new Date().toISOString()
       });
       
-      // 根据错误类型决定是否允许重试
-      if (errorMessage.includes('Business Error 500') || errorMessage.includes('HTTP Error 5')) {
-        // console.warn('UserProvider: 服务器错误，3秒后允许重试');
-        setTimeout(() => {
-          delete globalSyncStatus[userId];
-        }, 3000);
-        showErrorToast(errorMessage);
-      } else {
-        // 其他错误立即重置状态，允许重试
-        delete globalSyncStatus[userId];
-        showErrorToast(`Sync failed: ${errorMessage}`);
+      // 清除同步状态
+      delete globalSyncStatus[userId];
+      
+      // 清除用户信息
+      setUserInfo(null);
+      
+      // 显示错误提示
+      showErrorToast(`Failed to sync user data, please sign in again: ${errorMessage}`);
+      
+      // 退出登录状态
+      try {
+        await signOut();
+        console.log('UserProvider: 已清除登录状态');
+      } catch (signOutError) {
+        console.error('UserProvider: 清除登录状态失败:', signOutError);
       }
+      
+      return; // 直接退出，不再执行后续逻辑
     }
   };
 
