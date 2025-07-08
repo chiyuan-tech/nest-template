@@ -129,7 +129,7 @@ export const userApi = {
 // 支付相关接口
 export const paymentApi = {
   // 创建PayPal支付会话
-  createPayPalSession: async (priceId: string) => {
+  createPaypalSession: async (priceId: string) => {
     const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/paypal`, {
       method: 'POST',
       headers: getHeaders(),
