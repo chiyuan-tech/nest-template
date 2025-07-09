@@ -265,7 +265,7 @@ export default function ProfilePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalHistoryCount, setTotalHistoryCount] = useState(0);
-  const historyPageSize = 30;
+  const historyPageSize = 16;
   const [isDownloading, setIsDownloading] = useState<number | null>(null); // 跟踪正在下载的图片ID
 
   // 积分记录状态
@@ -1000,6 +1000,54 @@ export default function ProfilePage() {
             ) : (
               <div className="col-span-full text-center text-muted-foreground py-12">No videos yet.</div>
             )}
+          </div>
+          
+          {/* 分页组件 */}
+          <div className="flex justify-center mt-8">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(currentPage - 1);
+                    }}
+                    className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                
+                {paginationItems.map((item, index) => (
+                  <PaginationItem key={index}>
+                    {item === '...' ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(item as number);
+                        }}
+                        isActive={item === currentPage}
+                      >
+                        {item}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(currentPage + 1);
+                    }}
+                    className={currentPage >= totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         </div>
       </main>
