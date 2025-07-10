@@ -76,6 +76,8 @@ export function UserProvider({ children }: UserProviderProps) {
         delete globalSyncStatus[userId];
         // 清除用户信息
         setUserInfo(null);
+        // 清除tokens
+        api.auth.clearTokens();
         // 显示错误提示
         showErrorToast('Failed to get user token, please sign in again');
         // 退出登录状态
@@ -95,6 +97,8 @@ export function UserProvider({ children }: UserProviderProps) {
         delete globalSyncStatus[userId];
         // 清除用户信息
         setUserInfo(null);
+        // 清除tokens
+        api.auth.clearTokens();
         // 显示错误提示
         showErrorToast('User token is empty, please sign in again');
         // 退出登录状态
@@ -152,6 +156,9 @@ export function UserProvider({ children }: UserProviderProps) {
       
       // 清除用户信息
       setUserInfo(null);
+      
+      // 清除tokens
+      api.auth.clearTokens();
       
       // 显示错误提示
       showErrorToast(`Failed to sync user data, please sign in again: ${errorMessage}`);

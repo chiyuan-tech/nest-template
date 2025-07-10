@@ -51,7 +51,10 @@ export const authApi = {
     avatar?: string;
     from_login: string;
   }) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/loginAuth`, {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const endpoint = isDevelopment ? 'loginAuthCyTest' : 'loginAuth';
+    
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/${endpoint}`, {
       method: 'POST',
       headers: getHeaders(false), // 登录接口不需要Authorization
       body: JSON.stringify(userData),
