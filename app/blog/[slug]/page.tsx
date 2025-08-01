@@ -1,6 +1,8 @@
 import { serverCmsApi, type BlogPost } from '../../../lib/server-api';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Footer } from '../../../components/Footer';
 
 // 启用ISR，每小时重新验证一次
 export const revalidate = 3600;
@@ -66,7 +68,8 @@ export default async function BlogPost({ params }: BlogDetailProps) {
   }
 
   return (
-    <article className="container mx-auto px-6 py-12 mt-16 max-w-4xl">
+    <div className="min-h-screen flex flex-col">
+      <article className="container mx-auto px-6 py-12 mt-16 max-w-4xl flex-1">
       <a
         href="/blog"
         className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -105,6 +108,7 @@ export default async function BlogPost({ params }: BlogDetailProps) {
 
       <div className="prose prose-lg max-w-none">
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           components={{
             h1: ({node, ...props}) => <h1 className="text-3xl font-bold mt-8 mb-4 text-foreground leading-tight" {...props} />,
             h2: ({node, ...props}) => <h2 className="text-2xl font-bold mt-6 mb-4 text-foreground leading-tight" {...props} />,
@@ -116,13 +120,35 @@ export default async function BlogPost({ params }: BlogDetailProps) {
             a: ({node, ...props}) => <a className="text-primary hover:underline" {...props} />,
             blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-primary/20 pl-4 italic text-muted-foreground mb-4 leading-relaxed" {...props} />,
             code: ({node, ...props}) => <code className="bg-secondary px-2 py-1 rounded text-sm" {...props} />,
+            // 表格支持
+            table: ({node, ...props}) => <table className="w-full border-collapse border border-muted mb-6" {...props} />,
+            thead: ({node, ...props}) => <thead className="bg-muted/50" {...props} />,
+            tbody: ({node, ...props}) => <tbody {...props} />,
+            tr: ({node, ...props}) => <tr className="border-b border-muted hover:bg-muted/30" {...props} />,
+            th: ({node, ...props}) => <th className="border border-muted px-4 py-2 text-left font-semibold text-foreground" {...props} />,
+            td: ({node, ...props}) => <td className="border border-muted px-4 py-2 text-muted-foreground" {...props} />,
+            // 图片支持
+            img: ({node, ...props}) => (
+              <span className="block my-8">
+                <img 
+                  {...props} 
+                  className="max-w-full h-auto rounded-lg shadow-lg border border-gray-200/50 mx-auto block" 
+                  loading="lazy"
+                  alt={props.alt || 'Blog image'}
+                />
+              </span>
+            ),
           }}
         >
           {post.content}
         </ReactMarkdown>
       </div>
     </article>
-  );
+    
+    {/* Footer */}
+    <Footer />
+  </div>
+);
 }
 
 // 生成静态参数

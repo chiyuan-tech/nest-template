@@ -1,5 +1,6 @@
 import { serverCmsApi, BlogPost } from '../../lib/server-api';
 import Link from 'next/link';
+import { Footer } from '../../components/Footer';
 
 // 启用ISR，每小时重新验证一次
 export const revalidate = 3600;
@@ -51,7 +52,7 @@ export default async function Blog() {
   const blogPosts = await getBlogPosts();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex flex-col">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary/10 via-blue-50 to-primary/5 pt-20 pb-16">
         <div className="container mx-auto px-6 text-center">
@@ -65,7 +66,7 @@ export default async function Blog() {
       </div>
 
       {/* Blog Posts Section */}
-      <div className="container mx-auto px-6 py-16">
+      <div className="container mx-auto px-6 py-16 flex-1">
         {blogPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {blogPosts.map(post => (
@@ -129,6 +130,9 @@ export default async function Blog() {
           </div>
         )}
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 } 
