@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Footer } from '../../../components/Footer';
+import { Metadata } from 'next';
 
 // 启用ISR，每小时重新验证一次
 export const revalidate = 3600;
@@ -52,6 +53,40 @@ interface BlogDetailProps {
   params: Promise<{
     slug: string;
   }>;
+}
+
+// 生成动态metadata
+export async function generateMetadata({ params }: BlogDetailProps): Promise<Metadata> {
+  const { slug } = await params;
+  
+  // 获取博客文章数据
+  const blogPosts = await getBlogPosts();
+  
+  // 根据slug查找对应的文章
+  const post = blogPosts.find(p => generateSlug(p.title) === slug);
+
+  if (!post) {
+    return {
+      title: 'Blog Post Not Found',
+      description: 'The requested blog post could not be found.'
+    };
+  }
+
+  return {
+    title: post.title,
+    description: post.abstract || `Read about ${post.title} on  blog.`,
+    openGraph: {
+      title: post.title,
+      description: post.abstract || `Read about ${post.title} on blog.`,
+      type: 'article',
+      publishedTime: new Date(post.created_time * 1000).toISOString(),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.abstract || `Read about ${post.title} on blog.`,
+    },
+  };
 }
 
 export default async function BlogPost({ params }: BlogDetailProps) {
