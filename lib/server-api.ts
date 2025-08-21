@@ -41,6 +41,9 @@ export interface BlogPost {
   created_time: number;
   sort: number;
   updated_time: number;
+  url: string;
+  seo_name: string;
+  seo_desc: string;
 }
 
 // 博客列表响应类型

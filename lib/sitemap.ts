@@ -6,7 +6,16 @@ import { serverCmsApi } from './server-api';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.seedancepro.com';
 
 // 生成博客文章slug
-function generateSlug(title: string): string {
+function generateSlug(title: string, url?: string): string {
+  // 如果 url 字段存在且包含连字符，直接使用
+  if (url && url.includes('-')) {
+    return url.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/^-+|-+$/g, ''); // 移除开头和结尾的连字符
+  }
+  
+  // 否则使用原来的生成方式
   return title.toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
@@ -40,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const blogResponse = await serverCmsApi.getBlogList(1, 100, 0);
     
     blogResponse.list.forEach(post => {
-      const slug = generateSlug(post.title);
+      const slug = generateSlug(post.title, post.url);
       sitemapEntries.push({
         url: `${BASE_URL}/blog/${slug}`, // Correct path structure
         lastModified: new Date(post.updated_time * 1000), // Convert timestamp to Date
