@@ -14,11 +14,11 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Google One Tap 组件 - 只在用户未登录时显示 */}
-      <GoogleOneTapAuth
+      {/* <GoogleOneTapAuth
         cancelOnTapOutside={true}
         signInForceRedirectUrl="/"
         signUpForceRedirectUrl="/"
-      />
+      /> */}
       <main className="flex-grow">
       
       </main>
