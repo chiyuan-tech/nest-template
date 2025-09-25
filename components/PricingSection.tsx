@@ -114,16 +114,16 @@ export default function PricingSection() {
   };
 
   return (
-    <section id="pricing" className="pricing-section">
-      <div className="pricing-container">
-        <h2 className="pricing-title">
+    <section id="pricing" className="py-20 px-6 relative bg-gray-50 border-t border-gray-100">
+      <div className="container mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 text-foreground font-fredoka">
           Choose Your Perfect Plan
         </h2>
-        <p className="pricing-subtitle">
+        <p className="text-lg text-muted-foreground text-center mb-16 max-w-3xl mx-auto">
           All plans include HD image download and fast AI generation.
         </p>
 
-        <div className="pricing-grid">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {pricingPlans.map((plan) => {
               const isFree = plan.key === 'free';
 
@@ -131,25 +131,25 @@ export default function PricingSection() {
                 <div
                   key={plan.key}
                   className={cn(
-                    'pricing-card',
-                    plan.popular ? 'pricing-card-popular' : 'pricing-card-regular'
+                    'rounded-2xl p-8 flex flex-col h-full relative bg-white shadow-lg',
+                    plan.popular ? 'bg-foreground text-background border-2 border-primary' : ''
                   )}
                 >
                   {plan.popular && (
-                    <div className="pricing-badge">
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold shadow-md">
                       Most Popular
                     </div>
                   )}
 
-                  <h3 className="pricing-card-title">
+                  <h3 className="text-2xl font-semibold mb-2 text-center">
                     {plan.title}
                   </h3>
       
-                  <div className="pricing-card-price">
-                    <span className="pricing-price-value">
+                  <div className="text-center mb-8">
+                    <span className="text-5xl font-bold">
                       {plan.price}
                     </span>
-                    {!isFree && (<span className="pricing-price-period">/month</span>)}
+                    {!isFree && (<span className="text-muted-foreground text-lg ml-1">/month</span>)}
                   </div>
 
                   <Button 
@@ -170,15 +170,15 @@ export default function PricingSection() {
                     }
                   </Button>
 
-                  <div className="pricing-features">
+                  <div className="flex-grow border-t border-muted pt-6">
                     <ul className="space-y-3">
                       {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="pricing-feature-item">
+                        <li key={featureIndex} className="flex items-start space-y-3">
                           <Check className={cn(
-                            'pricing-feature-icon',
+                            'w-5 h-5 mr-2 flex-shrink-0',
                             plan.popular ? 'text-primary' : 'text-muted-foreground'
                           )} />
-                          <span className="pricing-feature-text">
+                          <span className="text-sm">
                             {feature}
                           </span>
                         </li>
