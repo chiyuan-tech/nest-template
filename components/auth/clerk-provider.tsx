@@ -1,7 +1,6 @@
 'use client';
 
 import { ClerkProvider } from '@clerk/nextjs';
-import { enUS } from '@clerk/localizations';
 
 export default function ClerkProviderWithLocale({
   children,
@@ -10,7 +9,9 @@ export default function ClerkProviderWithLocale({
 }) {
   return (
     <ClerkProvider 
-      localization={enUS}
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
+      afterSignOutUrl="/"
       appearance={{
         layout: {
           socialButtonsVariant: "iconButton",

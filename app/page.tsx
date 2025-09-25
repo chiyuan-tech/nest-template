@@ -5,18 +5,11 @@ import { Footer } from '../components/Footer';
 import { serverCmsApi, FriendLink } from '../lib/server-api';
 import { GoogleOneTapAuth } from '../components/auth';
 // 启用ISR，每小时重新验证数据
-export const revalidate = 1200;
 
 
-export default async function Home() {
-  // 获取友情链接数据，如果为空则使用默认数据
-  let friendlyLinks = await serverCmsApi.getFriendLinkList();
 
-  // 如果API返回空数据或失败，使用默认数据
-  if (!friendlyLinks || friendlyLinks.length === 0) {
-    console.log('Using default friend links as fallback');
-    friendlyLinks = [];
-  }
+export default function Home() {
+
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -27,9 +20,9 @@ export default async function Home() {
         signUpForceRedirectUrl="/"
       />
       <main className="flex-grow">
-        <PricingSection />
+      
       </main>
-      <Footer friendlyLinks={friendlyLinks} />
+      <Footer />
     </div>
   );
 }
