@@ -1,18 +1,12 @@
 'use client';
 
 import { useUser, useAuth } from '@clerk/nextjs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Footer } from '../../components/Footer';
 import Image from 'next/image';
-import { Progress } from '../../components/ui/progress';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -25,233 +19,29 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Link from 'next/link';
-import { DownloadIcon, ReloadIcon } from '@radix-ui/react-icons';
+import { ReloadIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { api } from '@/lib/api';
-import { User } from "@clerk/nextjs/server";
-import { cmsApi } from "@/lib/api";
-import { useToast } from '@/components/ui/toast-provider';
-
-// 友情链接数据类型定义
-interface FriendLink {
-  id: number;
-  name: string;
-  url: string;
-  is_bright: number;
-  desc: string;
-  image: string;
-  web_type: number;
-  sort: number;
-  appid: string;
-  created_time: number;
-}
-
-// 定义从API获取的用户信息类型
-interface UserApiInfo {
-  uuid: string;
-  email: string;
-  from_login: string;
-  nickname: string;
-  avatar?: string;
-  free_limit: number;
-  remaining_limit: number;
-  total_limit: number;
-  use_limit: number;
-  vip_last_time: number;
-  level: number;
-  created_at: number;
-  updated_at: number;
-  status: number;
-  id: number;
-}
-
-// 定义图片历史记录项的类型
-interface GenerationHistoryItem {
-  id: number;
-  user_id: number;
-  task_id: string;
-  origin_image: string;
-  size_image: string;
-  other_image: string;
-  generate_image: string;
-  quality_image: string;
-  status: number;
-  status_msg: string;
-  generation_time: number;
-  prompt: string;
-  created_at: number;
-  updated_at: number;
-}
-
-// 定义图片历史记录 API 返回的数据结构
-interface GenerationHistoryResponse {
-  count: number;
-  list: GenerationHistoryItem[];
-  total_page: number;
-}
-
-// 定义积分记录项的类型
-interface TimesLogItem {
-  id: number;
-  user_id: number;
-  change_type: string;
-  use_limit: number;
-  created_at: number;
-  updated_at: number;
-}
-
-// 定义积分记录 API 返回的数据结构
-interface TimesLogResponse {
-  count: number;
-  list: TimesLogItem[];
-  total_page: number;
-}
-
-// 定义订阅记录项的类型
-interface SubscriptionItem {
-  id: number;
-  pay_type: string;
-  user_id: number;
-  customer_id: string;
-  subscription_id: string;
-  price_id: string;
-  created_at: number;
-  updated_at: number;
-  price_info: {
-    id: number;
-    appid: string;
-    name: string;
-    description: string;
-    price: number;
-    features: string;
-    is_popular: number;
-    button_text: string;
-    usage_limit: number;
-    level: number;
-    stripe_id: number;
-    prices_id: string;
-    stripe_type: string;
-    status: number;
-  };
-}
-
-// 定义用户生成图片的接口
-interface GeneratedImage {
-  id: string;
-  imageUrl: string;
-  createdAt: string;
-}
-
-// 将辅助函数移到组件外部
-function getPaginationItems(currentPage: number, totalPages: number, siblingCount = 1): (number | '...')[] {
-  const totalPageNumbers = siblingCount + 5; // siblings + first + last + current + 2*ellipsis
-
-  if (totalPageNumbers >= totalPages) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
-  }
-
-  const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
-  const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages);
-
-  const shouldShowLeftDots = leftSiblingIndex > 2;
-  const shouldShowRightDots = rightSiblingIndex < totalPages - 1;
-
-  const firstPageIndex = 1;
-  const lastPageIndex = totalPages;
-
-  if (!shouldShowLeftDots && shouldShowRightDots) {
-    let leftItemCount = 3 + 2 * siblingCount;
-    let leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
-    return [...leftRange, '...', lastPageIndex];
-  }
-
-  if (shouldShowLeftDots && !shouldShowRightDots) {
-    let rightItemCount = 3 + 2 * siblingCount;
-    let rightRange = Array.from({ length: rightItemCount }, (_, i) => totalPages - rightItemCount + 1 + i);
-    return [firstPageIndex, '...', ...rightRange];
-  }
-
-  if (shouldShowLeftDots && shouldShowRightDots) {
-    let middleRange = Array.from({ length: rightSiblingIndex - leftSiblingIndex + 1 }, (_, i) => leftSiblingIndex + i);
-    return [firstPageIndex, '...', ...middleRange, '...', lastPageIndex];
-  }
-
-  return Array.from({ length: totalPages }, (_, i) => i + 1); // Fallback
-}
-
-// --- 将下载逻辑定义为独立函数 --- 
-async function downloadMediaWithCors(
-  mediaUrl: string, 
-  filename: string, 
-  setIsDownloading: (id: number | null) => void, // 用于更新加载状态
-  mediaId: number, // 媒体 ID 用于设置加载状态
-  showToast: (message: string, type: 'success' | 'error' | 'info') => void // toast显示函数
-) {
-  setIsDownloading(mediaId); // 开始下载，设置加载状态
-  try {
-    // 1. 发起 fetch 请求
-    const response = await fetch(mediaUrl, { mode: 'cors' });
-
-    // 检查响应是否成功并且是 CORS 允许的
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}. Failed to fetch media. Check CORS headers on the server.`);
-    }
-
-    // 2. 将响应体转换为 Blob 对象
-    const blob = await response.blob();
-
-    // 3. 创建一个指向 Blob 的 Object URL
-    const objectUrl = URL.createObjectURL(blob);
-
-    // 4. 创建 <a> 标签并触发下载
-    const link = document.createElement('a');
-    link.href = objectUrl;
-            link.download = filename || `ideavido-media-${mediaId}.mp4`; // 使用传入的 filename 或生成一个
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // 5. 释放 Object URL 资源
-    URL.revokeObjectURL(objectUrl);
-
-    console.log('Media download initiated!');
-    showToast('Video downloaded successfully!', 'success');
-
-  } catch (error: any) {
-    console.error('Download failed:', error);
-    // 使用英文显示错误信息
-    const errorMessage = 'Download failed!';
-    const corsMessage = `Could not fetch media from ${mediaUrl}. This is often due to missing CORS headers (Access-Control-Allow-Origin) on the server. Check the browser console for details.`;
-    const genericMessage = `Error: ${error.message}`;
-
-    // 检查是否是网络错误或类型错误（通常与 CORS 相关）
-    if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-        showToast(`${errorMessage} - CORS error. Check server configuration.`, 'error');
-    } else {
-        showToast(`${errorMessage} ${genericMessage}`, 'error');
-    }
-  } finally {
-    setIsDownloading(null); // 结束下载（无论成功或失败），清除加载状态
-  }
-}
-
-// Function to format timestamp based on locale
-const formatTimestamp = (timestamp: number): string => {
-  if (!timestamp) return 'N/A';
-  try {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric', month: 'long', day: 'numeric', 
-      hour: '2-digit', minute: '2-digit'
-    }).format(new Date(timestamp * 1000));
-  } catch (e) {
-    console.error("Error formatting date:", e);
-    return new Date(timestamp * 1000).toLocaleDateString(); // Fallback
-  }
-};
+import { 
+  PayLogDialog, 
+  PointsLogDialog, 
+  SubscriptionsDialog, 
+  InvoiceDialog, 
+  VideoDetailDialog 
+} from '@/components/profile';
+import { 
+  FriendLink, 
+  UserApiInfo, 
+  GenerationHistoryItem 
+} from '@/components/profile/types';
+import { 
+  groupHistoryByDate, 
+  getPaginationItems, 
+  formatTimestamp 
+} from '@/components/profile/utils';
 
 export default function ProfilePage() {
   const { user, isLoaded, isSignedIn } = useUser();
-  const { userId, sessionId, getToken } = useAuth();
-  const toast = useToast();
+  const { userId } = useAuth();
 
   // API 数据状态 (用户信息)
   const [userApiInfo, setUserApiInfo] = useState<UserApiInfo | null>(null);
@@ -266,150 +56,40 @@ export default function ProfilePage() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalHistoryCount, setTotalHistoryCount] = useState(0);
   const historyPageSize = 16;
-  const [isDownloading, setIsDownloading] = useState<number | null>(null); // 跟踪正在下载的图片ID
-
-  // 积分记录状态
-  const [timesLogList, setTimesLogList] = useState<TimesLogItem[]>([]);
-  const [isLoadingTimesLog, setIsLoadingTimesLog] = useState(false);
-  const [timesLogError, setTimesLogError] = useState<string | null>(null);
-  const [timesLogCurrentPage, setTimesLogCurrentPage] = useState(1);
-  const [timesLogTotalPages, setTimesLogTotalPages] = useState(0);
-  const [isTimesLogDialogOpen, setIsTimesLogDialogOpen] = useState(false);
-  const timesLogPageSize = 10;
-
-  // New state for generated images
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [userImages, setUserImages] = useState<GeneratedImage[]>([]);
+  const autoRefreshRef = useRef<NodeJS.Timeout | null>(null);
 
   // 友情链接状态
   const [friendlyLinks, setFriendlyLinks] = useState<FriendLink[]>([]);
 
-  // 订阅记录状态
-  const [subscriptionList, setSubscriptionList] = useState<SubscriptionItem[]>([]);
-  const [isLoadingSubscriptions, setIsLoadingSubscriptions] = useState(false);
-  const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
+  // 对话框状态
+  const [isPayLogDialogOpen, setIsPayLogDialogOpen] = useState(false);
+  const [isTimesLogDialogOpen, setIsTimesLogDialogOpen] = useState(false);
   const [isSubscriptionDialogOpen, setIsSubscriptionDialogOpen] = useState(false);
-  const [cancellingSubscriptionId, setCancellingSubscriptionId] = useState<number | null>(null);
+  const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
+  const [selectedPayLogId, setSelectedPayLogId] = useState<number | null>(null);
+  const [payLogList, setPayLogList] = useState<any[]>([]);
 
-  // 获取积分记录数据的函数
-  const fetchTimesLog = async (page: number) => {
+  // 视频详情弹窗状态
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [selectedVideoDetail, setSelectedVideoDetail] = useState<GenerationHistoryItem | null>(null);
+
+  // 打开发票弹窗
+  const handleOpenInvoiceDialog = (payLogId: number) => {
+    setSelectedPayLogId(payLogId);
+    setIsInvoiceDialogOpen(true);
+  };
+
+  // 获取支付记录（用于发票对话框）
+  const fetchPayLogForInvoice = async () => {
     if (!isLoaded || !userId) return;
-
-    setIsLoadingTimesLog(true);
-    setTimesLogError(null);
     try {
-      const result = await api.user.getTimesLog(page, timesLogPageSize);
-
+      const result = await api.user.getPayLog(1, 100); // 获取足够的数据用于发票
       if (result.code === 200 && result.data) {
-        setTimesLogList(result.data.list || []);
-        setTimesLogTotalPages(result.data.total_page || 0);
-      } else {
-        console.error("Failed to fetch times log:", result.msg || 'Unknown API error');
-        setTimesLogList([]);
-        setTimesLogTotalPages(0);
-        setTimesLogError(result.msg || 'Failed to fetch times log');
+        setPayLogList(result.data.list || []);
       }
     } catch (error) {
-      console.error("Failed to fetch times log:", error);
-      setTimesLogError(error instanceof Error ? error.message : 'An unknown error occurred fetching times log');
-      setTimesLogList([]);
-      setTimesLogTotalPages(0);
-    } finally {
-      setIsLoadingTimesLog(false);
+      console.error('Failed to fetch pay log for invoice:', error);
     }
-  };
-
-  // Format change type
-  const formatChangeType = (changeType: string): string => {
-    const typeMap: Record<string, string> = {
-      'buy_package': 'Buy Package',
-      'create_task_free': 'Free Generation',
-      'month_free': 'Monthly Free',
-      'register_give': 'Registration Gift',
-      'invite_reward': 'Invitation Reward',
-      'daily_check': 'Daily Check-in',
-      'refund': 'Refund',
-    };
-    return typeMap[changeType] || changeType;
-  };
-
-  // Open points log dialog
-  const handleOpenTimesLogDialog = () => {
-    setIsTimesLogDialogOpen(true);
-    setTimesLogCurrentPage(1);
-    fetchTimesLog(1);
-  };
-
-  // Handle points log page change
-  const handleTimesLogPageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= timesLogTotalPages && newPage !== timesLogCurrentPage) {
-      setTimesLogCurrentPage(newPage);
-      fetchTimesLog(newPage);
-    }
-  };
-
-  // 获取订阅记录数据的函数
-  const fetchSubscriptions = async () => {
-    if (!isLoaded || !userId) return;
-
-    setIsLoadingSubscriptions(true);
-    setSubscriptionError(null);
-    try {
-      const result = await api.payment.getSubscriptions();
-
-      if (result.code === 200 && Array.isArray(result.data)) {
-        setSubscriptionList(result.data);
-      } else {
-        console.error("Failed to fetch subscriptions:", result.msg || 'Unknown API error');
-        setSubscriptionList([]);
-        setSubscriptionError(result.msg || 'Failed to fetch subscriptions');
-      }
-    } catch (error) {
-      console.error("Failed to fetch subscriptions:", error);
-      setSubscriptionError(error instanceof Error ? error.message : 'An unknown error occurred fetching subscriptions');
-      setSubscriptionList([]);
-    } finally {
-      setIsLoadingSubscriptions(false);
-    }
-  };
-
-  // 取消订阅函数
-  const handleCancelSubscription = async (subscriptionId: number) => {
-    setCancellingSubscriptionId(subscriptionId);
-    try {
-      const result = await api.payment.cancelSubscription(subscriptionId);
-
-      if (result.code === 200) {
-        // 取消成功，刷新订阅记录
-        await fetchSubscriptions();
-        toast.success('Subscription cancelled successfully!');
-      } else {
-        console.error("Failed to cancel subscription:", result.msg || 'Unknown API error');
-        toast.error('Failed to cancel subscription: ' + (result.msg || 'Unknown error'));
-      }
-    } catch (error) {
-      console.error("Failed to cancel subscription:", error);
-      toast.error('Failed to cancel subscription: ' + (error instanceof Error ? error.message : 'Unknown error'));
-    } finally {
-      setCancellingSubscriptionId(null);
-    }
-  };
-
-  // 打开订阅记录弹窗
-  const handleOpenSubscriptionDialog = () => {
-    setIsSubscriptionDialogOpen(true);
-    fetchSubscriptions();
-  };
-
-  // 格式化价格显示
-  const formatPrice = (price: number): string => {
-    return `$${price.toFixed(2)}`;
-  };
-
-  // 格式化特性列表
-  const formatFeatures = (features: string): string[] => {
-    return features.split(',').map(feature => feature.trim());
   };
 
   // 修改useEffect，添加userId作为依赖项以确保登录时触发
@@ -511,6 +191,55 @@ export default function ProfilePage() {
     fetchGenerationHistory(currentPage);
   }, [isLoaded, userId, currentPage]); // 使用userId替换user作为依赖项
 
+  // Auto-refresh effect - 每30秒自动刷新一次
+  useEffect(() => {
+    if (!isLoaded || !userId) return;
+
+    const startAutoRefresh = () => {
+      if (autoRefreshRef.current) return; // 已存在则不重复创建
+      autoRefreshRef.current = setInterval(() => {
+        // 静默刷新，不显示loading状态
+        const fetchGenerationHistory = async (page: number) => {
+          try {
+            const result = await api.user.getUserOpusList(page, historyPageSize);
+            if (result.code === 200 && result.data) {
+              setHistoryList(result.data.list || []);
+              setTotalPages(result.data.total_page || 0);
+              setTotalHistoryCount(result.data.count || 0);
+            }
+          } catch (error) {
+            console.error("Auto-refresh failed:", error);
+          }
+        };
+        fetchGenerationHistory(currentPage);
+      }, 30000); // 30秒
+    };
+
+    const stopAutoRefresh = () => {
+      if (autoRefreshRef.current) {
+        clearInterval(autoRefreshRef.current);
+        autoRefreshRef.current = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAutoRefresh();
+      } else {
+        startAutoRefresh();
+      }
+    };
+
+    startAutoRefresh();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // 清理：页面卸载或路由变更时停止轮询并移除监听
+    return () => {
+      stopAutoRefresh();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isLoaded, userId, currentPage]);
+
   // 处理分页变化
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
@@ -522,9 +251,15 @@ export default function ProfilePage() {
     }
   };
 
-  // 添加一个刷新历史记录的函数
+
+  // 打开视频详情弹窗
+  const handleOpenDetailDialog = (item: GenerationHistoryItem) => {
+    setSelectedVideoDetail(item);
+    setIsDetailDialogOpen(true);
+  };
+
+  // 刷新历史记录
   const refreshHistory = () => {
-    // 刷新当前页
     const fetchGenerationHistory = async (page: number) => {
       if (!isLoaded || !userId) {
         return;
@@ -582,10 +317,10 @@ export default function ProfilePage() {
         <main className="flex-grow py-12 px-6">
           <div className="container mx-auto max-w-lg">
             <div className="bg-card rounded-2xl p-8 text-center shadow-custom border border-border">
-                              <h1 className="text-2xl font-bold mb-4 text-card-foreground">Profile</h1>
-                <p className="mb-6 text-muted-foreground">Please sign in to view your profile</p>
+              <h1 className="text-2xl font-bold mb-4 text-card-foreground">Profile</h1>
+              <p className="mb-6 text-muted-foreground">Please sign in to view your profile</p>
               <Link href="/sign-in">
-                                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   Sign In
                 </Button>
               </Link>
@@ -611,6 +346,7 @@ export default function ProfilePage() {
       case 1: return 'Starter';
       case 2: return 'Pro';
       case 3: return 'Ultimate';
+      case 4: return 'Enterprise';
       default: return 'Free';
     }
   };
@@ -618,6 +354,9 @@ export default function ProfilePage() {
 
   // Pagination items calculation
   const paginationItems = getPaginationItems(currentPage, totalPages);
+
+  // Grouped history by date
+  const groupedHistory = groupHistoryByDate(historyList);
 
   // 用户信息卡片统计项
   const stats = [
@@ -699,237 +438,60 @@ export default function ProfilePage() {
                 </div>
               </div>
               {/* Action Buttons */}
-              <div className="mt-6 flex gap-3">
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Dialog open={isPayLogDialogOpen} onOpenChange={setIsPayLogDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2 rounded-full border-border bg-card/50 hover:bg-card/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
+                      onClick={() => {
+                        setIsPayLogDialogOpen(true);
+                        fetchPayLogForInvoice();
+                      }}
+                    >
+                      <span className="text-card-foreground">Pay Log</span>
+                    </Button>
+                  </DialogTrigger>
+                  <PayLogDialog
+                    open={isPayLogDialogOpen}
+                    onOpenChange={setIsPayLogDialogOpen}
+                    onOpenInvoiceDialog={handleOpenInvoiceDialog}
+                  />
+                </Dialog>
                 <Dialog open={isTimesLogDialogOpen} onOpenChange={setIsTimesLogDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="flex items-center gap-2 rounded-full border-border bg-card/50 hover:bg-card/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
-                      onClick={handleOpenTimesLogDialog}
+                      onClick={() => setIsTimesLogDialogOpen(true)}
                     >
                       <span className="text-card-foreground">Points Log</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-border shadow-2xl bg-card/95 backdrop-blur-xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted/80 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
-                                          <DialogHeader className="text-center pb-6 border-b border-border">
-                        <DialogTitle className="text-2xl font-semibold text-card-foreground tracking-tight">Points Log</DialogTitle>
-                        <DialogDescription className="text-muted-foreground mt-2">
-                        View your points transaction history
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="pt-6">
-                      {isLoadingTimesLog ? (
-                        <div className="text-center py-12">
-                          <ReloadIcon className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
-                          <p className="text-muted-foreground font-medium">Loading...</p>
-                        </div>
-                      ) : timesLogError ? (
-                        <div className="text-center py-12">
-                          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-red-400 text-2xl">⚠️</span>
-                          </div>
-                          <p className="text-red-400 font-medium">Failed to load: {timesLogError}</p>
-                        </div>
-                      ) : timesLogList.length > 0 ? (
-                        <>
-                                                     {/* Points Log List */}
-                          <div className="space-y-3">
-                            {timesLogList.map((item) => (
-                              <div key={item.id} className="group p-6 rounded-2xl bg-secondary/80 hover:bg-card hover:shadow-lg transition-all duration-200 border border-border">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-4 mb-2">
-                                      <span className="font-semibold text-card-foreground text-lg">
-                                        {formatChangeType(item.change_type)}
-                                      </span>
-                                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
-                                        item.use_limit > 0 
-                                          ? 'bg-green-500/20 text-green-400' 
-                                          : 'bg-red-500/20 text-red-400'
-                                      }`}>
-                                        {item.use_limit > 0 ? '+' : ''}{item.use_limit}
-                                      </span>
-                                    </div>
-                                    <p className="text-muted-foreground text-sm font-medium">
-                                      {formatTimestamp(item.created_at)}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          
-                                                     {/* Points Log Pagination */}
-                          {timesLogTotalPages > 1 && (
-                            <div className="flex justify-center mt-6">
-                              <Pagination>
-                                <PaginationContent>
-                                  <PaginationItem>
-                                    <PaginationPrevious 
-                                      href="#"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        handleTimesLogPageChange(timesLogCurrentPage - 1);
-                                      }}
-                                      className={timesLogCurrentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
-                                    />
-                                  </PaginationItem>
-                                  
-                                  {getPaginationItems(timesLogCurrentPage, timesLogTotalPages).map((item, index) => (
-                                    <PaginationItem key={index}>
-                                      {item === '...' ? (
-                                        <PaginationEllipsis />
-                                      ) : (
-                                        <PaginationLink
-                                          href="#"
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            handleTimesLogPageChange(item as number);
-                                          }}
-                                          isActive={item === timesLogCurrentPage}
-                                        >
-                                          {item}
-                                        </PaginationLink>
-                                      )}
-                                    </PaginationItem>
-                                  ))}
-                                  
-                                  <PaginationItem>
-                                    <PaginationNext 
-                                      href="#"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        handleTimesLogPageChange(timesLogCurrentPage + 1);
-                                      }}
-                                      className={timesLogCurrentPage >= timesLogTotalPages ? 'pointer-events-none opacity-50' : ''}
-                                    />
-                                  </PaginationItem>
-                                </PaginationContent>
-                              </Pagination>
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <div className="text-center py-16">
-                          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-muted-foreground text-3xl">📊</span>
-                          </div>
-                          <p className="text-muted-foreground font-medium text-lg">No points records yet</p>
-                          <p className="text-muted-foreground/60 text-sm mt-1">Your transaction history will appear here</p>
-                        </div>
-                      )}
-                    </div>
-                  </DialogContent>
+                  <PointsLogDialog
+                    open={isTimesLogDialogOpen}
+                    onOpenChange={setIsTimesLogDialogOpen}
+                  />
                 </Dialog>
-
                 <Dialog open={isSubscriptionDialogOpen} onOpenChange={setIsSubscriptionDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="flex items-center gap-2 rounded-full border-border bg-card/50 hover:bg-card/80 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md px-4 py-2"
-                      onClick={handleOpenSubscriptionDialog}
+                      onClick={() => setIsSubscriptionDialogOpen(true)}
                     >
                       <span className="text-card-foreground">Subscriptions</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-fit min-w-[800px] max-h-[90vh] overflow-y-auto rounded-3xl border border-border shadow-2xl bg-card/95 backdrop-blur-xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted/80 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
-                    <DialogHeader className="text-center pb-6 border-b border-border">
-                      <DialogTitle className="text-2xl font-semibold text-card-foreground tracking-tight">Subscription Records</DialogTitle>
-                      <DialogDescription className="text-muted-foreground mt-2">
-                        Manage your active subscriptions
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="pt-6">
-                      {isLoadingSubscriptions ? (
-                        <div className="text-center py-12">
-                          <ReloadIcon className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
-                          <p className="text-muted-foreground font-medium">Loading...</p>
-                        </div>
-                      ) : subscriptionError ? (
-                        <div className="text-center py-12">
-                          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-red-400 text-2xl">⚠️</span>
-                          </div>
-                          <p className="text-red-400 font-medium">Failed to load: {subscriptionError}</p>
-                        </div>
-                      ) : subscriptionList.length > 0 ? (
-                        <div className="grid gap-6">
-                          {subscriptionList.map((subscription) => (
-                            <div key={subscription.id} className="group relative p-6 rounded-3xl bg-gradient-to-br from-card to-secondary/50 border border-border shadow-lg hover:shadow-xl transition-all duration-300">
-                              {/* 顶部彩条 */}
-                              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary/60 rounded-t-3xl"></div>
-                              
-                              {/* 简化的头部区域：名称、状态、价格、按钮 */}
-                              <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                  <h3 className="text-2xl font-bold text-card-foreground tracking-tight">
-                                    {subscription.price_info.name}
-                                  </h3>
-                                  <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-sm font-semibold">
-                                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                                    Active
-                                  </span>
-                                </div>
-                                
-                                <div className="flex items-center gap-6">
-                                  <div className="text-3xl font-bold text-card-foreground">
-                                    {formatPrice(subscription.price_info.price)}
-                                  </div>
-                                  <Button
-                                    variant={subscription.price_info.button_text === 'Contact Sales' ? 'outline' : 'destructive'}
-                                    size="sm"
-                                    onClick={() => handleCancelSubscription(subscription.id)}
-                                    disabled={cancellingSubscriptionId === subscription.id || subscription.price_info.button_text === 'Contact Sales'}
-                                    className={`min-w-[120px] rounded-full transition-all duration-200 ${
-                                      subscription.price_info.button_text === 'Contact Sales' 
-                                        ? 'border-muted-foreground/30 text-muted-foreground cursor-not-allowed opacity-60' 
-                                        : 'bg-red-500 hover:bg-red-600 text-white border-red-500 hover:border-red-600 shadow-md hover:shadow-lg'
-                                    }`}
-                                  >
-                                    {cancellingSubscriptionId === subscription.id ? (
-                                      <>
-                                        <ReloadIcon className="h-4 w-4 animate-spin mr-2" />
-                                        <span>Cancelling...</span>
-                                      </>
-                                    ) : (
-                                      subscription.price_info.button_text === 'Contact Sales' ? 'Contact Sales' : 'Cancel Plan'
-                                    )}
-                                  </Button>
-                                </div>
-                              </div>
-                              
-                              {/* 底部信息 */}
-                              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground bg-secondary/80 rounded-2xl p-4 mt-4">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium text-card-foreground">ID:</span>
-                                  <span className="font-mono text-xs bg-muted px-2 py-1 rounded">{subscription.subscription_id.slice(-8)}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium text-card-foreground">Started:</span>
-                                  <span>{formatTimestamp(subscription.created_at)}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium text-card-foreground">Usage Limit:</span>
-                                  <span className="font-semibold text-primary">{subscription.price_info.usage_limit === 999999 ? 'Unlimited' : subscription.price_info.usage_limit}</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-20">
-                          <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <span className="text-primary text-4xl">💳</span>
-                          </div>
-                          <p className="text-card-foreground font-semibold text-xl mb-2">No active subscriptions</p>
-                          <p className="text-muted-foreground text-sm">Subscribe to a plan to get started</p>
-                        </div>
-                      )}
-                    </div>
-                  </DialogContent>
+                  <SubscriptionsDialog
+                    open={isSubscriptionDialogOpen}
+                    onOpenChange={setIsSubscriptionDialogOpen}
+                  />
                 </Dialog>
+
               </div>
             </div>
           </div>
@@ -939,10 +501,10 @@ export default function ProfilePage() {
         <div className="container mx-auto mb-4">
           <div className="flex justify-between items-center">
             <h2 className="text-primary text-2xl font-bold mb-4">Video Generation History</h2>
-            <Button 
-              onClick={refreshHistory} 
-              variant="outline" 
-              size="sm" 
+            <Button
+              onClick={refreshHistory}
+              variant="outline"
+              size="sm"
               className="flex items-center gap-2"
               disabled={isLoadingHistory}
             >
@@ -961,53 +523,122 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* 视频历史区域 */}
+        {/* 视频历史区域（按日期分组） */}
         <div className="container mx-auto pb-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {historyList.length > 0 ? (
-              historyList
-                .filter(item => item.status !== -1 && item.quality_image) // 过滤掉状态为-1的作品和没有quality_image的记录
-                .map((item) => (
-                <div key={item.id} className="bg-card rounded-xl overflow-hidden relative flex flex-col shadow-lg border border-border">
-                  {/* 下载按钮 - 只在有quality_image时才显示 */}
-                  <button 
-                    className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-primary p-2 rounded-full text-white transition-colors"
-                                         onClick={() => downloadMediaWithCors(item.quality_image, `video-${item.id}.mp4`, setIsDownloading, item.id, toast.showToast)}
-                  >
-                    <DownloadIcon className="h-4 w-4" />
-                  </button>
-                  
-                  {/* 视频内容 - 16:9比例 */}
-                  <div className="relative w-full aspect-video overflow-hidden">
-                    <video
-                      src={item.quality_image}
-                      controls
-                      muted
-                      preload="metadata"
-                      className="w-full h-full object-cover"
-                      playsInline
-                    >
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  
-                  {/* 日期 - 减少内边距使其更紧凑 */}
-                  <div className="px-3 py-1.5 text-xs text-muted-foreground bg-muted">
-                    {formatTimestamp(item.created_at)}
+          {historyList.length > 0 ? (
+            <div className="space-y-8">
+              {groupedHistory.map((group, groupIndex) => (
+                <div key={groupIndex} className="space-y-4">
+                  {/* 日期标题 */}
+                  <h3 className="text-xl font-semibold text-card-foreground border-b border-border pb-2">
+                    {group.date}
+                  </h3>
+                  {/* 分组内网格 */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {group.items
+                      .filter(item => item.status === 0 || item.status === 1 || (item.status === -1 && item.generate_image === ''))
+                      .map((item) => {
+                        const isFailed = item.status === -1 && item.generate_image === '';
+                        const isGenerating = item.status === 0 && item.generate_image === '';
+                        const getModelName = (sizeImage: string) => {
+                          const modelMatch = sizeImage.match(/Model:\s*([^;]+)/);
+                          return modelMatch ? modelMatch[1].trim() : null;
+                        };
+                        const getResolution = (sizeImage: string) => {
+                          // 匹配 resolution: 后面的内容，直到遇到下一个字段或字符串结束
+                          const resolutionMatch = sizeImage.match(/resolution:\s*([^\s;]+)/i);
+                          return resolutionMatch ? resolutionMatch[1].trim() : null;
+                        };
+                        const modelName = item.size_image ? getModelName(item.size_image) : null;
+                        const resolution = item.size_image ? getResolution(item.size_image) : null;
+                        return (
+                          <div 
+                            key={item.id} 
+                            className={`bg-card rounded-xl overflow-hidden relative flex flex-col shadow-lg border border-border transition-all duration-200 ${!isFailed && !isGenerating ? 'cursor-pointer hover:shadow-xl hover:border-primary/50' : ''}`}
+                            onClick={() => {
+                              if (!isFailed && !isGenerating) {
+                                handleOpenDetailDialog(item);
+                              }
+                            }}
+                          >
+                            <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+                              {modelName && (
+                                <div className="bg-primary/90 hover:bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-semibold shadow-lg backdrop-blur-sm">
+                                  Model: {modelName}
+                                </div>
+                              )}
+                              {resolution && (
+                                <div className="bg-emerald-500/90 hover:bg-emerald-500 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-lg backdrop-blur-sm">
+                                  Resolution: {resolution}
+                                </div>
+                              )}
+                            </div>
+                            {!isFailed && !isGenerating && (
+                              <button
+                                className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-primary p-2 rounded-full text-white transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOpenDetailDialog(item);
+                                }}
+                                title="View Details"
+                              >
+                                <EyeOpenIcon className="h-4 w-4" />
+                              </button>
+                            )}
+                            <div className="relative w-full aspect-video overflow-hidden">
+                              {isFailed ? (
+                                <div className="w-full h-full bg-gradient-to-br from-red-500/10 to-red-600/20 flex flex-col items-center justify-center border-2 border-dashed border-red-300/50">
+                                  <div className="text-center p-4">
+                                    <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                                      <span className="text-red-400 text-2xl">⚠️</span>
+                                    </div>
+                                    <p className="text-red-400 font-semibold text-sm mb-1">Generation Failed</p>
+                                    <p className="text-red-300/70 text-xs">Please try again</p>
+                                  </div>
+                                </div>
+                              ) : isGenerating ? (
+                                <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/20 flex flex-col items-center justify-center border-2 border-dashed border-primary/50">
+                                  <div className="text-center p-4">
+                                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                                      <ReloadIcon className="h-6 w-6 text-primary animate-spin" />
+                                    </div>
+                                    <p className="text-primary font-semibold text-sm mb-1">Generating...</p>
+                                    <p className="text-primary/70 text-xs">Please wait</p>
+                                  </div>
+                                </div>
+                              ) : (
+                                <video
+                                  src={item.generate_image}
+                                  muted
+                                  preload="metadata"
+                                  className="w-full h-full pointer-events-none"
+                                  playsInline
+                                  disablePictureInPicture
+                                >
+                                  Your browser does not support the video tag.
+                                </video>
+                              )}
+                            </div>
+                            <div className="px-3 py-1.5 text-xs text-muted-foreground bg-muted">
+                              {formatTimestamp(item.created_at)}
+                            </div>
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-muted-foreground py-12">No videos yet.</div>
-            )}
-          </div>
-          
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-muted-foreground py-12">No videos yet.</div>
+          )}
+
           {/* 分页组件 */}
           <div className="flex justify-center mt-8">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
+                  <PaginationPrevious
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -1016,7 +647,7 @@ export default function ProfilePage() {
                     className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
                   />
                 </PaginationItem>
-                
+
                 {paginationItems.map((item, index) => (
                   <PaginationItem key={index}>
                     {item === '...' ? (
@@ -1035,9 +666,9 @@ export default function ProfilePage() {
                     )}
                   </PaginationItem>
                 ))}
-                
+
                 <PaginationItem>
-                  <PaginationNext 
+                  <PaginationNext
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -1050,6 +681,23 @@ export default function ProfilePage() {
             </Pagination>
           </div>
         </div>
+
+
+        {/* 发票对话框 */}
+        <InvoiceDialog
+          open={isInvoiceDialogOpen}
+          onOpenChange={setIsInvoiceDialogOpen}
+          payLogId={selectedPayLogId}
+          payLogList={payLogList}
+        />
+
+        {/* 视频详情对话框 */}
+        <VideoDetailDialog
+          open={isDetailDialogOpen}
+          onOpenChange={setIsDetailDialogOpen}
+          videoDetail={selectedVideoDetail}
+          onDeleteSuccess={refreshHistory}
+        />
       </main>
       <Footer friendlyLinks={friendlyLinks} />
     </div>

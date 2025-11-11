@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { useUser, useAuth, useClerk } from '@clerk/nextjs';
 import { api } from '../api';
 import { useToast } from '@/components/ui/toast-provider';
@@ -28,6 +28,7 @@ interface UserContextType {
   userInfo: UserInfo | null;
   isLoadingUserInfo: boolean;
   refreshUserInfo: () => Promise<void>;
+  clearUserState: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -39,6 +40,38 @@ interface UserProviderProps {
 // 全局同步状态，避免重复同步
 const globalSyncStatus: { [userId: string]: boolean } = {};
 
+
+
+// ivcode 缓存管理
+const IVCODE_CACHE_KEY = 'pending_ivcode';
+
+const saveIvcodeToCache = (ivcode: string) => {
+  try {
+    localStorage.setItem(IVCODE_CACHE_KEY, ivcode);
+    console.log('UserProvider: ivcode saved to cache:', ivcode);
+  } catch (error) {
+    console.error('UserProvider: Failed to save ivcode to cache:', error);
+  }
+};
+
+const getIvcodeFromCache = (): string | null => {
+  try {
+    return localStorage.getItem(IVCODE_CACHE_KEY);
+  } catch (error) {
+    console.error('UserProvider: Failed to get ivcode from cache:', error);
+    return null;
+  }
+};
+
+const clearIvcodeCache = () => {
+  try {
+    localStorage.removeItem(IVCODE_CACHE_KEY);
+    console.log('UserProvider: ivcode cache cleared');
+  } catch (error) {
+    console.error('UserProvider: Failed to clear ivcode cache:', error);
+  }
+};
+
 export function UserProvider({ children }: UserProviderProps) {
   const { user, isSignedIn } = useUser();
   const { getToken } = useAuth();
@@ -46,6 +79,29 @@ export function UserProvider({ children }: UserProviderProps) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState(false);
   const { error: showErrorToast } = useToast();
+
+
+
+  // 在组件初始化时检查并缓存 ivcode
+  useEffect(() => {
+    const checkAndCacheIvcode = () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const ivcode = urlParams.get('ivcode');
+
+        if (ivcode) {
+          // 如果 URL 中有 ivcode，保存到缓存
+          saveIvcodeToCache(ivcode);
+          console.log('UserProvider: Found ivcode in URL and cached:', ivcode);
+        }
+      } catch (error) {
+        console.error('UserProvider: Failed to check URL params:', error);
+      }
+    };
+
+    checkAndCacheIvcode();
+  }, []); // 只在组件挂载时执行一次
+
 
   // 同步用户数据到后端
   const syncUserToBackend = async () => {
@@ -55,7 +111,7 @@ export function UserProvider({ children }: UserProviderProps) {
     }
 
     const userId = user.id;
-    
+
     // 避免重复同步
     if (globalSyncStatus[userId]) {
       return;
@@ -76,8 +132,6 @@ export function UserProvider({ children }: UserProviderProps) {
         delete globalSyncStatus[userId];
         // 清除用户信息
         setUserInfo(null);
-        // 清除tokens
-        api.auth.clearTokens();
         // 显示错误提示
         showErrorToast('Failed to get user token, please sign in again');
         // 退出登录状态
@@ -111,35 +165,63 @@ export function UserProvider({ children }: UserProviderProps) {
         return;
       }
 
+
+
+      // 从缓存中获取ivcode参数（优先使用缓存，回退到URL）
+      let ivcode = getIvcodeFromCache();
+      if (!ivcode) {
+        // 如果缓存中没有，尝试从当前URL获取（用于向后兼容）
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          ivcode = urlParams.get('ivcode');
+          if (ivcode) {
+            // 如果从URL获取到了，也保存到缓存
+            saveIvcodeToCache(ivcode);
+          }
+        } catch (error) {
+          console.error('UserProvider: Failed to get ivcode from URL:', error);
+        }
+      }
+
+
+
       const userData = {
         uuid: userId,
         email: user.primaryEmailAddress.emailAddress,
         nickname: user.fullName || undefined,
         avatar: user.imageUrl || undefined,
         from_login: "google",
-        token: clerkToken // API期望的字段名是token
+        token: clerkToken, // API期望的字段名是token
+        ivcode: ivcode || undefined
       };
 
       console.log('UserProvider: 开始同步用户数据', {
         ...userData,
         token: '***' // 安全起见，不在日志中显示完整token
       });
-      
+
       const responseData = await api.auth.syncUser(userData);
       console.log('UserProvider: 用户数据同步成功', responseData);
-      
+
       // 验证同步结果
       if (!responseData || responseData.code !== 200) {
         throw new Error(`Sync failed: ${responseData?.message || responseData?.msg || 'Unknown error'}`);
       }
-      
+
       // 验证返回的token数据
       if (!responseData.data?.access_token) {
         throw new Error('Sync succeeded but no access_token received');
       }
-      
+
       console.log('UserProvider: 用户数据同步成功，Token已保存');
-      
+
+
+      // 同步成功后清除 ivcode 缓存
+      if (ivcode) {
+        clearIvcodeCache();
+        console.log('UserProvider: ivcode successfully used and cache cleared');
+      }
+
       // 同步成功后立即获取用户信息
       await fetchUserInfo(true);
     } catch (error) {
@@ -150,19 +232,19 @@ export function UserProvider({ children }: UserProviderProps) {
         email: user.primaryEmailAddress.emailAddress,
         timestamp: new Date().toISOString()
       });
-      
+
       // 清除同步状态
       delete globalSyncStatus[userId];
-      
+
       // 清除用户信息
       setUserInfo(null);
-      
+
       // 清除tokens
       api.auth.clearTokens();
-      
+
       // 显示错误提示
       showErrorToast(`Failed to sync user data, please sign in again: ${errorMessage}`);
-      
+
       // 退出登录状态
       try {
         await signOut();
@@ -170,7 +252,7 @@ export function UserProvider({ children }: UserProviderProps) {
       } catch (signOutError) {
         console.error('UserProvider: 清除登录状态失败:', signOutError);
       }
-      
+
       return; // 直接退出，不再执行后续逻辑
     }
   };
@@ -180,21 +262,21 @@ export function UserProvider({ children }: UserProviderProps) {
       setUserInfo(null);
       return;
     }
-    
+
     // 检查token是否可用
     if (!api.auth.isTokenValid()) {
       console.log('Token not available yet, waiting...');
       return;
     }
-    
+
     // 只在初始加载时显示loading
     if (isInitialLoad) {
-    setIsLoadingUserInfo(true);
+      setIsLoadingUserInfo(true);
     }
-    
+
     try {
       const result = await api.user.getUserInfo();
-      
+
       if (result.code === 200 && result.data) {
         const userInfoData: UserInfo = {
           uuid: result.data.uuid,
@@ -230,7 +312,7 @@ export function UserProvider({ children }: UserProviderProps) {
     } finally {
       // 只在初始加载时才设置loading为false
       if (isInitialLoad) {
-      setIsLoadingUserInfo(false);
+        setIsLoadingUserInfo(false);
       }
     }
   };
@@ -244,7 +326,7 @@ export function UserProvider({ children }: UserProviderProps) {
     if (isSignedIn && user?.id) {
       // 清空之前的用户信息
       setUserInfo(null);
-      
+
       // 先同步用户数据，确保token可用
       syncUserToBackend();
     } else {
@@ -256,7 +338,8 @@ export function UserProvider({ children }: UserProviderProps) {
     }
   }, [isSignedIn, user?.id]);
 
-  // 设置定时器，每10秒更新一次用户信息（仅在有token时）
+  // 设置定时器，每30秒更新一次用户信息（仅在有token时）
+  // 优化：从10秒改为30秒，减少不必要的API调用
   useEffect(() => {
     if (!isSignedIn || !user?.id) return;
 
@@ -264,8 +347,8 @@ export function UserProvider({ children }: UserProviderProps) {
       if (api.auth.isTokenValid()) {
         fetchUserInfo(false); // 后续刷新，不是初始加载
       }
-    }, 10000);
-    
+    }, 30000); // 30秒轮询，减少70%的API调用
+
     // 组件卸载时清除定时器
     return () => clearInterval(intervalId);
   }, [isSignedIn, user?.id]);
@@ -274,6 +357,17 @@ export function UserProvider({ children }: UserProviderProps) {
     userInfo,
     isLoadingUserInfo,
     refreshUserInfo,
+    clearUserState: useCallback(() => {
+      try {
+        api.auth.clearTokens();
+      } catch (e) {
+        console.warn('clearUserState: failed to clear tokens');
+      }
+      setUserInfo(null);
+      if (user?.id) {
+        delete globalSyncStatus[user.id];
+      }
+    }, [user?.id])
   };
 
   return (

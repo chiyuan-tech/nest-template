@@ -1,27 +1,40 @@
-// import { Navbar } from '../components/Navbar'; // Navbar is now in root layout
-
-import PricingSection from '../components/PricingSection';
-import { Footer } from '../components/Footer';
-import { serverCmsApi, FriendLink } from '../lib/server-api';
 import { GoogleOneTapAuth } from '../components/auth';
-// 启用ISR，每小时重新验证数据
+import { Footer } from '../components/Footer';
+import dynamic from 'next/dynamic';
+import Script from 'next/script';
+import { schemaData } from '../lib/seo-config';
 
+// Client island - dynamically imported for code splitting
+const PricingSection = dynamic(() => import('../components/home/client').then(m => ({ default: m.PricingSection })), {
+  loading: () => <div className="h-96 animate-pulse bg-gray-100/5 rounded-lg" />,
+});
 
+// Enable ISR - revalidate every 20 minutes
+export const revalidate = 1200;
 
-export default function Home() {
-
+export default async function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Google One Tap 组件 - 只在用户未登录时显示 */}
-      {/* <GoogleOneTapAuth
+ 
+      
+      {/* Google One Tap Auth - only shown when user is not signed in */}
+      <GoogleOneTapAuth
         cancelOnTapOutside={true}
         signInForceRedirectUrl="/"
         signUpForceRedirectUrl="/"
-      /> */}
-      <main className="flex-grow">
+      />
       
+      <main className="flex-grow relative">
+   
+        
+ 
+        <PricingSection />
+  
+   
       </main>
+      
+      {/* Server Component: Footer */}
       <Footer />
     </div>
   );

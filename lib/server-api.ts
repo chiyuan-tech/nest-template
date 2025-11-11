@@ -1,7 +1,7 @@
 // 服务端专用API配置 - 不依赖localStorage
 const SERVER_API_CONFIG = {
-  VIDOR_AI_BASE: 'https://svc.seedancepro.com',
-  APP_ID: 'seedance',
+  VIDOR_AI_BASE: 'https://svc.infinitetalk.net',
+  APP_ID: 'infinitetalk',
 };
 
 // 服务端专用请求头
@@ -53,6 +53,24 @@ export interface BlogListResponse {
   total_page: number;
 }
 
+// 作品详情数据类型定义
+export interface OpusDetail {
+  id: number;
+  user_id: number;
+  task_id: string;
+  origin_image: string;
+  size_image: string;
+  other_image: string;
+  generate_image: string;
+  quality_image: string;
+  status: number;
+  status_msg: string;
+  generation_time: number;
+  prompt: string;
+  created_at: number;
+  updated_at: number;
+}
+
 // 通用错误处理
 const handleServerApiError = async (response: Response) => {
   if (!response.ok) {
@@ -69,8 +87,8 @@ export const serverCmsApi = {
       const response = await fetch(`${SERVER_API_CONFIG.VIDOR_AI_BASE}/api/cms/friendLinkList`, {
         method: 'GET',
         headers: getServerHeaders(),
-        // 使用缓存并设置重新验证时间（1小时）
-        next: { revalidate: 3600 },
+        // 使用缓存，允许静态生成
+        next: { revalidate: 60 }, // 1小时重新验证
       });
 
       const result = await handleServerApiError(response);
@@ -96,8 +114,8 @@ export const serverCmsApi = {
         {
           method: 'GET',
           headers: getServerHeaders(),
-          // 使用缓存并设置重新验证时间（1小时）
-          next: { revalidate: 3600 },
+          // 禁用缓存，每次都获取最新数据
+          cache: 'no-store',
         }
       );
 
@@ -132,6 +150,34 @@ export const serverCmsApi = {
         total: 0,
         total_page: 1
       };
+    }
+  },
+
+  // 获取作品详情（公开接口，服务端专用）
+  getOpusDetail: async (taskId: string): Promise<OpusDetail | null> => {
+    try {
+      const response = await fetch(
+        `${SERVER_API_CONFIG.VIDOR_AI_BASE}/api/opus/info?task_id=${taskId}`,
+        {
+          method: 'GET',
+          headers: getServerHeaders(),
+          // 短期缓存，5分钟重新验证
+          next: { revalidate: 300 },
+        }
+      );
+
+      const result = await handleServerApiError(response);
+      
+      if (result.code === 200 && result.data) {
+        console.log(`Server API: Successfully fetched opus detail for task_id: ${taskId}`);
+        return result.data;
+      }
+      
+      console.warn('Server API: Invalid opus detail response format', result);
+      return null;
+    } catch (error) {
+      console.error('Server API: Failed to fetch opus detail:', error);
+      return null;
     }
   },
 }; 
