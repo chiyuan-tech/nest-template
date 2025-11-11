@@ -7,7 +7,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Pagination,
@@ -105,55 +104,103 @@ export function PayLogDialog({ open, onOpenChange, onOpenInvoiceDialog }: PayLog
             </div>
           ) : payLogList.length > 0 ? (
             <>
-              <div className={dialogTable.wrapper}>
-                <div className="overflow-x-auto">
-                  <table className={dialogTable.table} style={{ minWidth: '700px' }}>
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className={`${dialogTable.headCell} w-1/4`}>Date</th>
-                        <th className={`${dialogTable.headCell} w-1/6`}>Points</th>
-                        <th className={`${dialogTable.headCell} w-1/6`}>Price</th>
-                        <th className={`${dialogTable.headCell} w-1/6 hidden sm:table-cell`}>Currency</th>
-                        <th className={`${dialogTable.headCell} w-1/6 hidden sm:table-cell`}>Payment Type</th>
-                        <th className={`${dialogTable.headCell} w-1/6`}>Invoice</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {payLogList.map((item) => (
-                        <tr key={item.id} className={dialogTable.row}>
-                          <td className={`${dialogTable.cell} text-muted-foreground`}>{formatTimestamp(item.created_at)}</td>
-                          <td className={dialogTable.cell}>
-                            <span className={`${dialogTable.pillBase} bg-green-500/20 text-green-400 font-bold`}>
-                              {item.amount}
-                            </span>
-                          </td>
-                          <td className={`${dialogTable.cell} text-card-foreground font-medium whitespace-nowrap`}>
-                            {(() => {
-                              const mapped = getPriceFromPriceId(item.price_id);
-                              if (mapped && mapped !== '-') return mapped;
-                              return (
-                                <span className="inline-block max-w-[180px] truncate align-middle" title={item.price_id || '-'}>
-                                  {item.price_id || '-'}
-                                </span>
-                              );
-                            })()}
-                          </td>
-                          <td className={`${dialogTable.cell} text-card-foreground hidden sm:table-cell`}>{item.currency}</td>
-                          <td className={`${dialogTable.cell} text-card-foreground hidden sm:table-cell`}>{item.pay_type}</td>
-                          <td className={dialogTable.cell}>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => onOpenInvoiceDialog(item.id)}
-                              className="h-8 px-3 text-sm"
-                            >
-                              Invoice
-                            </Button>
-                          </td>
+              {/* 移动端卡片布局 */}
+              <div className="block sm:hidden space-y-3">
+                {payLogList.map((item) => (
+                  <div key={item.id} className="bg-muted/30 rounded-lg p-4 border border-border space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Date</span>
+                      <span className="text-sm text-card-foreground font-medium">{formatTimestamp(item.created_at)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Points</span>
+                      <span className={`${dialogTable.pillBase} bg-green-500/20 text-green-400 font-bold`}>
+                        {item.amount}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Price</span>
+                      <span className="text-sm text-card-foreground font-medium">
+                        {(() => {
+                          const mapped = getPriceFromPriceId(item.price_id);
+                          return mapped && mapped !== '-' ? mapped : (item.price_id || '-');
+                        })()}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Currency</span>
+                      <span className="text-sm text-card-foreground">{item.currency}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Payment Type</span>
+                      <span className="text-sm text-card-foreground">{item.pay_type}</span>
+                    </div>
+                    <div className="pt-2 border-t border-border">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onOpenInvoiceDialog(item.id)}
+                        className="w-full h-9 text-sm"
+                      >
+                        Generate Invoice
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 桌面端表格布局 */}
+              <div className="hidden sm:block">
+                <div className={dialogTable.wrapper}>
+                  <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-muted/30 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/60">
+                    <table className={dialogTable.table} style={{ minWidth: '700px' }}>
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className={`${dialogTable.headCell} w-1/4 min-w-[120px]`}>Date</th>
+                          <th className={`${dialogTable.headCell} w-1/6 min-w-[80px]`}>Points</th>
+                          <th className={`${dialogTable.headCell} w-1/6 min-w-[100px]`}>Price</th>
+                          <th className={`${dialogTable.headCell} w-1/6 hidden sm:table-cell min-w-[90px]`}>Currency</th>
+                          <th className={`${dialogTable.headCell} w-1/6 hidden sm:table-cell min-w-[110px]`}>Payment Type</th>
+                          <th className={`${dialogTable.headCell} w-1/6 min-w-[100px]`}>Invoice</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {payLogList.map((item) => (
+                          <tr key={item.id} className={dialogTable.row}>
+                            <td className={`${dialogTable.cell} text-muted-foreground min-w-[120px]`}>{formatTimestamp(item.created_at)}</td>
+                            <td className={`${dialogTable.cell} min-w-[80px]`}>
+                              <span className={`${dialogTable.pillBase} bg-green-500/20 text-green-400 font-bold`}>
+                                {item.amount}
+                              </span>
+                            </td>
+                            <td className={`${dialogTable.cell} text-card-foreground font-medium whitespace-nowrap min-w-[100px]`}>
+                              {(() => {
+                                const mapped = getPriceFromPriceId(item.price_id);
+                                if (mapped && mapped !== '-') return mapped;
+                                return (
+                                  <span className="inline-block max-w-[180px] truncate align-middle" title={item.price_id || '-'}>
+                                    {item.price_id || '-'}
+                                  </span>
+                                );
+                              })()}
+                            </td>
+                            <td className={`${dialogTable.cell} text-card-foreground hidden sm:table-cell min-w-[90px]`}>{item.currency}</td>
+                            <td className={`${dialogTable.cell} text-card-foreground hidden sm:table-cell min-w-[110px]`}>{item.pay_type}</td>
+                            <td className={`${dialogTable.cell} min-w-[100px]`}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onOpenInvoiceDialog(item.id)}
+                                className="h-8 px-3 text-sm whitespace-nowrap"
+                              >
+                                Invoice
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
 

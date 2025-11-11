@@ -106,56 +106,104 @@ export function SubscriptionsDialog({ open, onOpenChange }: SubscriptionsDialogP
             </div>
           ) : subscriptionList.length > 0 ? (
             <>
-              <div className={dialogTable.wrapper}>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className={`${dialogTable.headCell} w-1/4`}>Plan</th>
-                        <th className={`${dialogTable.headCell} w-1/6`}>Status</th>
-                        <th className={`${dialogTable.headCell} w-1/6`}>Price</th>
-                        <th className={`${dialogTable.headCell} w-1/6 hidden lg:table-cell`}>ID</th>
-                        <th className={`${dialogTable.headCell} w-1/6 hidden xl:table-cell`}>Started</th>
-                        <th className={`${dialogTable.headCell} w-1/6`}>Limit</th>
-                        <th className={`${dialogTable.headCell} w-1/6`}>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {subscriptionList.map((subscription) => (
-                        <tr key={subscription.id} className={dialogTable.row}>
-                          <td className={`${dialogTable.cell} text-card-foreground font-medium`}>{subscription.price_info.name}</td>
-                          <td className={dialogTable.cell}>
-                            <span className={`${dialogTable.pillBase} bg-green-500/20 text-green-400`}>
-                              <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                              Active
-                            </span>
-                          </td>
-                          <td className={`${dialogTable.cell} text-card-foreground font-semibold`}>{formatPrice(subscription.price_info.price)}</td>
-                          <td className={`${dialogTable.cell} ${dialogTable.mono} hidden lg:table-cell`}>{subscription.subscription_id.slice(-8)}</td>
-                          <td className={`${dialogTable.cell} text-muted-foreground hidden xl:table-cell`}>{formatTimestamp(subscription.created_at)}</td>
-                          <td className={`${dialogTable.cell} text-card-foreground font-semibold`}>{subscription.price_info.usage_limit === 999999 ? '∞' : subscription.price_info.usage_limit}</td>
-                          <td className={dialogTable.cell}>
-                            <Button
-                              variant={subscription.price_info.button_text === 'Contact Sales' ? 'outline' : 'destructive'}
-                              size="sm"
-                              onClick={() => handleCancelSubscription(subscription.id)}
-                              disabled={cancellingSubscriptionId === subscription.id || subscription.price_info.button_text === 'Contact Sales'}
-                              className={`text-sm px-4 py-2 h-8 ${subscription.price_info.button_text === 'Contact Sales' ? 'border-muted-foreground/30 text-muted-foreground cursor-not-allowed opacity-60' : ''}`}
-                            >
-                              {cancellingSubscriptionId === subscription.id ? (
-                                <>
-                                  <ReloadIcon className="h-3 w-3 animate-spin mr-1" />
-                                  <span>Cancelling...</span>
-                                </>
-                              ) : (
-                                subscription.price_info.button_text === 'Contact Sales' ? 'Contact' : 'Cancel'
-                              )}
-                            </Button>
-                          </td>
+              {/* 移动端卡片布局 */}
+              <div className="block sm:hidden space-y-3">
+                {subscriptionList.map((subscription) => (
+                  <div key={subscription.id} className="bg-muted/30 rounded-lg p-4 border border-border space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Plan</span>
+                      <span className="text-sm text-card-foreground font-semibold">{subscription.price_info.name}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Status</span>
+                      <span className={`${dialogTable.pillBase} bg-green-500/20 text-green-400 whitespace-nowrap`}>
+                        <div className="w-2 h-2 bg-green-400 rounded-full mr-2 inline-block"></div>
+                        Active
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Price</span>
+                      <span className="text-sm text-card-foreground font-semibold">{formatPrice(subscription.price_info.price)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Limit</span>
+                      <span className="text-sm text-card-foreground font-semibold">{subscription.price_info.usage_limit === 999999 ? '∞' : subscription.price_info.usage_limit}</span>
+                    </div>
+                    <div className="pt-2 border-t border-border">
+                      <Button
+                        variant={subscription.price_info.button_text === 'Contact Sales' ? 'outline' : 'destructive'}
+                        size="sm"
+                        onClick={() => handleCancelSubscription(subscription.id)}
+                        disabled={cancellingSubscriptionId === subscription.id || subscription.price_info.button_text === 'Contact Sales'}
+                        className={`w-full h-9 text-sm ${subscription.price_info.button_text === 'Contact Sales' ? 'border-muted-foreground/30 text-muted-foreground cursor-not-allowed opacity-60' : ''}`}
+                      >
+                        {cancellingSubscriptionId === subscription.id ? (
+                          <>
+                            <ReloadIcon className="h-3 w-3 animate-spin mr-1" />
+                            <span>Cancelling...</span>
+                          </>
+                        ) : (
+                          subscription.price_info.button_text === 'Contact Sales' ? 'Contact Sales' : 'Cancel Subscription'
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 桌面端表格布局 */}
+              <div className="hidden sm:block">
+                <div className={dialogTable.wrapper}>
+                  <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-muted/30 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/60">
+                    <table className="w-full" style={{ minWidth: '800px' }}>
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className={`${dialogTable.headCell} w-1/4 min-w-[140px]`}>Plan</th>
+                          <th className={`${dialogTable.headCell} w-1/6 min-w-[100px]`}>Status</th>
+                          <th className={`${dialogTable.headCell} w-1/6 min-w-[90px]`}>Price</th>
+                          <th className={`${dialogTable.headCell} w-1/6 hidden lg:table-cell min-w-[100px]`}>ID</th>
+                          <th className={`${dialogTable.headCell} w-1/6 hidden xl:table-cell min-w-[180px]`}>Started</th>
+                          <th className={`${dialogTable.headCell} w-1/6 min-w-[80px]`}>Limit</th>
+                          <th className={`${dialogTable.headCell} w-1/6 min-w-[100px]`}>Action</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {subscriptionList.map((subscription) => (
+                          <tr key={subscription.id} className={dialogTable.row}>
+                            <td className={`${dialogTable.cell} text-card-foreground font-medium min-w-[140px]`}>{subscription.price_info.name}</td>
+                            <td className={`${dialogTable.cell} min-w-[100px]`}>
+                              <span className={`${dialogTable.pillBase} bg-green-500/20 text-green-400 whitespace-nowrap`}>
+                                <div className="w-2 h-2 bg-green-400 rounded-full mr-2 inline-block"></div>
+                                Active
+                              </span>
+                            </td>
+                            <td className={`${dialogTable.cell} text-card-foreground font-semibold min-w-[90px] whitespace-nowrap`}>{formatPrice(subscription.price_info.price)}</td>
+                            <td className={`${dialogTable.cell} ${dialogTable.mono} hidden lg:table-cell min-w-[100px]`}>{subscription.subscription_id.slice(-8)}</td>
+                            <td className={`${dialogTable.cell} text-muted-foreground hidden xl:table-cell min-w-[180px] whitespace-nowrap`}>{formatTimestamp(subscription.created_at)}</td>
+                            <td className={`${dialogTable.cell} text-card-foreground font-semibold min-w-[80px] whitespace-nowrap`}>{subscription.price_info.usage_limit === 999999 ? '∞' : subscription.price_info.usage_limit}</td>
+                            <td className={`${dialogTable.cell} min-w-[100px]`}>
+                              <Button
+                                variant={subscription.price_info.button_text === 'Contact Sales' ? 'outline' : 'destructive'}
+                                size="sm"
+                                onClick={() => handleCancelSubscription(subscription.id)}
+                                disabled={cancellingSubscriptionId === subscription.id || subscription.price_info.button_text === 'Contact Sales'}
+                                className={`text-sm px-3 sm:px-4 py-2 h-8 whitespace-nowrap ${subscription.price_info.button_text === 'Contact Sales' ? 'border-muted-foreground/30 text-muted-foreground cursor-not-allowed opacity-60' : ''}`}
+                              >
+                                {cancellingSubscriptionId === subscription.id ? (
+                                  <>
+                                    <ReloadIcon className="h-3 w-3 animate-spin mr-1" />
+                                    <span>Cancelling...</span>
+                                  </>
+                                ) : (
+                                  subscription.price_info.button_text === 'Contact Sales' ? 'Contact' : 'Cancel'
+                                )}
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </>

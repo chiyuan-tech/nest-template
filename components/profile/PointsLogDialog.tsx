@@ -105,30 +105,55 @@ export function PointsLogDialog({ open, onOpenChange }: PointsLogDialogProps) {
             </div>
           ) : timesLogList.length > 0 ? (
             <>
-              <div className={dialogTable.wrapper}>
-                <div className="overflow-x-auto">
-                  <table className={dialogTable.table} style={{ minWidth: '600px' }}>
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className={`${dialogTable.headCell} w-1/3`}>Type</th>
-                        <th className={`${dialogTable.headCell} w-1/6`}>Points</th>
-                        <th className={`${dialogTable.headCell} w-1/2`}>Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {timesLogList.map((item) => (
-                        <tr key={item.id} className={dialogTable.row}>
-                          <td className={`${dialogTable.cell} text-card-foreground font-medium`}>{formatChangeType(item.change_type)}</td>
-                          <td className={dialogTable.cell}>
-                            <span className={`${dialogTable.pillBase} font-bold ${item.use_limit > 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                              {item.use_limit > 0 ? '+' : ''}{item.use_limit}
-                            </span>
-                          </td>
-                          <td className={`${dialogTable.cell} text-muted-foreground`}>{formatTimestamp(item.created_at)}</td>
+              {/* 移动端卡片布局 */}
+              <div className="block sm:hidden space-y-3">
+                {timesLogList.map((item) => (
+                  <div key={item.id} className="bg-muted/30 rounded-lg p-4 border border-border space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Type</span>
+                      <span className="text-sm text-card-foreground font-medium">{formatChangeType(item.change_type)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Points</span>
+                      <span className={`${dialogTable.pillBase} font-bold ${item.use_limit > 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                        {item.use_limit > 0 ? '+' : ''}{item.use_limit}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Date</span>
+                      <span className="text-sm text-muted-foreground">{formatTimestamp(item.created_at)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 桌面端表格布局 */}
+              <div className="hidden sm:block">
+                <div className={dialogTable.wrapper}>
+                  <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-muted/30 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/60">
+                    <table className={dialogTable.table} style={{ minWidth: '600px' }}>
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className={`${dialogTable.headCell} w-1/3 min-w-[150px]`}>Type</th>
+                          <th className={`${dialogTable.headCell} w-1/6 min-w-[100px]`}>Points</th>
+                          <th className={`${dialogTable.headCell} w-1/2 min-w-[180px]`}>Date</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {timesLogList.map((item) => (
+                          <tr key={item.id} className={dialogTable.row}>
+                            <td className={`${dialogTable.cell} text-card-foreground font-medium min-w-[150px]`}>{formatChangeType(item.change_type)}</td>
+                            <td className={`${dialogTable.cell} min-w-[100px]`}>
+                              <span className={`${dialogTable.pillBase} font-bold ${item.use_limit > 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                {item.use_limit > 0 ? '+' : ''}{item.use_limit}
+                              </span>
+                            </td>
+                            <td className={`${dialogTable.cell} text-muted-foreground min-w-[180px] whitespace-nowrap`}>{formatTimestamp(item.created_at)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
 
