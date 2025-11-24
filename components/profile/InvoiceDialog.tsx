@@ -50,7 +50,8 @@ export function InvoiceDialog({ open, onOpenChange, payLogId, payLogList }: Invo
       }
 
       const price = getPriceFromPriceId(payLogItem.price_id);
-      const priceValue = parseFloat(price.replace('$', '')) || payLogItem.amount;
+      const parsedPrice = parseFloat(price.replace('$', ''));
+      const priceValue = !isNaN(parsedPrice) && parsedPrice > 0 ? parsedPrice : (payLogItem.amount / 100);
 
       const invoiceNumber = `INFINITETALK-${new Date().getFullYear()}-${payLogItem.id}`;
       const data = {
@@ -61,7 +62,7 @@ export function InvoiceDialog({ open, onOpenChange, payLogId, payLogList }: Invo
         customerName: user?.fullName || user?.username || 'Customer',
         customerEmail: user?.primaryEmailAddress?.emailAddress || 'customer@example.com',
         customerCompanyName: invoiceType === 'business' ? companyName.trim() : '',
-        description: `${payLogItem.amount} Credits`,
+        description: `Purchase Credits for Video Generation Service`,
         quantity: 1,
         unitPrice: priceValue,
         amount: priceValue,

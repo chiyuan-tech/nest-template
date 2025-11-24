@@ -112,12 +112,12 @@ export function PayLogDialog({ open, onOpenChange, onOpenInvoiceDialog }: PayLog
                       <span className="text-xs text-muted-foreground">Date</span>
                       <span className="text-sm text-card-foreground font-medium">{formatTimestamp(item.created_at)}</span>
                     </div>
-                    <div className="flex items-center justify-between">
+                    {/* <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">Points</span>
                       <span className={`${dialogTable.pillBase} bg-green-500/20 text-green-400 font-bold`}>
                         {item.amount}
                       </span>
-                    </div>
+                    </div> */}
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">Price</span>
                       <span className="text-sm text-card-foreground font-medium">
