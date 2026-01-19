@@ -58,19 +58,33 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
           </DialogHeader>
 
           <div className="pt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 左侧：视频播放器 */}
+            {/* 左侧：媒体播放器 */}
             <div className="flex flex-col justify-center space-y-3">
               <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden">
-                <video
-                  src={videoDetail.generate_image}
-                  controls
-                  className="w-full h-full"
-                  playsInline
-                  controlsList="nodownload"
-                  onContextMenu={(e) => e.preventDefault()}
-                >
-                  Your browser does not support the video tag.
-                </video>
+                {isVideoFile(videoDetail.generate_image) ? (
+                  <video
+                    src={videoDetail.generate_image}
+                    controls
+                    className="w-full h-full"
+                    playsInline
+                    controlsList="nodownload"
+                    onContextMenu={(e) => e.preventDefault()}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                ) : isImageFile(videoDetail.generate_image) ? (
+                  <Image
+                    src={videoDetail.generate_image}
+                    alt="Generated content"
+                    fill
+                    className="object-contain"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <p className="text-muted-foreground">Unsupported media type</p>
+                  </div>
+                )}
               </div>
               
               {/* 下载和分享按钮 */}

@@ -1,6 +1,6 @@
 # Next.js 基础模板
 
-一个基于 Next.js 15 + TypeScript + Tailwind CSS 的现代化 Web 应用基础模板，集成了用户认证、博客系统、支付处理和 SEO 优化等核心功能。
+一个基于 Next.js 15 + TypeScript + Tailwind CSS 的现代化 Web 应用基础模板，集成了用户认证、博客系统、支付处理和 SEO 优化，优惠券等核心功能。
 
 ## 🚀 快速开始
 

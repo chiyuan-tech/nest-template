@@ -36,7 +36,9 @@ import {
 import { 
   groupHistoryByDate, 
   getPaginationItems, 
-  formatTimestamp 
+  formatTimestamp,
+  isVideoFile,
+  isImageFile
 } from '@/components/profile/utils';
 
 export default function ProfilePage() {
@@ -606,17 +608,29 @@ export default function ProfilePage() {
                                     <p className="text-primary/70 text-xs">Please wait</p>
                                   </div>
                                 </div>
-                              ) : (
+                              ) : isVideoFile(item.generate_image) ? (
                                 <video
                                   src={item.generate_image}
                                   muted
                                   preload="metadata"
-                                  className="w-full h-full pointer-events-none"
+                                  className="w-full h-full pointer-events-none object-cover"
                                   playsInline
                                   disablePictureInPicture
                                 >
                                   Your browser does not support the video tag.
                                 </video>
+                              ) : isImageFile(item.generate_image) ? (
+                                <Image
+                                  src={item.generate_image}
+                                  alt={`Generated content ${item.id}`}
+                                  fill
+                                  className="object-cover pointer-events-none"
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-muted flex items-center justify-center">
+                                  <p className="text-muted-foreground text-sm">Unsupported media type</p>
+                                </div>
                               )}
                             </div>
                             <div className="px-3 py-1.5 text-xs text-muted-foreground bg-muted">
