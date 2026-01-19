@@ -1,0 +1,80 @@
+---
+name: website
+description: This is a new rule
+---
+
+# Overview
+
+Insert overview text here. The agent will only see this should they choose to apply the rule.
+
+## Metadata Requirements
+
+All pages in the `app/` directory **MUST** export a `metadata` object, except for:
+- `app/profile` - User profile page (excluded)
+- `app/sso-callback` - SSO callback page (excluded)
+
+### Required Metadata Fields
+
+All page metadata objects must include all fields from `lib/seo-config.js`. The metadata structure should follow this pattern:
+
+#### TDK Character Limits
+
+**CRITICAL**: All TDK (Title, Description, Keywords) fields must comply with character limits:
+
+- **Title (T)**: ≤ 60 characters
+- **Description (D)**: ≤ 160 characters  
+- **Keywords (K)**: < 100 characters (total length of all keywords combined, separated by commas)
+
+```typescript
+export const metadata: Metadata = {
+  title: string,                    // Page title (≤ 60 characters)
+  description: string,              // Page description (≤ 160 characters)
+  keywords: string[],               // SEO keywords array (total < 100 characters)
+  robots: {
+    index: boolean,
+    follow: boolean,
+    googleBot: {
+      index: boolean,
+      follow: boolean,
+      'max-video-preview': number,
+      'max-image-preview': string,
+      'max-snippet': number,
+    },
+  },
+  alternates: {
+    canonical: string,              // Canonical URL
+  },
+  openGraph: {
+    title: string,
+    description: string,
+    url: string,
+    siteName: string,
+    images: Array<{
+      url: string,
+      width: number,
+      height: number,
+      alt: string,
+    }>,
+    locale: string,
+    type: string,
+  },
+  twitter: {
+    card: string,
+    site: string,
+    title: string,
+    description: string,
+    images: string[],
+  },
+};
+```
+
+### Validation Checklist
+
+When creating or updating pages in `app/`, ensure:
+- ✅ `metadata` is exported (except profile and sso-callback pages)
+- ✅ All required fields from `lib/seo-config.js` are present
+- ✅ **Title length ≤ 60 characters** (check: `metadata.title.length <= 60`)
+- ✅ **Description length ≤ 160 characters** (check: `metadata.description.length <= 160`)
+- ✅ **Keywords total length < 100 characters** (check: `metadata.keywords.join(', ').length < 100`)
+- ✅ Values are appropriate for the specific page
+- ✅ URLs use the correct site URL (can use `siteUrl` from `lib/seo-config.js`)

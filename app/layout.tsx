@@ -3,22 +3,89 @@ import Script from 'next/script';
 import { Navbar } from '@/components/Navbar';
 import { ToastProvider } from '@/components/ui/toast-provider';
 import { UserProvider } from '@/lib/providers';
-import { metadata, schemaData } from '@/lib/seo-config';
+import { siteUrl } from '@/website-config';
 import dynamic from 'next/dynamic';
-import { Poppins } from 'next/font/google';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
+import type { Metadata } from 'next';
 
-// Optimized font loading - only load primary font
-// Poppins is the core brand font used 25+ times across the site
-const poppins = Poppins({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-  variable: '--font-poppins',
-  display: 'swap',
-  preload: true,
-  fallback: ['system-ui', 'arial'],
-});
+export const metadata: Metadata = {
+  title: 'InfiniteTalk AI | Sparse-Frame, Audio-Driven Video Dubbing',
+  description: 'InfiniteTalk AI: audio-driven full-body video dubbing that preserves identity and camera motion, with sparse-frame control and long-sequence image-to-video.',
+  keywords: ['InfiniteTalk AI', 'sparse-frame video dubbing', 'audio-driven animation', 'image-to-video', 'keyframes'],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
+  openGraph: {
+    title: 'InfiniteTalk AI | Sparse-Frame, Audio-Driven Video Dubbing',
+    description: 'InfiniteTalk AI: audio-driven full-body video dubbing that preserves identity and camera motion, with sparse-frame control and long-sequence image-to-video.',
+    url: siteUrl,
+    siteName: 'InfiniteTalk AI',
+    images: [
+      {
+        url: `${siteUrl}/og-img.png`,
+        width: 1200,
+        height: 630,
+        alt: 'InfiniteTalk AI - AI Video Generator',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: 'InfiniteTalk AI',
+    title: 'InfiniteTalk AI | Sparse-Frame, Audio-Driven Video Dubbing',
+    description: 'InfiniteTalk AI: audio-driven full-body video dubbing that preserves identity and camera motion, with sparse-frame control and long-sequence image-to-video.',
+    images: [`${siteUrl}/og-img.png`],
+  },
+};
+
+const schemaData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "InfiniteTalk AI",
+      "url": siteUrl,
+      "description": "Audio-driven full-body video dubbing platform with sparse-frame control"
+    },
+    {
+      "@type": "WebSite",
+      "name": "InfiniteTalk AI",
+      "url": siteUrl,
+      "description": "Advanced audio-driven video dubbing platform with sparse-frame control",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${siteUrl}/search?q={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "InfiniteTalk AI",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "description": "Audio-driven full-body video dubbing with sparse-frame control and long-sequence image-to-video generation",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  ]
+};
+
 
 // Dynamically import Clerk Provider to reduce initial bundle size
 const ClerkProviderWithLocale = dynamic(() => import('@/components/auth/clerk-provider'), {
@@ -26,82 +93,22 @@ const ClerkProviderWithLocale = dynamic(() => import('@/components/auth/clerk-pr
   loading: () => <div className="min-h-screen" />,
 });
 
-export { metadata };
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const GA_TRACKING_ID = 'G-BST9KGD31X';
+
 
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en">
       <head>
-        {/* Critical CSS - Inlined for instant render (Complete CSS Variables) */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          :root {
-            --radius: 0.625rem;
-            --background: #000000;
-            --foreground: #FFFFFF;
-            --card: #111111;
-            --card-foreground: #FFFFFF;
-            --popover: #111111;
-            --popover-foreground: #FFFFFF;
-            --primary: #D4AF37;
-            --primary-foreground: #000000;
-            --secondary: #1A1A1A;
-            --secondary-foreground: #FFFFFF;
-            --muted: #333333;
-            --muted-foreground: #CCCCCC;
-            --accent: #1A1A1A;
-            --accent-foreground: #FFFFFF;
-            --destructive: #E63946;
-            --border: #333333;
-            --input: #333333;
-            --ring: #D4AF37;
-            --info: #2196F3;
-            --success: #4CAF50;
-            --warning: #FFC107;
-            --chart-1: #D4AF37;
-            --chart-2: #B8860B;
-            --chart-3: #FFD700;
-            --chart-4: #F4A460;
-            --chart-5: #DAA520;
-            --sidebar: #111111;
-            --sidebar-foreground: #FFFFFF;
-            --sidebar-primary: #D4AF37;
-            --sidebar-primary-foreground: #000000;
-            --sidebar-accent: #1A1A1A;
-            --sidebar-accent-foreground: #FFFFFF;
-            --sidebar-border: #333333;
-            --sidebar-ring: #D4AF37;
-          }
-          html {
-            scroll-behavior: smooth;
-          }
-          body {
-            background-color: var(--background);
-            color: var(--foreground);
-            font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 0;
-          }
-          .font-poppins {
-            font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
-          }
-        `}} />
-        {/* Preconnect & DNS Prefetch for analytics domain */}
+
         <link rel="preconnect" href="https://v1.cnzz.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://v1.cnzz.com" />
         <link rel="preconnect" href="https://c.cnzz.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://c.cnzz.com" />
-        {/* Preconnect to Clerk domain for faster authentication */}
-        <link rel="preconnect" href="https://clerk.infinitetalk.net" crossOrigin="" />
-        <link rel="dns-prefetch" href="https://clerk.infinitetalk.net" />
-        {/* Non-critical CSS will be loaded by Next.js automatically */}
-        {/* Critical styles are inlined above for instant render */}
       </head>
       <body className="bg-background text-foreground">
         <script
@@ -137,7 +144,7 @@ export default function RootLayout({
           src="https://v1.cnzz.com/z.js?id=1281431393&async=1"
         />
 
-        <SpeedInsights />
+     
 
       </body>
     </html>

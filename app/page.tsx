@@ -1,8 +1,6 @@
 import { GoogleOneTapAuth } from '../components/auth';
 import { Footer } from '../components/Footer';
 import dynamic from 'next/dynamic';
-import Script from 'next/script';
-import { schemaData } from '../lib/seo-config';
 
 // Client island - dynamically imported for code splitting
 const PricingSection = dynamic(() => import('../components/home/client').then(m => ({ default: m.PricingSection })), {

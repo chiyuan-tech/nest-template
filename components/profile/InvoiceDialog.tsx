@@ -49,10 +49,7 @@ export function InvoiceDialog({ open, onOpenChange, payLogId, payLogList }: Invo
         throw new Error('Payment record not found');
       }
 
-      const price = getPriceFromPriceId(payLogItem.price_id);
-      const parsedPrice = parseFloat(price.replace('$', ''));
-      const priceValue = !isNaN(parsedPrice) && parsedPrice > 0 ? parsedPrice : (payLogItem.amount / 100);
-
+      const priceValue = parseFloat((payLogItem.amount / 100).toString()) || 0;
       const invoiceNumber = `INFINITETALK-${new Date().getFullYear()}-${payLogItem.id}`;
       const data = {
         invoiceNumber,

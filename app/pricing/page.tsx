@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
 import Script from 'next/script';
 import { Footer } from '../../components/Footer';
-import { CTA } from '../../components/CTA';
-import PricingSection from './PricingSection';
+import PricingSection from '@/components/PricingSection';
 import PricingFAQ from './PricingFAQ';
 
 // SEO metadata
@@ -166,7 +165,6 @@ export default function PricingPage() {
         
         <PricingSection />
         <PricingFAQ />
-        <CTA />
       </main>
       
       {/* Footer without friendly links */}

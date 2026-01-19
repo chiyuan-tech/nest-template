@@ -1,1 +1,0 @@
-// Deprecated: moved to Next Script tags in app/layout.tsx
