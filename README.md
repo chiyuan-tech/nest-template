@@ -26,6 +26,7 @@
 - **`public/logo.webp`** - Logo 图片（如果使用）
 - **`public/share-img.png`** - 默认分享图片（用于 OpenGraph 和 Twitter 卡片）
 
+
 ### 4. 创建首页内容
 编辑 **`app/page.tsx`** 创建你的首页内容，并确保：
 - 更新页面的 `metadata` 对象
