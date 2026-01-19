@@ -9,7 +9,7 @@ interface FooterProps {
 export function Footer({ friendlyLinks = [] }: FooterProps) {
   return (
     <footer className="bg-card border-t border-muted py-12">
-      <div className="container mx-auto px-6">
+      <div className="max-w-7xl mx-auto">
         {/* Partner Sites - Only show if there are links */}
         {friendlyLinks && friendlyLinks.length > 0 && (
           <div className="mb-10 pb-6 border-b border-muted">

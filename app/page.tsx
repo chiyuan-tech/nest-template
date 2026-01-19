@@ -26,9 +26,8 @@ export default async function Home() {
       <main className="flex-grow relative">
    
         
- 
-        <PricingSection />
-  
+    
+      <PricingSection />
    
       </main>
       

@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
 
         <link rel="preconnect" href="https://v1.cnzz.com" crossOrigin="" />

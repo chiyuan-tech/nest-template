@@ -85,7 +85,7 @@ export default function AuthButton() {
     <>
       <Button
         variant="default"
-        className="bg-primary text-black hover:bg-primary/90 px-6 py-2 rounded-full transition-colors"
+        className="bg-primary text-white hover:bg-primary/90 px-6 py-2 rounded-full transition-colors"
         onClick={handleLoginClick}
       >
         Login
