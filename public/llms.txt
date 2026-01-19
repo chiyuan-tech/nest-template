@@ -30,7 +30,6 @@ Allow: /privacy
 # -------------------------------------
 # ❌ Disallowed API or Internal Paths (implicitly via robots.txt)
 Disallow: /api/
-Disallow: /_next/
 Disallow: /admin/
 Disallow: /sign-in
 Disallow: /sign-up

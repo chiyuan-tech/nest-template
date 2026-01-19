@@ -6,7 +6,8 @@
 
 - 🚀 **Next.js 15** - 最新的 React 框架，支持 App Router
 - 💎 **TypeScript** - 类型安全的开发体验
-- 🎨 **Tailwind CSS** - 现代化的 CSS 框架
+- 🎨 **Tailwind CSS** - 现代化的 CSS 框架，使用 oklch 颜色系统
+- 🌓 **Dark Mode** - 默认深色主题，支持完整的主题系统
 - 🔐 **Clerk 认证** - 完整的用户认证系统
 - 🌐 **全局状态管理** - 基于 Context API 的用户信息管理
 - 📝 **博客系统** - 支持 Markdown 的博客功能
@@ -14,6 +15,7 @@
 - 🔍 **SEO 优化** - 自动生成 sitemap 和 meta 标签
 - 📱 **响应式设计** - 移动端友好的界面设计
 - 🎯 **组件化架构** - 可复用的 UI 组件库
+- ⚙️ **集中配置** - 统一的网站配置管理系统
 
 ## 📁 项目结构
 
@@ -40,16 +42,24 @@ nest-template/
 │   ├── Navbar.tsx             # 导航栏组件
 │   ├── Footer.tsx             # 页脚组件
 │   ├── PricingSection.tsx     # 价格展示组件
-│   ├── payment-status-modal.tsx # 支付状态弹窗
+│   ├── PricingSectionWithHeader.tsx # 带标题的价格展示组件
+│   ├── InvoiceTemplate.tsx   # 发票模板组件
 │   ├── ui/                    # UI 基础组件库
 │   │   ├── button.tsx         # 按钮组件
-│   │   ├── dialog.tsx         # 对话框组件
-│   │   ├── dropdown-menu.tsx  # 下拉菜单组件
-│   │   ├── sheet.tsx          # 侧边栏组件
-│   │   └── ...                # 其他 UI 组件
-│   └── auth/                  # 认证相关组件
-│       ├── auth-button.tsx    # 认证按钮
-│       └── clerk-provider.tsx # Clerk 认证提供者
+│   │   ├── dialog.tsx        # 对话框组件
+│   │   ├── dropdown-menu.tsx # 下拉菜单组件
+│   │   ├── sheet.tsx         # 侧边栏组件
+│   │   └── ...               # 其他 UI 组件
+│   ├── auth/                  # 认证相关组件
+│   │   ├── auth-button.tsx   # 认证按钮
+│   │   ├── clerk-provider.tsx # Clerk 认证提供者
+│   │   └── custom-sign-modal.tsx # 自定义登录弹窗
+│   ├── nav/                   # 导航相关组件
+│   │   ├── NavClient.tsx     # 客户端导航组件
+│   │   └── ...               # 其他导航组件
+│   └── profile/               # 用户资料相关组件
+│       ├── InvoiceDialog.tsx  # 发票对话框
+│       └── ...                # 其他资料组件
 │
 ├── lib/                       # 工具库目录
 │   ├── providers/             # 全局状态管理 ✨
@@ -57,12 +67,22 @@ nest-template/
 │   │   ├── UserProvider.tsx  # 用户信息Provider
 │   │   └── README.md         # Provider使用说明
 │   ├── utils.ts              # 通用工具函数
-│   ├── api.ts                # API 请求封装
-│   ├── seo-config.js         # SEO 配置
-│   └── sitemap.ts            # sitemap 生成逻辑
+│   ├── api.ts                # 客户端 API 请求封装
+│   ├── server-api.ts         # 服务端 API 请求封装
+│   ├── sitemap.ts            # sitemap 生成逻辑
+│   └── share-utils.ts        # 分享功能工具函数
+│
+├── website-config.js         # 网站集中配置文件 ⭐
+│                              # 包含：站点信息、联系信息、价格配置、API 配置
+│
+├── .cursor/                   # Cursor IDE 配置
+│   └── rules/                 # 代码规则和规范
+│       └── website.mdc        # 网站开发规则（metadata、sitemap 等）
 │
 ├── public/                    # 静态资源目录
-│   └── js/                    # 第三方脚本文件
+│   ├── robots.txt            # 搜索引擎爬虫规则
+│   ├── llms.txt              # LLM 爬虫指南
+│   └── share-img.png         # 默认分享图片
 │
 ├── package.json              # 项目依赖配置
 ├── tailwind.config.js        # Tailwind CSS 配置
@@ -90,11 +110,20 @@ nest-template/
   - **`index.ts`** - 统一导出所有 Providers 和 hooks
   - **`README.md`** - 详细的使用说明和扩展指南
 
+### 集中配置系统 ⭐
+- **`website-config.js`** - 网站集中配置文件
+  - **站点信息** (`siteConfig`) - 项目名称、描述、URL
+  - **联系信息** (`contactConfig`) - 支持邮箱等联系方式
+  - **价格配置** (`pricingConfig`) - 价格方案和功能列表
+  - **API 配置** (`apiConfig`) - API 基础 URL 和应用 ID
+  - 所有组件和页面统一从此文件读取配置，便于维护
+
 ### 工具库
 - **`lib/utils.ts`** - 包含 `cn()` 函数，用于合并 Tailwind CSS 类名
-- **`lib/api.ts`** - 封装的 API 请求函数，处理认证和错误
-- **`lib/seo-config.js`** - SEO 元数据配置，包含 OpenGraph 和 Twitter 卡片
+- **`lib/api.ts`** - 客户端 API 请求封装，处理认证和错误
+- **`lib/server-api.ts`** - 服务端 API 请求封装，不依赖 localStorage
 - **`lib/sitemap.ts`** - 自动生成 sitemap.xml 的逻辑
+- **`lib/share-utils.ts`** - 社交媒体分享功能工具函数
 
 ### 认证系统
 - 使用 **Clerk** 提供完整的用户认证功能
@@ -193,11 +222,40 @@ pnpm dev
 
 ## 🎨 自定义配置
 
+### 网站配置 ⭐
+**重要**: 所有网站相关的配置都集中在 `website-config.js` 文件中：
+
+```javascript
+// 修改项目名称、邮箱、价格等
+export const websiteConfig = {
+  site: {
+    name: 'Your Project Name',
+    description: 'Your project description',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://your-domain.com',
+  },
+  contact: {
+    supportEmail: 'support@your-domain.com',
+  },
+  pricing: {
+    oneTimePlans: [/* 价格方案 */],
+  },
+  api: {
+    baseUrl: 'https://your-api-url.com',
+    appId: 'your-app-id',
+  },
+};
+```
+
 ### 主题配置
-在 `tailwind.config.js` 中自定义颜色、字体和其他设计令牌。
+- **颜色系统**: 使用 oklch 颜色格式，支持更好的颜色一致性和可访问性
+- **默认主题**: 默认启用 dark 模式（在 `app/layout.tsx` 中设置）
+- **自定义**: 在 `app/globals.css` 和 `tailwind.config.js` 中修改主题颜色
 
 ### SEO 配置
-在 `lib/seo-config.js` 中修改网站的 meta 信息、OpenGraph 和 Twitter 卡片配置。
+- **Metadata**: 在 `app/layout.tsx` 中配置全局 SEO 元数据
+- **页面 Metadata**: 每个页面导出 `metadata` 对象（参考 `.cursor/rules/website.mdc`）
+- **Sitemap**: 在 `lib/sitemap.ts` 中配置静态页面列表
+- **robots.txt**: 在 `public/robots.txt` 中配置爬虫规则
 
 ### 添加新的 Provider
 按照 `lib/providers/README.md` 中的说明添加新的全局状态管理功能。
@@ -208,6 +266,22 @@ pnpm dev
 ```bash
 npx shadcn@latest add [component-name]
 ```
+
+### 使用集中配置
+在组件中导入配置：
+
+```tsx
+import { siteConfig, contactConfig, pricingConfig, apiConfig } from '@/website-config';
+
+// 使用配置
+<h1>{siteConfig.name}</h1>
+<a href={`mailto:${contactConfig.supportEmail}`}>Contact</a>
+```
+
+### 开发规范
+- 查看 `.cursor/rules/website.mdc` 了解代码规范和最佳实践
+- 所有 `app/` 目录下的页面（除 `profile` 和 `sso-callback`）必须导出 `metadata` 对象
+- 添加或删除页面时，需要同步更新 `lib/sitemap.ts`、`public/llms.txt` 和 `public/robots.txt`
 
 ## 📦 构建和部署
 

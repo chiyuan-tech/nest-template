@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next';
 import { serverCmsApi } from './server-api';
+import { siteUrl } from '@/website-config';
 
-// !!! IMPORTANT: Replace with your actual production domain !!!
-// You can use environment variables like process.env.NEXT_PUBLIC_SITE_URL
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.infinitetalk.net';
+// Use siteUrl from website-config.js
+const BASE_URL = siteUrl;
 
 // 生成博客文章slug
 function generateSlug(title: string, url?: string): string {

@@ -3,23 +3,38 @@ import Script from 'next/script';
 import { Footer } from '../../components/Footer';
 import PricingSection from '@/components/PricingSection';
 import PricingFAQ from './PricingFAQ';
+import { siteConfig, siteUrl } from '@/website-config';
 
 // SEO metadata
 export const metadata: Metadata = {
-  title: 'InfiniteTalk AI Pricing - Affordable Video Generation Plans',
-  description: 'Discover InfiniteTalk AI pricing plans. Generate unlimited talking videos with our AI. Free trial available. Monthly subscriptions & one-time purchases.',
-  keywords: 'InfiniteTalk AI price, video generation pricing, AI dubbing cost, talking video plans, subscription pricing',
+  title: `${siteConfig.name} Pricing - Video Generation Plans`,
+  description: `Discover ${siteConfig.name} pricing plans. Generate unlimited talking videos with our AI. Flexible billing options available.`,
+  keywords: ['AI video pricing', 'video generation cost', 'AI dubbing plans', siteConfig.name],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: `${siteUrl}/pricing`,
+  },
   openGraph: {
-    title: 'InfiniteTalk AI Pricing - Affordable Video Generation Plans',
-    description: 'Discover InfiniteTalk AI pricing plans. Generate unlimited talking videos with our AI. Free trial available. Monthly subscriptions & one-time purchases.',
-    url: 'https://www.infinitetalk.net/pricing',
-    siteName: 'InfiniteTalk AI',
+    title: `${siteConfig.name} Pricing - Video Generation Plans`,
+    description: `Discover ${siteConfig.name} pricing plans. Generate unlimited talking videos with our AI. Flexible billing options available.`,
+    url: `${siteUrl}/pricing`,
+    siteName: siteConfig.name,
     images: [
       {
-        url: 'https://www.infinitetalk.net/og-pricing.jpg',
+        url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: 'InfiniteTalk AI Pricing Plans',
+        alt: `${siteConfig.name} Pricing Plans`,
       },
     ],
     locale: 'en_US',
@@ -27,12 +42,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'InfiniteTalk AI Pricing - Affordable Video Generation Plans',
-    description: 'Discover InfiniteTalk AI pricing plans. Generate unlimited talking videos with our AI. Free trial available.',
-    images: ['https://www.infinitetalk.net/og-pricing.jpg'],
-  },
-  alternates: {
-    canonical: 'https://www.infinitetalk.net/pricing',
+    site: siteConfig.name,
+    title: `${siteConfig.name} Pricing - Video Generation Plans`,
+    description: `Discover ${siteConfig.name} pricing plans. Generate unlimited talking videos with our AI.`,
+    images: [`${siteUrl}/share-img.png`],
   },
 };
 
@@ -40,13 +53,13 @@ export const metadata: Metadata = {
 const pricingSchemaData = {
   '@context': 'https://schema.org',
   '@type': 'Product',
-  name: 'InfiniteTalk AI',
-  description: 'Advanced AI-powered video generation and dubbing service for creating infinite-length talking videos',
+  name: siteConfig.name,
+  description: siteConfig.description,
   brand: {
     '@type': 'Brand',
-    name: 'InfiniteTalk AI'
+    name: siteConfig.name
   },
-  url: 'https://www.infinitetalk.net',
+  url: siteUrl,
   offers: [
     {
       '@type': 'Offer',

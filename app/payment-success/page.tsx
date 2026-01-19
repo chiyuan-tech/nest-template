@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { CheckCircle, CreditCard, Gift, Mail } from 'lucide-react';
+import { contactConfig } from '@/website-config';
 
 interface PaymentInfo {
   planKey: string;
@@ -40,51 +41,51 @@ export default function PaymentSuccessPage() {
   }, []);
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
+    <section className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="max-w-4xl w-full">
         {/* Success Header */}
         <div className="text-center mb-12">
-          <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-12 h-12 text-green-400" />
+          <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-12 h-12 text-primary" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Payment Successful!
           </h1>
-          <p className="text-xl text-slate-300">
+          <p className="text-xl text-muted-foreground">
             Thank you for your purchase. Your credits have been added to your account.
           </p>
         </div>
 
         {/* Payment Details Card */}
-        <div className="bg-gradient-to-b from-slate-800/80 to-slate-900/80 rounded-2xl border border-slate-700/50 backdrop-blur-xl p-8 mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">Payment Details</h2>
+        <div className="bg-card rounded-2xl border border-border backdrop-blur-xl p-8 mb-8">
+          <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Payment Details</h2>
           
           <div className="grid md:grid-cols-2 gap-6">
             {/* Left Column - Payment Info */}
             <div className="space-y-4">
               {paymentInfo && (
                 <>
-                  <div className="flex items-center gap-3 p-4 bg-slate-700/30 rounded-lg">
-                    <CreditCard className="w-5 h-5 text-blue-400" />
+                  <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                    <CreditCard className="w-5 h-5 text-primary" />
                     <div>
-                      <div className="text-sm text-slate-400">Plan</div>
-                      <div className="text-white font-semibold">{paymentInfo.planTitle}</div>
+                      <div className="text-sm text-muted-foreground">Plan</div>
+                      <div className="text-foreground font-semibold">{paymentInfo.planTitle}</div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3 p-4 bg-slate-700/30 rounded-lg">
-                    <CreditCard className="w-5 h-5 text-green-400" />
+                  <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                    <CreditCard className="w-5 h-5 text-primary" />
                     <div>
-                      <div className="text-sm text-slate-400">Amount Paid</div>
-                      <div className="text-white font-semibold text-xl">{paymentInfo.price}</div>
+                      <div className="text-sm text-muted-foreground">Amount Paid</div>
+                      <div className="text-foreground font-semibold text-xl">{paymentInfo.price}</div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3 p-4 bg-slate-700/30 rounded-lg">
-                    <Gift className="w-5 h-5 text-purple-400" />
+                  <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                    <Gift className="w-5 h-5 text-primary" />
                     <div>
-                      <div className="text-sm text-slate-400">Credits Received</div>
-                      <div className="text-white font-semibold text-xl">{paymentInfo.credits} Credits</div>
+                      <div className="text-sm text-muted-foreground">Credits Received</div>
+                      <div className="text-foreground font-semibold text-xl">{paymentInfo.credits} Credits</div>
                     </div>
                   </div>
                 </>
@@ -94,29 +95,29 @@ export default function PaymentSuccessPage() {
             {/* Right Column - Order Info */}
             <div className="space-y-4">
               {orderToken && (
-                <div className="flex items-center gap-3 p-4 bg-slate-700/30 rounded-lg">
-                  <CreditCard className="w-5 h-5 text-orange-400" />
+                <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                  <CreditCard className="w-5 h-5 text-primary" />
                   <div>
-                    <div className="text-sm text-slate-400">Order ID</div>
-                    <div className="text-white font-mono text-sm break-all">{orderToken}</div>
+                    <div className="text-sm text-muted-foreground">Order ID</div>
+                    <div className="text-foreground font-mono text-sm break-all">{orderToken}</div>
                   </div>
                 </div>
               )}
               
-              <div className="flex items-center gap-3 p-4 bg-slate-700/30 rounded-lg">
-                <Mail className="w-5 h-5 text-cyan-400" />
+              <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                <Mail className="w-5 h-5 text-primary" />
                 <div>
-                  <div className="text-sm text-slate-400">Support Email</div>
-                  <div className="text-white font-semibold">support@infinitetalk.net</div>
+                  <div className="text-sm text-muted-foreground">Support Email</div>
+                  <div className="text-foreground font-semibold">{contactConfig.supportEmail}</div>
                 </div>
               </div>
               
               {paymentInfo && (
-                <div className="flex items-center gap-3 p-4 bg-slate-700/30 rounded-lg">
-                  <CreditCard className="w-5 h-5 text-slate-400" />
+                <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                  <CreditCard className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <div className="text-sm text-slate-400">Purchase Date</div>
-                    <div className="text-white font-semibold">
+                    <div className="text-sm text-muted-foreground">Purchase Date</div>
+                    <div className="text-foreground font-semibold">
                       {new Date(paymentInfo.timestamp).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -134,13 +135,13 @@ export default function PaymentSuccessPage() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/infinitetalk">
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 font-medium transition-colors">
+          <Link href="/">
+            <Button className="w-full sm:w-auto px-8 py-3 font-medium transition-colors">
               Start Creating Videos
             </Button>
           </Link>
           <Link href="/pricing">
-            <Button variant="outline" className="w-full sm:w-auto border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white px-8 py-3 font-medium transition-colors">
+            <Button variant="outline" className="w-full sm:w-auto px-8 py-3 font-medium transition-colors">
               View More Plans
             </Button>
           </Link>
@@ -148,10 +149,10 @@ export default function PaymentSuccessPage() {
 
         {/* Support Info */}
         <div className="text-center mt-8">
-          <p className="text-slate-400 text-sm">
+          <p className="text-muted-foreground text-sm">
             Need help? Contact us at{' '}
-            <a href="mailto:support@infinitetalk.net" className="text-blue-400 hover:text-blue-300 underline">
-              support@infinitetalk.net
+            <a href={`mailto:${contactConfig.supportEmail}`} className="text-primary hover:text-primary/80 underline">
+              {contactConfig.supportEmail}
             </a>
           </p>
         </div>

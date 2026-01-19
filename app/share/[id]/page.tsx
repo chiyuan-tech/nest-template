@@ -4,6 +4,7 @@ import { serverCmsApi } from '@/lib/server-api';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Footer } from '@/components/Footer';
+import { siteConfig, siteUrl } from '@/website-config';
 
 // 生成页面元数据（用于 Open Graph 标签）
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -23,21 +24,37 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       return opusDetail.origin_image;
     }
     // 如果没有合适的图片，使用默认品牌分享图
-    return `${process.env.NEXT_PUBLIC_SITE_URL || 'https://infinitetalk.net'}/share-img.png`;
+    return `${siteUrl}/share-img.png`;
   };
 
   const thumbnailUrl = getThumbnailUrl();
 
-  const description = 'Check out this amazing AI-generated video! Create your own at https://www.infinitetalk.net';
+  const description = `Check out this amazing AI-generated video! Create your own at ${siteUrl}`;
 
   return {
-    title: 'Amazing Video Created with InfiniteTalk',
+    title: `Amazing Video Created with ${siteConfig.name}`,
     description: description,
+    keywords: ['AI video', 'video generation', siteConfig.name],
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    alternates: {
+      canonical: `${siteUrl}/share/${id}`,
+    },
     openGraph: {
-      title: 'Amazing Video Created with InfiniteTalk',
+      title: `Amazing Video Created with ${siteConfig.name}`,
       description: description,
       type: 'video.other',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://infinitetalk.net'}/share/${id}`,
+      url: `${siteUrl}/share/${id}`,
+      siteName: siteConfig.name,
       images: [
         {
           url: thumbnailUrl,
@@ -55,7 +72,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     },
     twitter: {
       card: 'player',  // 视频播放器卡片
-      title: 'Amazing Video Created with InfiniteTalk',
+      site: siteConfig.name,
+      title: `Amazing Video Created with ${siteConfig.name}`,
       description: description,
       images: [thumbnailUrl],  // 缩略图（origin_image）
       players: {
@@ -100,7 +118,7 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
               Amazing AI-Generated Video
             </h1>
             <p className="text-muted-foreground text-lg">
-              Created with InfiniteTalk AI Video Generator
+              Created with {siteConfig.name} Video Generator
             </p>
           </div>
 
@@ -134,7 +152,7 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
               Want to Create Your Own AI Videos?
             </h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Join thousands of creators using InfiniteTalk to generate stunning AI-powered videos. 
+              Join thousands of creators using {siteConfig.name} to generate stunning AI-powered videos. 
               Transform your images and audio into amazing animated content with just a few clicks!
             </p>
             <Link href="/infinitetalk">

@@ -86,3 +86,113 @@ When creating or updating pages in `app/`, ensure:
 - ✅ **Share images use `/share-img.png` path** (default: `${siteUrl}/share-img.png`)
 - ✅ Values are appropriate for the specific page
 - ✅ URLs use the correct site URL (can use `siteUrl` from `@/website-config`)
+
+## Component Library Priority
+
+**CRITICAL**: Always prioritize using shadcn/ui components over custom implementations:
+
+### shadcn/ui Components
+
+**REQUIRED**: When a component exists in the shadcn/ui library, use it instead of creating custom components:
+
+```typescript
+// ✅ Correct - Use shadcn components
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+
+// ❌ Incorrect - Custom implementation when shadcn component exists
+<button className="px-4 py-2 bg-blue-500">Click me</button>
+```
+
+**Available shadcn/ui Components:**
+- `Button` - Use instead of custom buttons
+- `Dialog` / `Sheet` - Use instead of custom modals
+- `Input` / `Textarea` - Use instead of custom form inputs
+- `Card` - Use instead of custom card containers
+- `DropdownMenu` - Use instead of custom dropdowns
+- `Toast` / `Alert` - Use instead of custom notifications
+- `Avatar` - Use instead of custom avatar components
+- `Badge` - Use instead of custom badges
+- `Checkbox` / `Radio` - Use instead of custom form controls
+- And other components in `components/ui/` directory
+
+**Rules:**
+- ✅ Check `components/ui/` directory first before creating custom components
+- ✅ Use shadcn components with theme-aware styling (they automatically use theme colors)
+- ✅ Extend shadcn components when needed, don't replace them
+- ✅ If a component doesn't exist in shadcn, create it following shadcn patterns
+- ✅ Use `cn()` utility function to merge Tailwind classes with shadcn components
+
+### Adding New shadcn Components
+
+If you need a component that doesn't exist, add it using shadcn CLI:
+
+```bash
+npx shadcn@latest add [component-name]
+```
+
+This ensures consistency with the existing component library and theme system.
+
+## Image and Link Components
+
+**CRITICAL**: All images and links in the project must use Next.js optimized components:
+
+### Image Component
+
+**REQUIRED**: Always use Next.js `Image` component instead of HTML `<img>` tag:
+
+```typescript
+import Image from 'next/image';
+
+// ✅ Correct
+<Image 
+  src="/logo.png" 
+  alt="Logo" 
+  width={100} 
+  height={100}
+  loading="lazy"
+/>
+
+// ❌ Incorrect
+<img src="/logo.png" alt="Logo" />
+```
+
+**Rules:**
+- ✅ Always import `Image` from `next/image`
+- ✅ Always provide `width` and `height` props (or use `fill` for responsive images)
+- ✅ Always provide `alt` text for accessibility
+- ✅ Use `loading="lazy"` for images below the fold
+- ✅ Use `priority` prop for above-the-fold images (e.g., hero images)
+
+### Link Component
+
+**REQUIRED**: Always use Next.js `Link` component instead of HTML `<a>` tag for internal navigation:
+
+```typescript
+import Link from 'next/link';
+
+// ✅ Correct
+<Link href="/about" prefetch={false}>
+  About Us
+</Link>
+
+// ❌ Incorrect
+<a href="/about">About Us</a>
+```
+
+**Rules:**
+- ✅ Always import `Link` from `next/link`
+- ✅ **`prefetch` defaults to `false`** - Only set `prefetch={true}` when explicitly needed for critical navigation paths
+- ✅ Use HTML `<a>` tag only for external links (with `target="_blank"` and `rel="noopener noreferrer"`)
+- ✅ For external links, use: `<a href="https://external.com" target="_blank" rel="noopener noreferrer">`
+
+### Validation Checklist
+
+When using images and links:
+- ✅ All images use `Image` component from `next/image`
+- ✅ All internal links use `Link` component from `next/link`
+- ✅ **`prefetch={false}` is the default** (only set `prefetch={true}` when necessary)
+- ✅ External links use `<a>` tag with proper security attributes
+- ✅ All images have `alt` text for accessibility
+- ✅ All images have explicit `width` and `height` (or use `fill`)

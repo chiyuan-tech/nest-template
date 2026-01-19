@@ -1,31 +1,50 @@
 import type { Metadata } from 'next';
-import { siteUrl } from '@/website-config';
+import { siteConfig, siteUrl } from '@/website-config';
 import dynamic from 'next/dynamic';
 import {Footer} from '@/components/Footer';
 
 const PromotionClient = dynamic(() => import('./PromotionClient'), { ssr: true });
 
 export const metadata: Metadata = {
-  title: 'Infinite Talk AI Video Generator for Free By Referral',
-  description: 'Share your referral link and earn credits when friends join Infinite Talk AI.',
-  alternates: { canonical: `${siteUrl}/referral` },
+  title: `${siteConfig.name} Referral Program`,
+  description: `Share your referral link and earn credits when friends join ${siteConfig.name}.`,
+  keywords: ['referral program', 'earn credits', 'invite friends', siteConfig.name],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: `${siteUrl}/referral`,
+  },
   openGraph: {
-    title: 'Infinite Talk AI Video Generator for Free By Referral',
-    description: 'Invite friends and earn credits on Infinite Talk AI.',
+    title: `${siteConfig.name} Referral Program`,
+    description: `Invite friends and earn credits on ${siteConfig.name}.`,
     url: `${siteUrl}/referral`,
-    siteName: 'Infinite Talk AI',
-    images: [{ url: `${siteUrl}/og-img.png`, width: 1200, height: 630, alt: 'Infinite Talk AI' }],
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: `${siteUrl}/share-img.png`,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+    locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Infinite Talk AI Video Generator for Free By Referral',
-    description: 'Invite friends and earn credits on Infinite Talk AI.',
-    images: [`${siteUrl}/og-img.png`],
-  },
-  robots: {
-    index: true, 
-    follow: true,
+    site: siteConfig.name,
+    title: `${siteConfig.name} Referral Program`,
+    description: `Invite friends and earn credits on ${siteConfig.name}.`,
+    images: [`${siteUrl}/share-img.png`],
   },
 };
 
