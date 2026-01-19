@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { siteConfig, contactConfig } from '@/website-config';
 
 interface FAQItem {
   question: string;
@@ -49,7 +50,7 @@ export default function PricingFAQ() {
               Pricing FAQ
             </h2>
             <p className="text-xl text-slate-300 mb-8">
-              Get answers to common questions about InfiniteTalk AI pricing, subscriptions, and payment options.
+              Get answers to common questions about {siteConfig.name} pricing, subscriptions, and payment options.
             </p>
             <div className="hidden lg:block">
               <div className="bg-gradient-to-r from-primary/20 to-transparent h-1 w-24 mb-4"></div>
@@ -107,7 +108,7 @@ export default function PricingFAQ() {
                 Our support team is ready to assist you with any questions about pricing or features.
               </p>
               <a
-                href="mailto:support@infinitetalk.net"
+                href={`mailto:${contactConfig.supportEmail}`}
                 className="inline-flex items-center text-primary hover:text-primary/80 transition-colors duration-200 font-medium"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

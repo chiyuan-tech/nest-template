@@ -29,13 +29,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/',
     '/terms',
     '/privacy',
-    '/infinitetalk-comfyui',
-    '/infinitetalk',
-    '/infinitetalk-multi',
-    '/wan2.2-s2v',
-    '/free/referral',
-    '/app',
-    '/audio-tools',
     '/refund'
   ];
 

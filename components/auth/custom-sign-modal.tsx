@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, X } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
+import { siteConfig } from '@/website-config';
 
 type View = 'signin' | 'signup' | 'verify-email';
 
@@ -278,7 +279,7 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
 
   // Memoize title and description to prevent unnecessary re-renders
   const title = useMemo(() => {
-    if (view === 'signin') return 'Sign in to InfiniteTalk';
+    if (view === 'signin') return `Sign in to ${siteConfig.shortName}`;
     if (view === 'signup') return 'Create your account';
     return 'Verify your email';
   }, [view]);

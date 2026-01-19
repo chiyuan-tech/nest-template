@@ -13,9 +13,10 @@ All pages in the `app/` directory **MUST** export a `metadata` object, except fo
 - `app/profile` - User profile page (excluded)
 - `app/sso-callback` - SSO callback page (excluded)
 
+
 ### Required Metadata Fields
 
-All page metadata objects must include all fields from `lib/seo-config.js`. The metadata structure should follow this pattern:
+All page metadata objects must include all required fields. The metadata structure should follow this pattern:
 
 #### TDK Character Limits
 
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
     url: string,
     siteName: string,
     images: Array<{
-      url: string,
+      url: string,                    // Use `${siteUrl}/share-img.png` for default share image
       width: number,
       height: number,
       alt: string,
@@ -63,18 +64,25 @@ export const metadata: Metadata = {
     site: string,
     title: string,
     description: string,
-    images: string[],
+    images: string[],                // Use `${siteUrl}/share-img.png` for default share image
   },
 };
 ```
+
+### Share Image Path
+
+**IMPORTANT**: The default share image path for OpenGraph and Twitter cards should be:
+- Path: `/share-img.png`
+- Full URL: `${siteUrl}/share-img.png` (where `siteUrl` is imported from `@/website-config`)
 
 ### Validation Checklist
 
 When creating or updating pages in `app/`, ensure:
 - ✅ `metadata` is exported (except profile and sso-callback pages)
-- ✅ All required fields from `lib/seo-config.js` are present
+- ✅ All required metadata fields are present
 - ✅ **Title length ≤ 60 characters** (check: `metadata.title.length <= 60`)
 - ✅ **Description length ≤ 160 characters** (check: `metadata.description.length <= 160`)
 - ✅ **Keywords total length < 100 characters** (check: `metadata.keywords.join(', ').length < 100`)
+- ✅ **Share images use `/share-img.png` path** (default: `${siteUrl}/share-img.png`)
 - ✅ Values are appropriate for the specific page
-- ✅ URLs use the correct site URL (can use `siteUrl` from `lib/seo-config.js`)
+- ✅ URLs use the correct site URL (can use `siteUrl` from `@/website-config`)

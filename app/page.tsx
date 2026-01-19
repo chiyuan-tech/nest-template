@@ -3,7 +3,7 @@ import { Footer } from '../components/Footer';
 import dynamic from 'next/dynamic';
 
 // Client island - dynamically imported for code splitting
-const PricingSection = dynamic(() => import('../components/home/client').then(m => ({ default: m.PricingSection })), {
+const PricingSection = dynamic(() => import('../components/PricingSection'), {
   loading: () => <div className="h-96 animate-pulse bg-gray-100/5 rounded-lg" />,
 });
 

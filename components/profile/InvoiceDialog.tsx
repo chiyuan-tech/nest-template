@@ -15,6 +15,7 @@ import { PayLogItem } from './types';
 import { formatTimestamp, getPriceFromPriceId } from './utils';
 import { useToast } from '@/components/ui/toast-provider';
 import InvoiceTemplate from '@/components/InvoiceTemplate';
+import { siteConfig, contactConfig } from '@/website-config';
 
 interface InvoiceDialogProps {
   open: boolean;
@@ -54,8 +55,8 @@ export function InvoiceDialog({ open, onOpenChange, payLogId, payLogList }: Invo
       const data = {
         invoiceNumber,
         dateOfIssue: formatTimestamp(payLogItem.created_at),
-        companyName: 'InfiniteTalk',
-        companyEmailAddress: 'support@infinitetalk.net',
+        companyName: siteConfig.shortName,
+        companyEmailAddress: contactConfig.supportEmail,
         customerName: user?.fullName || user?.username || 'Customer',
         customerEmail: user?.primaryEmailAddress?.emailAddress || 'customer@example.com',
         customerCompanyName: invoiceType === 'business' ? companyName.trim() : '',

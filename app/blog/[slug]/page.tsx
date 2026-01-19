@@ -6,6 +6,7 @@ import { Home, ChevronRight } from 'lucide-react';
 import { Metadata } from 'next';
 import styles from './blog-post.module.css';
 import BlogViewTracker from './BlogViewTracker';
+import { siteConfig } from '@/website-config';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -105,21 +106,21 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
   return {
     title: post.seo_name || post.title,
-    description: post.seo_desc || post.abstract || `Read about ${post.title} on InfiniteTalk AI blog.`,
+    description: post.seo_desc || post.abstract || `Read about ${post.title} on ${siteConfig.name} blog.`,
     openGraph: {
       title: post.seo_name || post.title,
-      description: post.seo_desc || post.abstract || `Read about ${post.title} on InfiniteTalk AI blog.`,
+      description: post.seo_desc || post.abstract || `Read about ${post.title} on ${siteConfig.name} blog.`,
       type: 'article',
       publishedTime: new Date(post.created_time * 1000).toISOString(),
-      authors: ['InfiniteTalk AI Team'],
+      authors: [`${siteConfig.name} Team`],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.seo_name || post.title,
-      description: post.seo_desc || post.abstract || `Read about ${post.title} on InfiniteTalk AI blog.`,
+      description: post.seo_desc || post.abstract || `Read about ${post.title} on ${siteConfig.name} blog.`,
     },
-    keywords: ['InfiniteTalk AI', 'blog', 'AI video', 'Wan 2.2', post.title],
-    authors: [{ name: 'InfiniteTalk AI Team' }],
+    keywords: [siteConfig.name, 'blog', 'AI video', 'Wan 2.2', post.title],
+    authors: [{ name: `${siteConfig.name} Team` }],
     category: 'Technology',
   };
 }
@@ -146,20 +147,20 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
           <div className="mb-12">
             <nav className="flex items-center space-x-2 text-sm">
               <Link
-                title="InfiniteTalk AI"
-                href="https://www.infinitetalk.net/"
+                title={siteConfig.name}
+                href={siteConfig.url}
                 className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 <Home className="w-4 h-4" />
-                InfiniteTalk AI
+                {siteConfig.name}
               </Link>
               <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
               <Link
-                title="InfiniteTalk AI Blog"
+                title={`${siteConfig.name} Blog`}
                 href="/blog"
                 className="text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
-                InfiniteTalk AI Blog
+                {siteConfig.name} Blog
               </Link>
               <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
               <span className="text-foreground font-medium">
@@ -171,7 +172,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
             {post.title}
           </h1>
           <div className="flex items-center gap-4 text-muted-foreground mb-6">
-            <span>InfiniteTalk AI Team</span>
+            <span>{siteConfig.name} Team</span>
             <span>•</span>
             <span>{formatDate(post.created_time)}</span>
             <span>•</span>

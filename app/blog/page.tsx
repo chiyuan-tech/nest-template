@@ -3,24 +3,25 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { Footer } from "../../components/Footer";
 import { Home, ChevronRight } from "lucide-react";
+import { siteConfig } from "@/website-config";
 
 // 页面metadata配置
 export const metadata: Metadata = {
-  title: "InfiniteTalk AI Video Generator Blog",
+  title: `${siteConfig.name} Video Generator Blog`,
   description:
-    "Read the latest posts on InfiniteTalk AI video generation. Get tips, inspiration, feature updates, and creative use cases.",
-  keywords: "InfiniteTalk AI blog, AI video tips, AI video ideas, AI video updates",
+    `Read the latest posts on ${siteConfig.name} video generation. Get tips, inspiration, feature updates, and creative use cases.`,
+  keywords: `${siteConfig.name} blog, AI video tips, AI video ideas, AI video updates`,
   openGraph: {
-    title: "InfiniteTalk AI Video Generator Blog",
+    title: `${siteConfig.name} Video Generator Blog`,
     description:
-      "Read the latest posts on InfiniteTalk AI video generation. Get tips, inspiration, feature updates, and creative use cases.",
+      `Read the latest posts on ${siteConfig.name} video generation. Get tips, inspiration, feature updates, and creative use cases.`,
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "InfiniteTalk AI Video Generator Blog",
+    title: `${siteConfig.name} Video Generator Blog`,
     description:
-      "Read the latest posts on InfiniteTalk AI video generation. Get tips, inspiration, feature updates, and creative use cases.",
+      `Read the latest posts on ${siteConfig.name} video generation. Get tips, inspiration, feature updates, and creative use cases.`,
   },
 };
 
@@ -90,30 +91,30 @@ export default async function Blog() {
           <div className="mb-12">
             <nav className="flex items-center space-x-2 text-sm">
               <Link 
-                title="InfiniteTalk AI"
-                href="https://www.infinitetalk.net/" 
+                title={siteConfig.name}
+                href={siteConfig.url} 
                 className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 <Home className="w-4 h-4" />
-                InfiniteTalk AI
+                {siteConfig.name}
               </Link>
               <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
               <span className="text-foreground font-medium">
-                InfiniteTalk AI Blog
+                {siteConfig.name} Blog
               </span>
             </nav>
           </div>
           
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 font-nunito bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-              InfiniteTalk AI Blog
+              {siteConfig.name} Blog
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Discover insights, tutorials, and updates about AI video generation
               and creative technology
             </p>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              InfiniteTalk AI 1.0 exploring the boundaries of video generation models
+              {siteConfig.name} 1.0 exploring the boundaries of video generation models
             </p>
           </div>
         </div>
@@ -152,9 +153,9 @@ export default async function Blog() {
                           </span>
                         </div>
                         <div>
-                                                  <div className="text-sm font-medium text-foreground">
-                          InfiniteTalk AI Team
-                        </div>
+                          <div className="text-sm font-medium text-foreground">
+                            {siteConfig.name} Team
+                          </div>
                           <div className="text-xs text-muted-foreground">
                             {formatDate(post.created_time)}
                           </div>

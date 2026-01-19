@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { FriendLink } from '../lib/server-api';
+import { siteConfig, contactConfig } from '@/website-config';
 
 interface FooterProps {
   friendlyLinks?: FriendLink[];
@@ -36,21 +37,21 @@ export function Footer({ friendlyLinks = [] }: FooterProps) {
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <span className="font-poppins text-xl font-bold text-primary">
-                InfiniteTalk AI
+                {siteConfig.name}
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              © 2025 InfiniteTalk AI. All rights reserved.
+              © 2025 {siteConfig.name}. All rights reserved.
             </p>
             <div className="mt-4">
               <a 
-                href="mailto:support@infinitetalk.net" 
+                href={`mailto:${contactConfig.supportEmail}`}
                 className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                support@infinitetalk.net
+                {contactConfig.supportEmail}
               </a>
             </div>
           </div>

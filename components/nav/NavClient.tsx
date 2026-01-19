@@ -57,15 +57,17 @@ const MenuIcon = () => (
   </svg>
 );
 
+// Shared navigation links for both mobile and desktop
+const navLinks = [
+  { href: '/', label: 'Home' },
+];
+
 // Mobile Links - Optimized for INP
 const MobileLinks = memo(({ pathname }: { pathname: string }) => {
-  const links = [
-    { href: '/', label: 'Home' },
-  ];
 
   return (
     <>
-      {links.map((link) => (
+      {navLinks.map((link) => (
         <SmartLink
           key={link.href}
           href={link.href}
@@ -117,15 +119,18 @@ export function NavClient() {
       {/* Desktop Nav Links */}
       <div className="hidden lg:flex items-center justify-center flex-1">
         <div className="flex items-center space-x-1">
-          <Link
-            href="/"
-            className={cn(
-              'nav-link-item px-4 py-2 rounded-md transition-colors',
-              pathname === '/' ? 'text-primary font-medium' : 'text-foreground/80 hover:text-primary'
-            )}
-          >
-            Home
-          </Link>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                'nav-link-item px-4 py-2 rounded-md transition-colors',
+                pathname === link.href ? 'text-primary font-medium' : 'text-foreground/80 hover:text-primary'
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
       </div>
 
