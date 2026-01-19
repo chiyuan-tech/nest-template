@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { api } from '@/lib/api';
 import { PayLogItem } from './types';
-import { formatTimestamp, getPriceFromPriceId, getPaginationItems, dialogTable } from './utils';
+import { formatTimestamp, getPaginationItems, dialogTable } from './utils';
 
 interface PayLogDialogProps {
   open: boolean;
