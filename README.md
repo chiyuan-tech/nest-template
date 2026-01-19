@@ -135,6 +135,12 @@ nest-template/
 │   │   ├── index.ts          # 统一导出文件
 │   │   ├── UserProvider.tsx  # 用户信息Provider
 │   │   └── README.md         # Provider使用说明
+│   ├── policy/                # Policy 系统（积分和权限管理）🎯
+│   │   ├── types.ts          # 类型定义
+│   │   ├── products.ts       # 产品配置和积分计算规则
+│   │   ├── evaluate.ts       # 策略评估引擎
+│   │   ├── README.md         # 详细使用指南
+│   │   └── SCENARIOS.md      # 使用场景示例
 │   ├── utils.ts              # 通用工具函数
 │   ├── api.ts                # 客户端 API 请求封装
 │   ├── server-api.ts         # 服务端 API 请求封装
@@ -193,6 +199,7 @@ nest-template/
 - **`lib/server-api.ts`** - 服务端 API 请求封装，不依赖 localStorage
 - **`lib/sitemap.ts`** - 自动生成 sitemap.xml 的逻辑
 - **`lib/share-utils.ts`** - 社交媒体分享功能工具函数
+- **`lib/policy/`** - Policy 系统，用于管理积分计算、优惠券限制和按钮状态（详见下方说明）
 
 ### 认证系统
 - 使用 **Clerk** 提供完整的用户认证功能
@@ -386,6 +393,99 @@ export default function Home() {
 - 积分计算规则在 `lib/policy/products.ts` 中定义
 - 策略评估在 `lib/policy/evaluate.ts` 中处理
 - API 配置在 `website-config.js` 中管理
+
+### Policy 系统（积分和权限管理）🎯
+
+Policy 系统提供了一种集中管理用户权益、表单限制和按钮状态的方式，适用于所有生成器页面。
+
+**位置**: `lib/policy/`
+
+**核心文件**:
+- **`types.ts`** - 类型定义（`ProductPolicy`, `PolicyDecision`, `FormContext` 等）
+- **`products.ts`** - 产品配置和积分计算规则
+- **`evaluate.ts`** - 策略评估引擎
+- **`README.md`** - 详细使用指南和示例
+
+**主要功能**:
+- ✅ 积分计算：根据表单参数（分辨率、时长等）动态计算所需积分
+- ✅ 优惠券限制：管理免费优惠券的使用限制
+- ✅ 按钮状态：自动决定按钮文本和操作（生成/登录/升级/购买积分）
+- ✅ 权限判断：根据用户等级和积分判断是否允许生成
+
+**快速使用**:
+
+1. **定义产品配置**（在 `lib/policy/products.ts` 中）:
+```typescript
+export const productPolicies: Record<string, ProductPolicy> = {
+  'your-product-id': {
+    productId: 'your-product-id',
+    voucherConstraints: {
+      resolution: ['480p'], // 优惠券仅支持 480p
+      duration: [5],         // 优惠券仅支持 5s
+    },
+    creditPricing: (form: FormContext) => {
+      // 根据表单参数计算积分
+      if (form.resolution === '1080p' && form.duration === 10) return 400;
+      if (form.resolution === '720p' && form.duration === 10) return 140;
+      return 30; // 默认值
+    },
+  },
+};
+```
+
+2. **在组件中使用**:
+```typescript
+import { evaluatePolicy } from '@/lib/policy/evaluate';
+import { useUserInfo } from '@/lib/providers';
+
+const policyDecision = useMemo(() => {
+  if (!userInfo) {
+    return {
+      allowed: false,
+      primaryAction: 'signin' as const,
+      buttonText: 'GENERATE',
+      costBadge: 0,
+    };
+  }
+
+  return evaluatePolicy({
+    productId: 'your-product-id',
+    user: {
+      isSignedIn: isSignedIn ?? false,
+      level: userInfo.level,
+      total_credits: userInfo.total_credits,
+      free_times: userInfo.free_times,
+    },
+    form: {
+      resolution: formData.resolution,
+      duration: formData.duration,
+      // ... 其他表单字段
+    },
+  });
+}, [isSignedIn, userInfo, formData]);
+
+// 使用 policyDecision 控制按钮
+<Button onClick={() => {
+  if (policyDecision.primaryAction === 'signin') {
+    openAuthModal('signin');
+  } else if (policyDecision.primaryAction === 'generate') {
+    handleGenerate();
+  }
+}}>
+  {policyDecision.buttonText} {policyDecision.costBadge}
+</Button>
+```
+
+**Policy 决策属性**:
+- `voucherEligible`: 用户是否处于优惠券可用状态
+- `voucherRestricted`: 是否因为优惠券限制而不允许生成
+- `allowed`: 是否允许生成
+- `primaryAction`: 按钮应该执行的操作（'signin' | 'generate' | 'upgrade' | 'buyCredits'）
+- `buttonText`: 按钮标签文本
+- `costBadge`: 显示的成本（'free' 或积分数字）
+- `requiredCredits`: 需要的积分数量
+
+**详细文档**: 查看 `lib/policy/README.md` 获取完整的使用指南和示例。
 
 ### 开发规范
 - 查看 `.cursor/rules/website.mdc` 了解代码规范和最佳实践
