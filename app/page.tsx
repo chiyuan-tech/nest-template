@@ -5,6 +5,10 @@ import { Metadata } from 'next';
 import { siteConfig, siteUrl } from '@/website-config';
 
 // Client island - dynamically imported for code splitting
+const Hero = dynamic(() => import('../components/home/Hero'), {
+  loading: () => <div className="h-96 animate-pulse bg-muted/10 rounded-lg" />,
+});
+
 const PricingSectionWithHeader = dynamic(() => import('../components/PricingSectionWithHeader'), {
   loading: () => <div className="h-96 animate-pulse bg-muted/10 rounded-lg" />,
 });
@@ -67,6 +71,7 @@ export default async function Home() {
       />
       
       <main className="flex-grow relative">
+        <Hero />
         <PricingSectionWithHeader />
       </main>
       

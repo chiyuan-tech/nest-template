@@ -1,9 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { useUser, useAuth, useClerk } from '@clerk/nextjs';
 import { api } from '../api';
 import { useToast } from '@/components/ui/toast-provider';
+import { VoucherToast } from '@/components/ui/voucher-toast';
 
 export interface UserInfo {
   uuid: string;
@@ -22,6 +23,7 @@ export interface UserInfo {
   status: number;
   id: number;
   total_credits: number; // 计算字段：free_limit + remaining_limit
+  free_times: number; // 用户免费额度
 }
 
 interface UserContextType {
@@ -78,6 +80,9 @@ export function UserProvider({ children }: UserProviderProps) {
   const { signOut } = useClerk();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState(false);
+  const [voucherCount, setVoucherCount] = useState<number>(0);
+  const [showVoucherToast, setShowVoucherToast] = useState(false);
+  const hasShownVoucherRef = useRef(false);
   const { error: showErrorToast } = useToast();
 
 
@@ -87,7 +92,7 @@ export function UserProvider({ children }: UserProviderProps) {
     const checkAndCacheIvcode = () => {
       try {
         const urlParams = new URLSearchParams(window.location.search);
-        const ivcode = urlParams.get('i') || urlParams.get('ivcode');
+        const ivcode = urlParams.get('i') ||  urlParams.get('ivcode');
 
         if (ivcode) {
           // 如果 URL 中有 ivcode，保存到缓存
@@ -173,7 +178,7 @@ export function UserProvider({ children }: UserProviderProps) {
         // 如果缓存中没有，尝试从当前URL获取（用于向后兼容）
         try {
           const urlParams = new URLSearchParams(window.location.search);
-          ivcode = urlParams.get('i') || urlParams.get('ivcode')
+          ivcode = urlParams.get('i') || urlParams.get('ivcode');
           if (ivcode) {
             // 如果从URL获取到了，也保存到缓存
             saveIvcodeToCache(ivcode);
@@ -278,6 +283,8 @@ export function UserProvider({ children }: UserProviderProps) {
       const result = await api.user.getUserInfo();
 
       if (result.code === 200 && result.data) {
+        const freeTimes = typeof result.data.free_times === 'number' ? result.data.free_times : 0;
+
         const userInfoData: UserInfo = {
           uuid: result.data.uuid,
           email: result.data.email,
@@ -294,9 +301,22 @@ export function UserProvider({ children }: UserProviderProps) {
           updated_at: result.data.updated_at,
           status: result.data.status,
           id: result.data.id,
-          total_credits: result.data.free_limit + result.data.remaining_limit
+          total_credits: result.data.free_limit + result.data.remaining_limit,
+          free_times: freeTimes
         };
         setUserInfo(userInfoData);
+
+        const hasFreeVouchers = userInfoData.free_times > 0;
+        const isLevelZeroOrBelow = userInfoData.level <= 0;
+
+        // 弹窗规则：
+        // 1. 只在当前会话中弹一次（useRef 记录，避免轮询多次弹出）
+        // 2. level <= 0 并且 free_times > 0 就弹
+        if (isLevelZeroOrBelow && hasFreeVouchers && !hasShownVoucherRef.current) {
+          setVoucherCount(userInfoData.free_times);
+          setShowVoucherToast(true);
+          hasShownVoucherRef.current = true;
+        }
       } else {
         console.warn("User info API returned success code but no data for:", user.id);
         setUserInfo(null);
@@ -326,6 +346,8 @@ export function UserProvider({ children }: UserProviderProps) {
     if (isSignedIn && user?.id) {
       // 清空之前的用户信息
       setUserInfo(null);
+      // 每次用户登录或切换账号时重置本次会话的弹窗标记
+      hasShownVoucherRef.current = false;
 
       // 先同步用户数据，确保token可用
       syncUserToBackend();
@@ -373,6 +395,9 @@ export function UserProvider({ children }: UserProviderProps) {
   return (
     <UserContext.Provider value={value}>
       {children}
+      {showVoucherToast && (
+        <VoucherToast count={voucherCount} onClose={() => setShowVoucherToast(false)} />
+      )}
     </UserContext.Provider>
   );
 }

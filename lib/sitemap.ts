@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { serverCmsApi } from './server-api';
-import { siteUrl } from '@/website-config';
+import { siteUrl, staticPages } from '@/website-config';
 
 // Use siteUrl from website-config.js
 const BASE_URL = siteUrl;
@@ -24,14 +24,7 @@ function generateSlug(title: string, url?: string): string {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static pages (relative to root)
-  const staticPages = [
-    '/',
-    '/terms',
-    '/privacy',
-    '/refund'
-  ];
-
+  // Static pages are imported from website-config.js
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
   // Add static pages URLs (without locale prefix)

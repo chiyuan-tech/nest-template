@@ -280,7 +280,197 @@ export const paymentApi = {
   },
 };
 
+export const videoApi = {
+  // 文生视频接口
+  textToVideo: async (params: {
+    prompt: string;
+    resolution: string;
+    ratio: string;
+    duration: number;
+    framepersecond?: number;
+  }) => {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/text2video`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        prompt: params.prompt,
+        resolution: params.resolution,
+        ratio: params.ratio,
+        duration: params.duration,
+        framepersecond: params.framepersecond || 24,
+      }),
+    });
 
+    return handleApiError(response);
+  },
+
+  // 图生视频接口
+  imageToVideo: async (params: {
+    prompt: string;
+    resolution: string;
+    duration: number;
+    framepersecond?: number;
+    image_file: File;
+    image_tail_file?: File; // 尾帧图片，非必须
+  }) => {
+    console.log(params);
+    const formData = new FormData();
+    formData.append('prompt', params.prompt);
+    formData.append('resolution', params.resolution);
+    formData.append('duration', params.duration.toString());
+    formData.append('framepersecond', (params.framepersecond || 24).toString());
+    formData.append('image_file', params.image_file);
+    
+    // 如果提供了尾帧图片，则添加到 FormData
+    if (params.image_tail_file) {
+      formData.append('image_tail_file', params.image_tail_file);
+    }
+
+    console.log(formData);
+
+    // 为FormData请求创建特殊的头部（不包含Content-Type，让浏览器自动设置）
+    const token = localStorage.getItem('access_token');
+    const headers: Record<string, string> = {
+      'x-appid': API_CONFIG.APP_ID,
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/img2video`, {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    });
+
+    return handleApiError(response);
+  },
+
+
+  // 检查任务状态接口
+  checkTaskStatus: async (taskId: string) => {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/check_task_status?task_id=${taskId}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+
+    return handleApiError(response);
+  },
+
+
+
+  // 轮询检查任务状态，直到完成或失败
+  pollTaskStatus: async (
+    taskId: string,
+    onProgress?: (progress: number, statusMsg: string) => void
+  ): Promise<{ video_url: string; status: number; status_msg: string }> => {
+    return new Promise((resolve, reject) => {
+      const poll = async () => {
+        try {
+          const result = await videoApi.checkTaskStatus(taskId);
+
+          if (result.code !== 200) {
+            reject(new Error(result.msg || 'Task check failed'));
+            return;
+          }
+
+          const { status, status_msg, video_url, progress } = result.data;
+
+          // 更新进度
+          if (onProgress) {
+            const progressNum = parseFloat(progress) * 100;
+            onProgress(progressNum, status_msg);
+          }
+
+          if (status === 1) {
+            // 任务完成
+            resolve({
+              video_url: video_url,
+              status,
+              status_msg
+            });
+          } else if (status === -1) {
+            // 任务失败
+            reject(new Error(status_msg || 'Task failed'));
+          } else {
+            // 任务进行中，2秒后继续轮询
+            setTimeout(poll, 2000);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      poll();
+    });
+  },
+
+  // Seedance 1.5 Pro - 文生视频接口
+  seedance15TextToVideo: async (params: {
+    prompt: string;
+    resolution: string;
+    duration: number;
+    camerafixed: boolean;
+    audio: boolean;
+  }) => {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/seedance1.5/text2video`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        prompt: params.prompt,
+        resolution: params.resolution,
+        duration: params.duration,
+        camerafixed: params.camerafixed,
+        audio: params.audio,
+      }),
+    });
+
+    return handleApiError(response);
+  },
+
+  // Seedance 1.5 Pro - 图生视频接口
+  seedance15ImageToVideo: async (params: {
+    prompt: string;
+    resolution: string;
+    duration: number;
+    image_file: File;
+    image_tail_file?: File;
+    camerafixed: boolean;
+    audio: boolean;
+  }) => {
+    const formData = new FormData();
+    formData.append('prompt', params.prompt);
+    formData.append('resolution', params.resolution);
+    formData.append('duration', params.duration.toString());
+    formData.append('camerafixed', params.camerafixed.toString());
+    formData.append('audio', params.audio.toString());
+    formData.append('image_file', params.image_file);
+    
+    // 如果提供了尾帧图片，则添加到 FormData
+    if (params.image_tail_file) {
+      formData.append('image_tail_file', params.image_tail_file);
+    }
+
+    // 为FormData请求创建特殊的头部（不包含Content-Type，让浏览器自动设置）
+    const token = localStorage.getItem('access_token');
+    const headers: Record<string, string> = {
+      'x-appid': API_CONFIG.APP_ID,
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/seedance1.5/img2video`, {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    });
+
+    return handleApiError(response);
+  },
+};
 
 // CMS相关接口
 export const cmsApi = {
@@ -370,6 +560,7 @@ export const api = {
   payment: paymentApi,
   website: websiteApi,
   cms: cmsApi,
+  video: videoApi,
 
   withRetry: apiWithRetry,
 }; 

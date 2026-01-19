@@ -2,6 +2,45 @@
 
 一个基于 Next.js 15 + TypeScript + Tailwind CSS 的现代化 Web 应用基础模板，集成了用户认证、博客系统、支付处理和 SEO 优化等核心功能。
 
+## 🚀 快速开始
+
+按照以下步骤快速配置和启动你的项目：
+
+### 1. 选择主题颜色
+访问 [shadcn/ui Themes](https://ui.shadcn.com/themes) 选择一种颜色主题，然后更新以下文件：
+- **`app/globals.css`** - 更新 `:root` 和 `.dark` 中的颜色变量（使用 oklch 格式）
+- **`tailwind.config.js`** - 确保颜色配置与 `globals.css` 同步
+
+### 2. 更新网站配置
+编辑 **`website-config.js`** 文件，更新为新项目的内容：
+- 项目名称 (`site.name`)
+- 项目描述 (`site.description`)
+- 网站 URL (`site.url`)
+- 联系邮箱 (`contact.supportEmail`)
+- API 配置 (`api.baseUrl`, `api.appId`)
+- 价格方案 (`pricing.oneTimePlans`)
+
+### 3. 替换图片资源
+替换以下图片文件为你的项目资源：
+- **`app/favicon.ico`** - 网站图标
+- **`public/logo.webp`** - Logo 图片（如果使用）
+- **`public/share-img.png`** - 默认分享图片（用于 OpenGraph 和 Twitter 卡片）
+
+### 4. 创建首页内容
+编辑 **`app/page.tsx`** 创建你的首页内容，并确保：
+- 更新页面的 `metadata` 对象
+- 使用 `siteConfig` 和 `siteUrl` 从 `website-config.js` 导入
+- 确保 Title ≤ 60 字符，Description ≤ 160 字符
+- 所有页面（除 `profile` 和 `sso-callback`）都需要导出完整的 `metadata`
+
+### 5. 更新 SEO 文件
+更新以下 SEO 相关文件：
+- **`public/llms.txt`** - 更新网站信息、URL 和允许的页面路径
+- **`public/robots.txt`** - 更新网站 URL 和 sitemap 路径
+- **`lib/sitemap.ts`** - 更新 `staticPages` 数组，添加你的静态页面路径
+
+---
+
 ## ✨ 功能特性
 
 - 🚀 **Next.js 15** - 最新的 React 框架，支持 App Router

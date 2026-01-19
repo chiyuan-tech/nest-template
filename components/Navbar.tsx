@@ -5,7 +5,7 @@ import { siteConfig } from '@/website-config';
 
 export function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-xl">
+    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-xl">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between h-16">
           {/* Left: Logo */}

@@ -22,6 +22,17 @@ export const websiteConfig = {
     appId: 'infinitetalk',
   },
 
+  // SEO Configuration
+  seo: {
+    // Static pages for sitemap generation
+    staticPages: [
+      '/',
+      '/terms',
+      '/privacy',
+      '/refund',
+    ],
+  },
+
   // Pricing Configuration
   pricing: {
     // One-time purchase plans
@@ -108,7 +119,11 @@ export const websiteConfig = {
 export const siteConfig = websiteConfig.site;
 export const contactConfig = websiteConfig.contact;
 export const apiConfig = websiteConfig.api;
+export const seoConfig = websiteConfig.seo;
 export const pricingConfig = websiteConfig.pricing;
 
 // Export siteUrl for convenience
 export const siteUrl = websiteConfig.site.url;
+
+// Export staticPages for convenience
+export const staticPages = websiteConfig.seo.staticPages;
