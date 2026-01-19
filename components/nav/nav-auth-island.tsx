@@ -1,7 +1,7 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import AuthButton from './auth-button';
+import AuthButton from '../auth/auth-button';
 import { useUserInfo } from '@/lib/providers';
 import { memo } from 'react';
 

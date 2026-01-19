@@ -14,7 +14,7 @@ const prewarmModules = () => {
   if (prewarmed) return;
   
   const prewarm = () => {
-    import('./user-profile-menu').then(m => (CachedUserMenu = m.default))
+    import('../nav/user-profile-menu').then(m => (CachedUserMenu = m.default))
       .then(() => {
         prewarmed = true;
       })
@@ -54,7 +54,7 @@ export default function AuthButton() {
   // 层2：登录成功后立即预热
   useEffect(() => {
     if (isSignedIn && !CachedUserMenu) {
-      import('./user-profile-menu').then(m => (CachedUserMenu = m.default));
+      import('../nav/user-profile-menu').then(m => (CachedUserMenu = m.default));
       prewarmed = true;
       setIsPrewarmed(true);
     }
@@ -70,7 +70,7 @@ export default function AuthButton() {
   }
 
   if (isSignedIn && user) {
-    const UserMenu = CachedUserMenu || require('./user-profile-menu').default;
+    const UserMenu = CachedUserMenu || require('../nav/user-profile-menu').default;
     return <UserMenu user={user} />;
   }
 

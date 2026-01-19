@@ -279,7 +279,7 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
 
   // Memoize title and description to prevent unnecessary re-renders
   const title = useMemo(() => {
-    if (view === 'signin') return `Sign in to ${siteConfig.shortName}`;
+    if (view === 'signin') return `Sign in to ${siteConfig.name}`;
     if (view === 'signup') return 'Create your account';
     return 'Verify your email';
   }, [view]);

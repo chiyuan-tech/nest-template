@@ -12,7 +12,7 @@ export function Navbar() {
           <div className="w-[180px] 2xl:w-[200px] flex-shrink-0">
             <Link href="/" className="flex items-center space-x-2">
               <span className="font-poppins text-xl font-bold text-primary">
-                {siteConfig.shortName}
+                {siteConfig.name}
               </span>
             </Link>
           </div>

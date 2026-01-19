@@ -7,7 +7,6 @@ export const websiteConfig = {
   // Site Information
   site: {
     name: 'InfiniteTalk AI',
-    shortName: 'InfiniteTalk',
     description: 'Advanced AI-powered video generation and dubbing service',
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.infinitetalk.net',
   },
@@ -15,6 +14,12 @@ export const websiteConfig = {
   // Contact Information
   contact: {
     supportEmail: 'support@infinitetalk.net',
+  },
+
+  // API Configuration
+  api: {
+    baseUrl: 'https://svc.infinitetalk.net',
+    appId: 'infinitetalk',
   },
 
   // Pricing Configuration
@@ -102,6 +107,7 @@ export const websiteConfig = {
 // Export individual sections for convenience
 export const siteConfig = websiteConfig.site;
 export const contactConfig = websiteConfig.contact;
+export const apiConfig = websiteConfig.api;
 export const pricingConfig = websiteConfig.pricing;
 
 // Export siteUrl for convenience
