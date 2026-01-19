@@ -47,8 +47,8 @@ export default function PrivacyPolicyPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <main className="flex-grow py-12 md:py-16 px-6">
-        <div className="container mx-auto max-w-4xl">
+      <main className="flex-grow py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
           <article className="prose prose-xl lg:prose-2xl max-w-none dark:prose-invert bg-card p-8 md:p-12 rounded-2xl shadow-custom">
             <h1 className="text-center font-poppins font-bold text-primary text-3xl md:text-4xl mb-4">{privacyContent.title}</h1>
             <p className="text-center text-base text-muted-foreground mb-10">{privacyContent.effectiveDate}</p>
@@ -56,7 +56,7 @@ export default function PrivacyPolicyPage() {
             
             {privacyContent.sections.map((section, index) => (
               <section key={index} className="mt-10">
-                <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground">{section.title}</h2>
+                <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground mb-3">{section.title}</h2>
                 <div className="text-base md:text-lg text-muted-foreground space-y-4">
                   {section.content.split('\n').map((paragraph, pIndex) => (
                     paragraph.trim() && <p key={pIndex}>{paragraph}</p>
