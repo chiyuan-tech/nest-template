@@ -1,4 +1,5 @@
 // 分享工具函数
+import { siteConfig } from '@/website-config';
 
 export type SocialPlatform = 'twitter' | 'facebook' | 'whatsapp';
 
@@ -13,7 +14,7 @@ export const generateShareUrl = (taskId: string, platform: SocialPlatform): stri
   const videoPageUrl = `${window.location.origin}/share/${taskId}`;
   
   // 分享文案
-  const shareText = 'Check out this amazing video I created with InfiniteTalk!';
+  const shareText = `Check out this amazing video I created with ${siteConfig.name}!`;
   
   switch (platform) {
     case 'twitter':

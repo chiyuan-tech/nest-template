@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useUser } from '@clerk/nextjs';
 import { PayLogItem } from './types';
-import { formatTimestamp, getPriceFromPriceId } from './utils';
+import { formatTimestamp } from './utils';
 import { useToast } from '@/components/ui/toast-provider';
 import InvoiceTemplate from '@/components/InvoiceTemplate';
 import { siteConfig, contactConfig } from '@/website-config';
@@ -55,7 +55,7 @@ export function InvoiceDialog({ open, onOpenChange, payLogId, payLogList }: Invo
       const data = {
         invoiceNumber,
         dateOfIssue: formatTimestamp(payLogItem.created_at),
-        companyName: siteConfig.shortName,
+        companyName: siteConfig.name,
         companyEmailAddress: contactConfig.supportEmail,
         customerName: user?.fullName || user?.username || 'Customer',
         customerEmail: user?.primaryEmailAddress?.emailAddress || 'customer@example.com',
