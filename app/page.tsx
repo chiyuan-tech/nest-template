@@ -3,8 +3,8 @@ import { Footer } from '../components/Footer';
 import dynamic from 'next/dynamic';
 
 // Client island - dynamically imported for code splitting
-const PricingSection = dynamic(() => import('../components/PricingSection'), {
-  loading: () => <div className="h-96 animate-pulse bg-gray-100/5 rounded-lg" />,
+const PricingSectionWithHeader = dynamic(() => import('../components/PricingSectionWithHeader'), {
+  loading: () => <div className="h-96 animate-pulse bg-muted/10 rounded-lg" />,
 });
 
 // Enable ISR - revalidate every 20 minutes
@@ -24,11 +24,7 @@ export default async function Home() {
       />
       
       <main className="flex-grow relative">
-   
-        
-    
-      <PricingSection />
-   
+        <PricingSectionWithHeader />
       </main>
       
       {/* Server Component: Footer */}

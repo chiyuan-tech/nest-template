@@ -21,7 +21,12 @@ interface PricingPlan {
   buttonText: string;
 }
 
-export default function PricingSection() {
+interface PricingSectionProps {
+  hideSection?: boolean;
+  hideHeader?: boolean;
+}
+
+export default function PricingSection({ hideSection = false, hideHeader = false }: PricingSectionProps = {}) {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const { user, isSignedIn } = useUser();
   const { openSignIn } = useClerk();
@@ -83,10 +88,11 @@ export default function PricingSection() {
     } 
   };
 
-  return (
-    <section id="pricing" className="py-24 px-4 bg-background">
-      <div className="max-w-7xl mx-auto">
+  const content = (
+    <>
+      {!hideHeader && (
         <div className="text-foreground text-xl font-semibold mb-6">One-time Credits</div>
+      )}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-8xl mx-auto mb-16">
             {pricingPlans.map((plan) => {
               const isFree = plan.key === 'free';
@@ -209,6 +215,17 @@ export default function PricingSection() {
               <span>✓ Email support</span>
             </div>
           </div>
+    </>
+  );
+
+  if (hideSection) {
+    return <div className="max-w-7xl mx-auto">{content}</div>;
+  }
+
+  return (
+    <section id="pricing" className="py-24 px-4 bg-background">
+      <div className="max-w-7xl mx-auto">
+        {content}
       </div>
     </section>
   );

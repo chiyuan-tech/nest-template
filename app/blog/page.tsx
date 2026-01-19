@@ -106,16 +106,14 @@ export default async function Blog() {
           </div>
           
           <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 font-nunito bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 font-nunito bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent leading-normal pb-2">
               {siteConfig.name} Blog
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Discover insights, tutorials, and updates about AI video generation
               and creative technology
             </p>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              {siteConfig.name} 1.0 exploring the boundaries of video generation models
-            </p>
+        
           </div>
         </div>
       </div>
