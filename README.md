@@ -6,6 +6,26 @@
 
 按照以下步骤快速配置和启动你的项目：
 
+### 0. 配置 Git 仓库和用户信息
+
+拉取代码后，首先配置新的远程仓库地址以及 Git 用户名和邮箱：
+
+```bash
+# 移除旧的远程仓库地址
+git remote remove origin
+
+# 添加新的远程仓库地址
+git remote add origin git@github-cy:your-org/your-repo.git
+
+# 配置 Git 用户名和邮箱
+git config user.name "your-username"
+git config user.email "your-email@example.com"
+```
+
+**说明**：
+- 将 `git@github-cy:your-org/your-repo.git` 替换为你的实际远程仓库地址
+- 将 `your-username` 和 `your-email@example.com` 替换为你的 Git 用户名和邮箱
+
 ### 1. 选择主题颜色
 访问 [shadcn/ui Themes](https://ui.shadcn.com/themes) 选择一种颜色主题，然后更新以下文件：
 - **`app/globals.css`** - 更新 `:root` 和 `.dark` 中的颜色变量（使用 oklch 格式）
@@ -39,6 +59,11 @@
 - **`public/llms.txt`** - 更新网站信息、URL 和允许的页面路径
 - **`public/robots.txt`** - 更新网站 URL 和 sitemap 路径
 - **`lib/sitemap.ts`** - 更新 `staticPages` 数组，添加你的静态页面路径
+- **`app/` 目录下的所有页面** - 更新所有需要 metadata 的文件，确保：
+  - 每个页面（除 `profile` 和 `sso-callback`）都导出完整的 `metadata` 对象
+  - Title ≤ 60 字符，Description ≤ 160 字符，Keywords < 100 字符
+  - 使用 `siteConfig` 和 `siteUrl` 从 `website-config.js` 导入
+  - 分享图片路径使用 `/share-img.png`
 
 ---
 
@@ -84,6 +109,10 @@ nest-template/
 │   ├── PricingSection.tsx     # 价格展示组件
 │   ├── PricingSectionWithHeader.tsx # 带标题的价格展示组件
 │   ├── InvoiceTemplate.tsx   # 发票模板组件
+│   ├── home/                  # 首页相关组件
+│   │   └── Hero.tsx           # 首页 Hero 组件（引用 generator）
+│   ├── generator-common/      # 通用生成器模块 🎬
+│   │   └── generator.tsx      # 通用生成器组件（三列布局）
 │   ├── ui/                    # UI 基础组件库
 │   │   ├── button.tsx         # 按钮组件
 │   │   ├── dialog.tsx        # 对话框组件
@@ -317,6 +346,46 @@ import { siteConfig, contactConfig, pricingConfig, apiConfig } from '@/website-c
 <h1>{siteConfig.name}</h1>
 <a href={`mailto:${contactConfig.supportEmail}`}>Contact</a>
 ```
+
+### 通用 Generator 模块
+
+项目包含一个通用的生成器模块，方便快速接入新的 API 接口：
+
+**位置**: `components/generator-common/generator.tsx`
+
+**特点**:
+- ✅ 三列布局设计（左侧表单、中间预览、右侧历史记录）
+- ✅ 完整的表单验证和错误处理
+- ✅ 积分计算和政策评估系统
+- ✅ 用户认证集成
+- ✅ 历史记录管理
+- ✅ 响应式设计
+
+**使用方法**:
+1. 复制 `components/generator-common/generator.tsx` 到你的项目
+2. 根据 API 接口所需字段，修改左侧表单的表单字段
+3. 更新 `FormData` 接口定义
+4. 修改 API 调用逻辑（在 `handleGenerate` 函数中）
+5. 根据需要调整积分计算规则（在 `lib/policy/products.ts` 中）
+
+**示例**:
+```tsx
+// 在 app/page.tsx 中使用
+import Hero from '@/components/home/Hero';
+
+export default function Home() {
+  return (
+    <div>
+      <Hero /> {/* Hero 组件内部引用了 generator.tsx */}
+    </div>
+  );
+}
+```
+
+**配置**:
+- 积分计算规则在 `lib/policy/products.ts` 中定义
+- 策略评估在 `lib/policy/evaluate.ts` 中处理
+- API 配置在 `website-config.js` 中管理
 
 ### 开发规范
 - 查看 `.cursor/rules/website.mdc` 了解代码规范和最佳实践
