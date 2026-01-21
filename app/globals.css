@@ -139,6 +139,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+  
+  html {
+    overflow-x: hidden;
   }
   
   /* 自定义字体样式 - Optimized to use Poppins as primary */

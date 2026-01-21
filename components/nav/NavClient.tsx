@@ -98,10 +98,12 @@ export function NavClient() {
 
   // 监听 SmartLink 的关闭事件
   useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    
     const close = () => setIsMobileMenuOpen(false);
-    window.addEventListener('drawer-close', close as any, { once: true });
+    window.addEventListener('drawer-close', close as any);
     return () => window.removeEventListener('drawer-close', close as any);
-  }, [isMobileMenuOpen]); // 当抽屉打开时，监听一次
+  }, [isMobileMenuOpen]);
 
   // Use RAF for opening to defer heavy work
   const handleOpenMenu = useCallback(() => {
@@ -148,7 +150,7 @@ export function NavClient() {
           {/* Menu Button */}
           <button
             onClick={handleOpenMenu}
-            className="inline-flex items-center justify-center h-10 w-10 rounded-md text-white hover:text-primary hover:bg-slate-700/50 transition-colors"
+            className="inline-flex items-center justify-center h-10 w-10 rounded-md text-foreground/80 hover:text-primary hover:bg-muted/50 transition-colors"
             aria-label="Open menu"
             type="button"
           >
@@ -161,9 +163,9 @@ export function NavClient() {
             onOpenChange={setIsMobileMenuOpen}
             className="w-[300px] sm:w-[340px]"
           >
-            <div className="flex flex-col h-full px-6 pt-[env(safe-area-inset-top,0)] pb-[env(safe-area-inset-bottom,0)] text-white">
+            <div className="flex flex-col h-full px-6 pt-[env(safe-area-inset-top,0)] pb-[env(safe-area-inset-bottom,0)] text-white overflow-x-hidden">
               {/* Header - 移除 backdrop-blur 优化性能 */}
-              <div className="sticky top-0 z-10 -mx-6 px-6 pt-4 pb-4 bg-slate-900/95 flex items-center justify-between border-b border-white/10">
+              <div className="sticky top-0 z-10 -mx-6 px-6 pt-4 pb-4 bg-slate-900/95 flex items-center justify-between border-b border-white/10 min-w-0">
                 <div className="text-lg font-semibold">Menu</div>
                 <button
                   type="button"
@@ -180,7 +182,7 @@ export function NavClient() {
               </div>
 
               {/* Links */}
-              <nav className="flex flex-col space-y-4 mt-6 pb-10">
+              <nav className="flex flex-col space-y-4 mt-6 pb-10 min-w-0 overflow-x-hidden">
                 <MobileLinks pathname={pathname} />
               </nav>
             </div>

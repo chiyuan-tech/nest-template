@@ -17,6 +17,7 @@ export const LiteDrawer: React.FC<LiteDrawerProps> = ({
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const scrollYRef = useRef<number>(0);
 
   // 使用 rAF 批量更新样式，避免多次重排
   const updateStyles = useCallback(() => {
@@ -24,7 +25,19 @@ export const LiteDrawer: React.FC<LiteDrawerProps> = ({
       const isMobile = window.innerWidth < 768;
       
       requestAnimationFrame(() => {
+        // 保存当前滚动位置
+        scrollYRef.current = window.scrollY;
+        
+        // 禁用所有滚动，防止横向滚动
         document.body.style.overflow = 'hidden';
+        document.body.style.overflowX = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollYRef.current}px`;
+        document.body.style.width = '100%';
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.documentElement.style.overflowX = 'hidden';
+        
         if (!isMobile) {
           const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
           document.body.style.paddingRight = `${scrollbarWidth}px`;
@@ -34,8 +47,19 @@ export const LiteDrawer: React.FC<LiteDrawerProps> = ({
       });
     } else {
       requestAnimationFrame(() => {
+        // 恢复滚动
         document.body.style.overflow = '';
+        document.body.style.overflowX = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
         document.body.style.paddingRight = '';
+        document.documentElement.style.overflowX = '';
+        
+        // 恢复滚动位置
+        window.scrollTo(0, scrollYRef.current);
       });
     }
   }, [open]);
@@ -81,9 +105,9 @@ export const LiteDrawer: React.FC<LiteDrawerProps> = ({
       <div
         ref={drawerRef}
         role="dialog"
-        aria-modal="false"
+        aria-modal="true"
         aria-hidden={!open}
-        className={`fixed top-0 right-0 bottom-0 h-dvh max-h-dvh w-[85vw] sm:w-[340px] bg-slate-900 shadow-2xl transition-transform duration-200 ease-out z-50 overflow-y-auto overscroll-contain touch-pan-y ${
+        className={`fixed top-0 right-0 bottom-0 h-dvh max-h-dvh w-[85vw] sm:w-[340px] bg-slate-900 shadow-2xl transition-transform duration-200 ease-out z-50 overflow-y-auto overflow-x-hidden overscroll-contain touch-pan-y ${
           open ? 'translate-x-0' : 'translate-x-full'
         } [will-change:transform] ${className}`}
       >
