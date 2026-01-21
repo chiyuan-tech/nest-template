@@ -142,10 +142,6 @@
     overflow-x: hidden;
   }
   
-  html {
-    overflow-x: hidden;
-  }
-  
   /* 自定义字体样式 - Optimized to use Poppins as primary */
   .font-poppins {
     font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
