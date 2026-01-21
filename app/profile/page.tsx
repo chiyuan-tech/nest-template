@@ -523,6 +523,9 @@ export default function ProfilePage() {
               )}
             </Button>
           </div>
+          <p className="text-muted-foreground text-sm mt-2">
+            Works are retained for 6 months. Please download and save promptly.
+          </p>
         </div>
 
         {/* 视频历史区域（按日期分组） */}
