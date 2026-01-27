@@ -5,22 +5,18 @@ import { siteConfig } from '@/website-config';
 
 export function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-xl">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between h-16">
-          {/* Left: Logo */}
-          <div className="w-[180px] 2xl:w-[200px] flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="font-poppins text-xl font-bold text-primary">
-                {siteConfig.name}
-              </span>
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto flex h-16 max-w-7xl items-center px-4">
+        {/* Logo */}
+        <Link href="/" className="mr-6 flex items-center space-x-2 flex-shrink-0">
+          <span className="font-poppins text-xl font-bold text-primary">
+            {siteConfig.name}
+          </span>
+        </Link>
 
-          {/* Middle & Right: Client-side interactive parts */}
-          <NavClient />
-        </div>
+        {/* Navigation */}
+        <NavClient />
       </div>
-    </nav>
+    </header>
   );
 }

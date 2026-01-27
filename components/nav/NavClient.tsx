@@ -1,12 +1,28 @@
 'use client';
 
-import React, { useState, useCallback, memo, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { LiteDrawer, LiteDrawerClose } from './LiteDrawer';
-import SmartLink from './SmartLink';
-import { cn } from '../../lib/utils';
+import { Menu } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 
 // Loading spinner component
 const LoadingSpinner = () => (
@@ -16,180 +32,175 @@ const LoadingSpinner = () => (
   </svg>
 );
 
-// Lazy load auth island
+// Lazy load auth components
 const NavAuthIsland = dynamic(() => import('./nav-auth-island'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
+    <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-full border">
       <LoadingSpinner />
-      <span className="text-sm text-gray-500 dark:text-gray-400">Signing in</span>
+      <span className="text-sm text-muted-foreground">Loading</span>
     </div>
   ),
 });
 
-// Lazy load mobile auth island with intersection observer
-const AuthIslandVisible = dynamic(() => import('./AuthIslandVisible'), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
-      <LoadingSpinner />
-      <span className="text-sm text-gray-500 dark:text-gray-400">Signing in</span>
-    </div>
-  ),
-});
+// Navigation link types
+type NavLink = 
+  | { href: string; label: string; type?: never; items?: never }
+  | { type: 'dropdown'; label: string; items: Array<{ href: string; label: string; icon: React.ElementType }>; href?: never };
 
-// Inline Menu SVG Icon - no lucide dependency
-const MenuIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="4" x2="20" y1="12" y2="12" />
-    <line x1="4" x2="20" y1="6" y2="6" />
-    <line x1="4" x2="20" y1="18" y2="18" />
-  </svg>
-);
+const navLinks: NavLink[] = [           
+  { href: '/', label: 'Home' }, 
 
-// Shared navigation links for both mobile and desktop
-const navLinks = [
-  { href: '/', label: 'Home' },
+
 ];
-
-// Mobile Links - Optimized for INP
-const MobileLinks = memo(({ pathname }: { pathname: string }) => {
-
-  return (
-    <>
-      {navLinks.map((link) => (
-        <SmartLink
-          key={link.href}
-          href={link.href}
-          className={cn(
-            'block px-4 py-2 rounded-md transition-colors',
-            pathname === link.href
-              ? 'text-primary font-medium bg-primary/20'
-              : 'text-white/90 hover:text-primary hover:bg-slate-800'
-          )}
-          onClosed={() => {
-            // 第3帧清除焦点/滚动锁之类
-            if (document.activeElement instanceof HTMLElement) {
-              document.activeElement.blur();
-            }
-          }}
-        >
-          {link.label}
-        </SmartLink>
-      ))}
-    </>
-  );
-});
-MobileLinks.displayName = 'MobileLinks';
 
 export function NavClient() {
   const pathname = usePathname();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // 监听 SmartLink 的关闭事件
-  useEffect(() => {
-    if (!isMobileMenuOpen) return;
-    
-    const close = () => setIsMobileMenuOpen(false);
-    window.addEventListener('drawer-close', close as any);
-    return () => window.removeEventListener('drawer-close', close as any);
-  }, [isMobileMenuOpen]);
-
-  // Use RAF for opening to defer heavy work
-  const handleOpenMenu = useCallback(() => {
-    requestAnimationFrame(() => {
-      setIsMobileMenuOpen(true);
-    });
-  }, []);
-
-  const handleCloseMenu = useCallback(() => {
-    setIsMobileMenuOpen(false);
-  }, []);
+  const [open, setOpen] = useState(false);
 
   return (
     <>
-      {/* Desktop Nav Links */}
-      <div className="hidden lg:flex items-center justify-center flex-1">
-        <div className="flex items-center space-x-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                'nav-link-item px-4 py-2 rounded-md transition-colors',
-                pathname === link.href ? 'text-primary font-medium' : 'text-foreground/80 hover:text-primary'
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+      {/* Desktop Navigation - Centered */}
+      <div className="hidden lg:flex flex-1 justify-center">
+        <NavigationMenu>
+          <NavigationMenuList>
+            {navLinks.map((link, index) => {
+              if (link.type === 'dropdown') {
+                const isActive = link.items.some(item => pathname === item.href);
+                return (
+                  <NavigationMenuItem key={`dropdown-${index}`}>
+                    <NavigationMenuTrigger 
+                      className={cn(isActive && "text-primary")}
+                    >
+                      {link.label}
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-[240px] gap-1 p-2">
+                        {link.items.map((item) => {
+                          const Icon = item.icon;
+                          return (
+                            <li key={item.href}>
+                              <NavigationMenuLink asChild>
+                                <Link
+                                  href={item.href}
+                                  className={cn(
+                                    "flex items-center gap-3 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors",
+                                    "hover:text-primary focus:text-primary",
+                                    pathname === item.href 
+                                      ? "text-primary" 
+                                      : "text-foreground"
+                                  )}
+                                >
+                                  <Icon className="h-5 w-5" />
+                                  <span className="text-sm font-medium">{item.label}</span>
+                                </Link>
+                              </NavigationMenuLink>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                );
+              }
+              
+              return (
+                <NavigationMenuItem key={link.href}>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        pathname === link.href 
+                          ? "text-primary" 
+                          : "text-foreground/80"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              );
+            })}
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
 
+      {/* Mobile Spacer - 占据中间空间，把右侧内容推到右边 */}
+      <div className="flex-1 lg:hidden" />
+
       {/* Right Section */}
-      <div className="w-[180px] 2xl:w-[200px] flex items-center justify-end gap-2">
-        {/* Desktop: Auth island */}
-        <div className="hidden lg:flex items-center gap-4">
+      <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
+        {/* Auth - 桌面端和移动端都显示 */}
+        <div className="hidden lg:flex">
           <NavAuthIsland variant="desktop" />
         </div>
-
-        {/* Mobile: Auth island + Menu */}
-        <div className="flex lg:hidden items-center gap-2">
-          <AuthIslandVisible />
-          
-          {/* Menu Button */}
-          <button
-            onClick={handleOpenMenu}
-            className="inline-flex items-center justify-center h-10 w-10 rounded-md text-foreground/80 hover:text-primary hover:bg-muted/50 transition-colors"
-            aria-label="Open menu"
-            type="button"
-          >
-            <MenuIcon />
-          </button>
-
-          {/* Lightweight Drawer */}
-          <LiteDrawer
-            open={isMobileMenuOpen}
-            onOpenChange={setIsMobileMenuOpen}
-            className="w-[300px] sm:w-[340px]"
-          >
-            <div className="flex flex-col h-full px-6 pt-[env(safe-area-inset-top,0)] pb-[env(safe-area-inset-bottom,0)] text-white overflow-x-hidden">
-              {/* Header - 移除 backdrop-blur 优化性能 */}
-              <div className="sticky top-0 z-10 -mx-6 px-6 pt-4 pb-4 bg-slate-900/95 flex items-center justify-between border-b border-white/10 min-w-0">
-                <div className="text-lg font-semibold">Menu</div>
-                <button
-                  type="button"
-                  aria-label="Close menu"
-                  onClick={() => requestAnimationFrame(() => setIsMobileMenuOpen(false))}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-md text-white/90 hover:text-primary hover:bg-slate-800 transition-colors"
-                >
-                  {/* Close (X) icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Links */}
-              <nav className="flex flex-col space-y-4 mt-6 pb-10 min-w-0 overflow-x-hidden">
-                <MobileLinks pathname={pathname} />
-              </nav>
-            </div>
-          </LiteDrawer>
+        <div className="flex lg:hidden">
+          <NavAuthIsland variant="mobile" />
         </div>
+
+        {/* Mobile Menu */}
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild className="lg:hidden">
+            <Button variant="ghost" size="icon" aria-label="Open menu">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetHeader>
+              <SheetTitle>Menu</SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-4 mt-6">
+              {navLinks.map((link, index) => {
+                if (link.type === 'dropdown') {
+                  return (
+                    <div key={`dropdown-${index}`} className="border-t pt-4">
+                      <div className="px-3 py-2 text-sm font-semibold text-muted-foreground">
+                        {link.label}
+                      </div>
+                      {link.items.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => setOpen(false)}
+                            className={cn(
+                              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-primary",
+                              pathname === item.href
+                                ? "text-primary"
+                                : "text-foreground/60"
+                            )}
+                          >
+                            <Icon className="h-4 w-4" />
+                            {item.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+                
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-primary",
+                      pathname === link.href
+                        ? "text-primary"
+                        : "text-foreground/60"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </SheetContent>
+        </Sheet>
       </div>
     </>
   );
 }
-
