@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Menu } from 'lucide-react';
+import { Menu, VideoIcon, MicIcon, ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   NavigationMenu,
@@ -50,7 +50,15 @@ type NavLink =
 
 const navLinks: NavLink[] = [           
   { href: '/', label: 'Home' }, 
-
+  {
+    type: 'dropdown',
+    label: 'Products',
+    items: [
+      { href: '/products/video-generator', label: 'Video Generator', icon: VideoIcon },
+      { href: '/products/audio-generator', label: 'Audio Generator', icon: MicIcon },
+      { href: '/products/image-generator', label: 'Image Generator', icon: ImageIcon },
+    ],
+  }
 
 ];
 
