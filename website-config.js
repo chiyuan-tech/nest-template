@@ -6,20 +6,23 @@
 export const websiteConfig = {
   // Site Information
   site: {
-    name: 'InfiniteTalk AI',
-    description: 'Advanced AI-powered video generation and dubbing service',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.infinitetalk.net',
+    name: 'LTX AI',
+    description: 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.',
   },
 
   // Contact Information
   contact: {
-    supportEmail: 'support@infinitetalk.net',
+    supportEmail: 'support@ltxai.app',
   },
 
+  // Canonical / site URL - single source for all public URLs (canonical, OG, sitemap, share images)
+  canonical: {
+    url:'https://ltxai.app',
+  },
   // API Configuration
   api: {
-    baseUrl: 'https://svc.infinitetalk.net',
-    appId: 'infinitetalk',
+    baseUrl: 'https://svc.ltxai.app',
+    appId: 'ltx23',
   },
 
   // SEO Configuration
@@ -27,6 +30,12 @@ export const websiteConfig = {
     // Static pages for sitemap generation
     staticPages: [
       '/',
+      '/ltx-2-3',
+      '/ltx-video-extend',
+      '/ltx-lipsync',
+      '/prompting-guide',
+      '/pricing',
+      '/blog',
       '/terms',
       '/privacy',
       '/refund',
@@ -39,76 +48,80 @@ export const websiteConfig = {
     oneTimePlans: [
       {
         key: 'Starter',
-        priceId: 'price_1S0bzJ2LCxiz8WFQshNuYpsJ',
+        priceId: 'price_1T9Ep9QeNOvbi7iexShMkWvX',
         popular: false,
         title: 'Starter',
         price: '$9.9',
         priceAmount: 9.9,
-        buttonText: 'Get 90 Credits',
+        buttonText: 'Get 99 Credits',
         features: [
-          '90 Credits included',
-          '$0.11 per credit',
-          'HD video generation',
-          'Lip-sync & body animation',
-          'Download enabled',
+          '99 credits included',
+          '$0.10 per credit',
+          'HD text-to-video or image-to-video with natural native audio',
+          '720p export, No watermark download',
+          'Commercial use license',
+          'Standard queue speed',
           'Email support'
         ]
       },
       {
-        key: 'premium',
-        priceId: 'price_1S0bze2LCxiz8WFQJBMjVxi0',
+        key: 'Basic',
+        priceId: 'price_1T9EpQQeNOvbi7ieNreeDNvb',
         popular: false,
-        title: 'Pro',
+        title: 'Basic',
         price: '$29.9',
         priceAmount: 29.9,
-        buttonText: 'Get 400 Credits',
+        buttonText: 'Get 330 Credits',
         features: [
-          '400 Credits included',
-          '$0.074 per credit',
-          'HD video generation',
-          'Lip-sync & body animation',
-          'Download enabled',
+          '330 credits included',
+          '$0.085 per credit',
+          'Faster HD generation for daily content',
+          'Text to Video & Image to Video with native audio',
+          '1080p export, No watermark download',
           'Commercial use license',
+          'Priority queue speed',
+          'Priority support (email)'
+        ]
+      },
+      {
+        key: 'Plus',
+        priceId: 'price_1T9EpcQeNOvbi7iePUHdg6tO',
+        popular: true,
+        title: 'Plus',
+        price: '$49.9',
+        priceAmount: 49.9,
+        buttonText: 'Get 600 Credits',
+        features: [
+          '600 credits included',
+          '$0.083 per credit',
+          'Scale creative runs with better stability and look',
+          'Text to Video & Image to Video with native audio',
+          '1080p export, No watermark download',
+          'Commercial use license',
+          'Faster priority queue + up to 5 concurrent jobs',
           'Priority support'
         ]
       },
       {
-        key: 'ultimate',
-        priceId: 'price_1S0bzt2LCxiz8WFQXQ5Foe8K',
-        popular: true,
-        title: 'Ultimate',
-        price: '$49.9',
-        priceAmount: 49.9,
-        buttonText: 'Get 800 Credits',
-        features: [
-          '800 Credits included',
-          '$0.062 per credit',
-          'HD video generation',
-          'Lip-sync & body animation',
-          'Download enabled',
-          'Commercial use license',
-          'Priority support',
-          'Best value per credit'
-        ]
-      },
-      {
-        key: 'enterprise',
-        priceId: 'price_1S3sev2LCxiz8WFQana9TXxD',
+        key: 'Professional',
+        priceId: 'price_1T9Eq3QeNOvbi7ied2IVXKmY',
         popular: false,
-        title: 'Enterprise',
+        title: 'Professional',
         price: '$99.9',
         priceAmount: 99.9,
-        buttonText: 'Get 1800 Credits',
+        buttonText: 'Get 1250 Credits',
         features: [
-          '1800 Credits included',
-          '$0.055 per credit',
-          'HD video generation ',
-          'Lip-sync & body animation',
-          'Download enabled',
+          '1250 credits included',
+          '$0.079 per credit (best value per credit)',
+          'High-volume, professional delivery and teams',
+          'Text to Video & Image to Video with native audio',
+          '1080p export, No watermark download',
           'Commercial use license',
-          'Priority support',
-          'Best value per credit',
-          'Bulk processing'
+          'Fastest queue + up to 10 concurrent jobs',
+          'Full effects pack + early access to new features',
+          '24/7 priority support',
+          'Bulk processing',
+          'API access (coming soon)'
         ]
       }
     ],
@@ -122,8 +135,8 @@ export const apiConfig = websiteConfig.api;
 export const seoConfig = websiteConfig.seo;
 export const pricingConfig = websiteConfig.pricing;
 
-// Export siteUrl for convenience
-export const siteUrl = websiteConfig.site.url;
+// Export siteUrl for convenience (alias of canonical.url)
+export const siteUrl = websiteConfig.canonical.url;
 
 // Export staticPages for convenience
 export const staticPages = websiteConfig.seo.staticPages;

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { siteConfig, siteUrl } from '@/website-config';
+import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
 export const metadata: Metadata = {
   title: `Terms of Service | ${siteConfig.name}`,
@@ -17,12 +17,12 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: `${siteUrl}/terms`,
+    canonical: `${websiteConfig.canonical.url}/terms`,
   },
   openGraph: {
     title: `Terms of Service | ${siteConfig.name}`,
     description: `Read the Terms of Service for ${siteConfig.name}. Understand the terms and conditions for using our AI video generation service.`,
-    url: `${siteUrl}/terms`,
+    url: `${websiteConfig.canonical.url}/terms`,
     siteName: siteConfig.name,
     images: [
       {

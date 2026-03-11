@@ -4,7 +4,7 @@ import { serverCmsApi } from '@/lib/server-api';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Footer } from '@/components/Footer';
-import { siteConfig, siteUrl } from '@/website-config';
+import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
 // 生成页面元数据（用于 Open Graph 标签）
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -47,13 +47,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
     },
     alternates: {
-      canonical: `${siteUrl}/share/${id}`,
+      canonical: `${websiteConfig.canonical.url}/share/${id}`,
     },
     openGraph: {
       title: `Amazing Video Created with ${siteConfig.name}`,
       description: description,
       type: 'video.other',
-      url: `${siteUrl}/share/${id}`,
+      url: `${websiteConfig.canonical.url}/share/${id}`,
       siteName: siteConfig.name,
       images: [
         {

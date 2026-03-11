@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { siteConfig, siteUrl } from '@/website-config';
+import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 import dynamic from 'next/dynamic';
 import {Footer} from '@/components/Footer';
 
@@ -21,12 +21,12 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: `${siteUrl}/referral`,
+    canonical: `${websiteConfig.canonical.url}/referral`,
   },
   openGraph: {
     title: `${siteConfig.name} Referral Program`,
     description: `Invite friends and earn credits on ${siteConfig.name}.`,
-    url: `${siteUrl}/referral`,
+    url: `${websiteConfig.canonical.url}/referral`,
     siteName: siteConfig.name,
     images: [
       {

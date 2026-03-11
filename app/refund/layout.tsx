@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { siteConfig, siteUrl } from '@/website-config';
+import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
 export const metadata: Metadata = {
   title: `Refund Policy | ${siteConfig.name}`,
@@ -17,12 +17,12 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: `${siteUrl}/refund`,
+    canonical: `${websiteConfig.canonical.url}/refund`,
   },
   openGraph: {
     title: `Refund Policy | ${siteConfig.name}`,
     description: `Read the Refund Policy for ${siteConfig.name}. Learn about our 7-day refund guarantee and refund eligibility.`,
-    url: `${siteUrl}/refund`,
+    url: `${websiteConfig.canonical.url}/refund`,
     siteName: siteConfig.name,
     images: [
       {

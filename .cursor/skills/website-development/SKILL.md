@@ -1,6 +1,6 @@
 ---
 name: website-development
-description: Enforces Next.js website development standards including metadata requirements, component library usage, image/link components, and CSS styling guidelines. Use when creating or updating pages in app/, working with Next.js components, styling pages, or implementing SEO metadata.
+description: Enforces Next.js website development standards including metadata requirements, component library usage, and image/link components. Use when creating or updating pages in app/, working with Next.js components, or implementing SEO metadata.
 ---
 
 # Website Development Standards
@@ -61,11 +61,68 @@ export const metadata: Metadata = {
 };
 ```
 
+### JSON-LD Structured Data
+
+**REQUIRED**: Pages **SHOULD** include JSON-LD script for SEO. Add a `<script type="application/ld+json">` in the page or layout.
+
+```typescript
+// Common types: WebSite, WebPage, Article, Organization
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: string,
+  description: string,
+  url: string,
+  // Add type-specific properties (e.g., Article: datePublished, author)
+};
+
+export default function Page() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {/* Page content */}
+    </>
+  );
+}
+```
+
+**Type guidelines:**
+- **WebSite**: Homepage, include `potentialAction` for SearchAction if applicable
+- **WebPage**: General pages
+- **Article**: Blog posts, include `datePublished`, `dateModified`, `author`, `image`
+- **Organization**: About/contact pages
+
+### Canonical URL
+
+**REQUIRED**: Canonical URL must use the value from `@/website-config`:
+
+```typescript
+import { websiteConfig } from '@/website-config';
+
+// In metadata.alternates.canonical
+alternates: {
+  canonical: `${websiteConfig.canonical.url}${pathname}`,
+},
+
+// For OpenGraph url
+openGraph: {
+  url: `${websiteConfig.canonical.url}/your-page-path`,
+  // ...
+},
+```
+
+- Use `websiteConfig.canonical.url` or `siteUrl` (they are the same; `siteUrl` is an alias)
+- Do NOT hardcode URLs — all public URLs come from `@/website-config`
+- Sitemap, metadata alternates, OpenGraph, and share images use the same base URL
+
 ### Share Image Path
 
 **IMPORTANT**: Default share image path:
 - Path: `/share-img.png`
-- Full URL: `${siteUrl}/share-img.png` (import `siteUrl` from `@/website-config`)
+- Full URL: `${siteUrl}/share-img.png` or `${websiteConfig.canonical.url}/share-img.png` (import from `@/website-config`)
 
 ### Validation Checklist
 
@@ -74,6 +131,8 @@ When creating or updating pages:
 - ✅ Title length ≤ 60 characters
 - ✅ Description length ≤ 160 characters
 - ✅ Keywords total length < 100 characters
+- ✅ Canonical URL uses `websiteConfig.canonical.url` from `@/website-config`
+- ✅ JSON-LD structured data included where applicable (WebPage, Article, etc.)
 - ✅ Share images use `/share-img.png` path
 - ✅ URLs use correct site URL from `@/website-config`
 
@@ -162,108 +221,3 @@ import Link from 'next/link';
 - ✅ Always import `Link` from `next/link`
 - ✅ **`prefetch` defaults to `false`** - Only set `prefetch={true}` for critical paths
 - ✅ Use HTML `<a>` tag only for external links (with `target="_blank"` and `rel="noopener noreferrer"`)
-
-## CSS and Styling Guidelines
-
-**CRITICAL**: Follow consistent CSS class naming and spacing conventions.
-
-### Container and Layout Classes
-
-**REQUIRED**: Use standard container classes:
-
-```typescript
-// ✅ Correct
-<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div className="max-w-4xl mx-auto px-6">
-<div className="container mx-auto max-w-4xl">
-
-// ❌ Incorrect
-<div className="max-w-1200 mx-auto">
-<div className="w-full max-w-custom">
-```
-
-**Standard Max-Width Classes:**
-- `max-w-7xl` - Main content containers (1280px)
-- `max-w-4xl` - Article/content pages (896px)
-- `max-w-2xl` - Narrow content (672px)
-- `max-w-xl` - Very narrow content (576px)
-
-**Standard Padding Classes:**
-- `px-4 sm:px-6 lg:px-8` - Standard horizontal padding (responsive)
-- `px-6` - Standard horizontal padding
-- `py-12` - Standard vertical padding (48px)
-- `py-16` - Large vertical padding (64px)
-- `p-8 md:p-12` - Card/content padding (responsive)
-
-### Spacing and Layout Patterns
-
-**REQUIRED**: Use consistent spacing patterns:
-
-```typescript
-// ✅ Correct - Standard page layout
-<div className="min-h-screen flex flex-col bg-background">
-  <main className="flex-grow py-12 md:py-16 px-4 sm:px-6 lg:px-8">
-    <div className="max-w-4xl mx-auto">
-      {/* Content */}
-    </div>
-  </main>
-</div>
-
-// ✅ Correct - Page layout with card styling
-<article className="prose prose-xl lg:prose-2xl max-w-none dark:prose-invert bg-card p-8 md:p-12 rounded-2xl shadow-custom">
-```
-
-**Standard Spacing Values:**
-- Vertical padding: `py-12`, `py-16`, `py-24`
-- Horizontal padding: `px-4 sm:px-6 lg:px-8`, `px-6`
-- Content padding: `p-8 md:p-12`
-- Margins: `mb-4`, `mb-6`, `mb-8`, `mb-10`, `mt-10`
-
-### Typography Classes
-
-**REQUIRED**: Use consistent typography classes:
-
-```typescript
-// ✅ Correct
-<h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-<h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-3">
-<p className="text-base md:text-lg text-muted-foreground">
-```
-
-**Standard Typography:**
-- H1: `text-3xl md:text-4xl font-bold`
-- H2: `text-2xl md:text-3xl font-semibold`
-- Body: `text-base md:text-lg`
-- Small: `text-sm`, `text-xs`
-
-### Color Classes
-
-**REQUIRED**: Always use theme-aware color classes:
-
-```typescript
-// ✅ Correct - Theme colors
-className="bg-background text-foreground"
-className="bg-card text-card-foreground"
-className="text-muted-foreground"
-className="text-primary"
-
-// ❌ Incorrect - Hardcoded colors
-className="bg-white text-black"
-className="text-gray-600"
-```
-
-**Standard Color Classes:**
-- Background: `bg-background`, `bg-card`
-- Text: `text-foreground`, `text-muted-foreground`, `text-primary`
-- Borders: `border-border`
-
-### Validation Checklist
-
-When styling pages:
-- ✅ Use `max-w-7xl` or `max-w-4xl` for containers
-- ✅ Use `py-12` or `py-16` for vertical padding
-- ✅ Use `px-4 sm:px-6 lg:px-8` for responsive horizontal padding
-- ✅ Use theme color classes (`bg-background`, `text-foreground`, etc.)
-- ✅ Use consistent typography classes
-- ✅ Use `min-h-screen flex flex-col` for full-page layouts
-- ✅ Use `flex-grow` for main content areas

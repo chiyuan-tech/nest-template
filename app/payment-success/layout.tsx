@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { siteConfig, siteUrl } from '@/website-config';
+import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
 export const metadata: Metadata = {
   title: `Payment Successful | ${siteConfig.name}`,
@@ -17,12 +17,12 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: `${siteUrl}/payment-success`,
+    canonical: `${websiteConfig.canonical.url}/payment-success`,
   },
   openGraph: {
     title: `Payment Successful | ${siteConfig.name}`,
     description: `Your payment was successful. Your credits have been added to your account.`,
-    url: `${siteUrl}/payment-success`,
+    url: `${websiteConfig.canonical.url}/payment-success`,
     siteName: siteConfig.name,
     images: [
       {

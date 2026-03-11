@@ -2,7 +2,7 @@ import { GoogleOneTapAuth } from '../components/auth';
 import { Footer } from '../components/Footer';
 import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
-import { siteConfig, siteUrl } from '@/website-config';
+import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
 // Client island - dynamically imported for code splitting
 const Hero = dynamic(() => import('../components/home/Hero'), {
@@ -30,12 +30,12 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: siteUrl,
+    canonical: websiteConfig.canonical.url,
   },
   openGraph: {
     title: `${siteConfig.name} - AI Video Generation Platform`,
     description: `${siteConfig.description}. Create infinite-length talking videos with accurate lip sync and natural motion.`,
-    url: siteUrl,
+    url: websiteConfig.canonical.url,
     siteName: siteConfig.name,
     images: [
       {

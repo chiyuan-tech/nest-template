@@ -3,7 +3,7 @@ import Script from 'next/script';
 import { Footer } from '../../components/Footer';
 import PricingSection from '@/components/PricingSection';
 import PricingFAQ from './PricingFAQ';
-import { siteConfig, siteUrl } from '@/website-config';
+import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
 // SEO metadata
 export const metadata: Metadata = {
@@ -22,12 +22,12 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: `${siteUrl}/pricing`,
+    canonical: `${websiteConfig.canonical.url}/pricing`,
   },
   openGraph: {
     title: `${siteConfig.name} Pricing - Video Generation Plans`,
     description: `Discover ${siteConfig.name} pricing plans. Generate unlimited talking videos with our AI. Flexible billing options available.`,
-    url: `${siteUrl}/pricing`,
+    url: `${websiteConfig.canonical.url}/pricing`,
     siteName: siteConfig.name,
     images: [
       {
@@ -59,7 +59,7 @@ const pricingSchemaData = {
     '@type': 'Brand',
     name: siteConfig.name
   },
-  url: siteUrl,
+  url: websiteConfig.canonical.url,
   offers: [
     {
       '@type': 'Offer',

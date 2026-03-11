@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { siteConfig, siteUrl } from '@/website-config';
+import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
 export const metadata: Metadata = {
   title: `Privacy Policy | ${siteConfig.name}`,
@@ -17,12 +17,12 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: `${siteUrl}/privacy`,
+    canonical: `${websiteConfig.canonical.url}/privacy`,
   },
   openGraph: {
     title: `Privacy Policy | ${siteConfig.name}`,
     description: `Read the Privacy Policy for ${siteConfig.name}. Learn how we collect, use, and protect your personal information.`,
-    url: `${siteUrl}/privacy`,
+    url: `${websiteConfig.canonical.url}/privacy`,
     siteName: siteConfig.name,
     images: [
       {

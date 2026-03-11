@@ -1,12 +1,14 @@
-import { serverCmsApi, type BlogPost } from '../../../lib/server-api';
+import { serverCmsApi, type BlogPost } from '@/lib/server-api';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Footer } from '../../../components/Footer';
-import { Home, ChevronRight } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 import { Metadata } from 'next';
 import styles from './blog-post.module.css';
 import BlogViewTracker from './BlogViewTracker';
-import { siteConfig } from '@/website-config';
+// import LtxNavLinks from '@/components/ltx/nav/LtxNavLinks';
+// import LtxBreadcrumb from '@/components/ltx/nav/LtxBreadcrumb';
+import BlogTableOfContents from './BlogTableOfContents';
+import { websiteConfig } from '@/website-config';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -57,11 +59,78 @@ function estimateReadingTime(content: string): string {
   return `${readingTime} min`;
 }
 
+// 提取 h2 标题并生成锚点
+interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
+function extractHeadings(html: string): Heading[] {
+  const headings: Heading[] = [];
+  const regex = /<h2[^>]*>(.*?)<\/h2>/gi;
+  let match;
+  let index = 0;
+
+  while ((match = regex.exec(html)) !== null) {
+    const text = match[1].replace(/<[^>]*>/g, '').trim(); // 移除内部HTML标签
+    
+    if (text) {
+      // 生成唯一的 ID
+      const baseId = text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 50);
+      
+      const id = `heading-${index}-${baseId}`;
+      headings.push({ id, text, level: 2 });
+      index++;
+    }
+  }
+
+  return headings;
+}
+
+// 为 HTML 内容中的 h2 标签添加 id 属性
+function addHeadingIds(html: string, headings: Heading[]): string {
+  let processedHtml = html;
+  let processedCount = 0;
+
+  headings.forEach((heading) => {
+    // 构建正则表达式来匹配 h2 标签
+    const regex = /(<h2)([^>]*>)(.*?)(<\/h2>)/gi;
+    
+    processedHtml = processedHtml.replace(regex, (match, tagStart, attributes, content, closeTag) => {
+      // 检查是否已经包含 id
+      if (attributes.includes('id=')) {
+        return match;
+      }
+      
+      // 提取标题文本（移除HTML标签）
+      const textContent = content.replace(/<[^>]*>/g, '').trim();
+      
+      // 只有当文本内容匹配时才添加 id
+      if (textContent === heading.text) {
+        processedCount++;
+        // 在属性部分添加 id
+        const newAttributes = attributes.replace(/>$/, ` id="${heading.id}">`);
+        return tagStart + newAttributes + content + closeTag;
+      }
+      
+      return match;
+    });
+  });
+
+  return processedHtml;
+}
+
 // 获取单篇博客文章
-async function getBlogPost(slug: string): Promise<{ post: BlogPost; originalUrl: string } | null> {
+async function getBlogPost(slug: string, classId: number = 0): Promise<{ post: BlogPost; originalUrl: string } | null> {
   try {
     // 通过列表找到对应的文章
-    const blogResponse = await serverCmsApi.getBlogList(1, 100, 0);
+    const blogResponse = await serverCmsApi.getBlogList(1, 100, classId);
 
     // 在 find 之前，先找到文章并保存原始 url
     let foundPost: BlogPost | undefined;
@@ -103,25 +172,53 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   const { post } = result;
+  const canonicalBase = websiteConfig.canonical.url;
 
   return {
     title: post.seo_name || post.title,
-    description: post.seo_desc || post.abstract || `Read about ${post.title} on ${siteConfig.name} blog.`,
+    description: post.seo_desc || post.abstract || `Read about ${post.title} on Ltx 2.3 blog.`,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
       title: post.seo_name || post.title,
-      description: post.seo_desc || post.abstract || `Read about ${post.title} on ${siteConfig.name} blog.`,
+      description: post.seo_desc || post.abstract || `Read about ${post.title} on Ltx 2.3 blog.`,
       type: 'article',
+      url: `${canonicalBase}/blog/${slug}`,
+      siteName: 'Ltx AI',
+      locale: 'en_US',
       publishedTime: new Date(post.created_time * 1000).toISOString(),
-      authors: [`${siteConfig.name} Team`],
+      authors: ['Ltx AI Team'],
+      images: [
+        {
+          url: post.thumb || `${canonicalBase}/og-share.png`,
+          width: 1200,
+          height: 630,
+          alt: post.seo_name || post.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
+      site: '@ltxai',
       title: post.seo_name || post.title,
-      description: post.seo_desc || post.abstract || `Read about ${post.title} on ${siteConfig.name} blog.`,
+      description: post.seo_desc || post.abstract || `Read about ${post.title} on Ltx 2.3 blog.`,
+      images: [post.thumb || `${canonicalBase}/og-share.png`],
     },
-    keywords: [siteConfig.name, 'blog', 'AI video', 'Wan 2.2', post.title],
-    authors: [{ name: `${siteConfig.name} Team` }],
+    keywords: ['Ltx 2.3', 'blog', 'AI video', 'AI creative tools', post.title],
+    authors: [{ name: 'Ltx AI Team' }],
     category: 'Technology',
+    alternates: {
+      canonical: `${canonicalBase}/blog/${slug}`,
+    },
   };
 }
 
@@ -135,62 +232,58 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
 
   const { post, originalUrl } = result;
 
+  // 提取标题并处理内容
+  const headings = extractHeadings(post.content);
+  const processedContent = addHeadingIds(post.content, headings);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      {/* 博客浏览统计组件 - 使用列表中的原始 url */}
+    <div className="min-h-screen">
       <BlogViewTracker url={originalUrl} />
       
-      {/* Hero Section（用于面包屑和标题） */}
-      <div className="pt-24 pb-12 bg-transparent">
-        <div className="container mx-auto px-6 max-w-7xl">
-          {/* Breadcrumb Navigation */}
-          <div className="mb-12">
-            <nav className="flex items-center space-x-2 text-sm">
-              <Link
-                title={siteConfig.name}
-                href={siteConfig.url}
-                className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors duration-200"
-              >
-                <Home className="w-4 h-4" />
-                {siteConfig.name}
-              </Link>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
-              <Link
-                title={`${siteConfig.name} Blog`}
-                href="/blog"
-                className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-              >
-                {siteConfig.name} Blog
-              </Link>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
-              <span className="text-foreground font-medium">
-                {truncateTitle(post.title)}
-              </span>
-            </nav>
-          </div>
-          <h1 className="text-4xl font-bold mb-4 text-foreground">
+      {/* Hero Section - match home section style */}
+      <section className="px-6 sm:px-10 lg:px-16 pt-24 pb-8 lg:pb-12">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-xs tracking-[0.2em] text-muted-foreground uppercase mb-5">
+            <span className="text-foreground/30">//</span> Blog
+          </p>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl text-foreground mb-6 leading-tight">
             {post.title}
           </h1>
-          <div className="flex items-center gap-4 text-muted-foreground mb-6">
-            <span>{siteConfig.name} Team</span>
-            <span>•</span>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm sm:text-base text-muted-foreground mb-6 lg:mb-8">
+            <span>Ltx AI Team</span>
+            <span className="hidden sm:inline text-foreground/30">•</span>
             <span>{formatDate(post.created_time)}</span>
-            <span>•</span>
+            <span className="hidden sm:inline text-foreground/30">•</span>
             <span>{estimateReadingTime(post.content)}</span>
           </div>
+          
+          {headings.length > 0 && (
+            <div className="lg:hidden mb-6">
+              <BlogTableOfContents headings={headings} isMobile={true} />
+            </div>
+          )}
         </div>
-      </div>
-      {/* 主内容区 */}
-      <div className="container mx-auto px-6 max-w-7xl">
-        <article>
-          <div className="prose prose-lg mx-auto max-w-7xl ">
-            {/* 使用富文本渲染 - CSS Module 按需加载 */}
-            <div 
-              className={styles.richTextContent}
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-          </div>
-        </article>
+      </section>
+      
+      {/* Main content - two-column layout */}
+      <div className="px-6 sm:px-10 lg:px-16 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-6xl mx-auto">
+          {headings.length > 0 && (
+            <aside className="lg:col-span-3 hidden lg:block">
+              <BlogTableOfContents headings={headings} isMobile={false} />
+            </aside>
+          )}
+          
+          <article className={headings.length > 0 ? 'lg:col-span-9' : 'lg:col-span-12'}>
+            <div className="max-w-none">
+              {/* 使用富文本渲染 - CSS Module 按需加载 */}
+              <div 
+                className={styles.richTextContent}
+                dangerouslySetInnerHTML={{ __html: processedContent }}
+              />
+            </div>
+          </article>
+        </div>
       </div>
 
       {/* Footer */}
@@ -202,7 +295,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
 // 生成静态参数
 export async function generateStaticParams() {
   try {
-    const blogResponse = await serverCmsApi.getBlogList(1, 100, 0);
+    const blogResponse = await serverCmsApi.getBlogList(1, 100, 9);
 
     return blogResponse.list.map((post) => ({
       slug: generateSlug(post.title, post.url),

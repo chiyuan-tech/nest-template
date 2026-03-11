@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next';
 import { serverCmsApi } from './server-api';
-import { siteUrl, staticPages } from '@/website-config';
+import { websiteConfig, staticPages } from '@/website-config';
 
-// Use siteUrl from website-config.js
-const BASE_URL = siteUrl;
+// Use canonical URL from website-config (per website-development SKILL)
+const BASE_URL = websiteConfig.canonical.url.replace(/\/$/, '');
 
 // 生成博客文章slug
 function generateSlug(title: string, url?: string): string {

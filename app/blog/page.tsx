@@ -1,35 +1,61 @@
-import { serverCmsApi, BlogPost } from "../../lib/server-api";
+import { serverCmsApi, BlogPost } from "@/lib/server-api";
 import Link from "next/link";
 import { Metadata } from "next";
-import { Footer } from "../../components/Footer";
-import { Home, ChevronRight } from "lucide-react";
-import { siteConfig } from "@/website-config";
+import { Footer } from "@/components/Footer";
 import Image from "next/image";
+import { websiteConfig } from '@/website-config';
 
 // 页面metadata配置
 export const metadata: Metadata = {
-  title: `${siteConfig.name} Video Generator Blog`,
+  title: "Ltx 2.3 Blog",
   description:
-    `Read the latest posts on ${siteConfig.name} video generation. Get tips, inspiration, feature updates, and creative use cases.`,
-  keywords: `${siteConfig.name} blog, AI video tips, AI video ideas, AI video updates`,
+    "Read the latest posts on Ltx 2.3 AI creative media tools. Get tips, inspiration, feature updates, and creative use cases for image and video generation.",
+  keywords: ['Ltx 2.3 blog', 'AI creative tools blog', 'AI image tips', 'AI video tips', 'creative media blog'],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
-    title: `${siteConfig.name} Video Generator Blog`,
+    title: "Ltx 2.3 Blog",
     description:
-      `Read the latest posts on ${siteConfig.name} video generation. Get tips, inspiration, feature updates, and creative use cases.`,
+      "Read the latest posts on Ltx 2.3 AI creative media tools. Get tips, inspiration, feature updates, and creative use cases for image and video generation.",
+    url: `${websiteConfig.canonical.url}/blog`,
+    siteName: 'Ltx AI',
     type: "website",
+    locale: 'en_US',
+    images: [
+      {
+        url: `${websiteConfig.canonical.url}/og-share.png`,
+        width: 1200,
+        height: 630,
+        alt: 'Ltx 2.3 Blog',
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} Video Generator Blog`,
+    site: '@ltxai',
+    title: "Blog | Ltx 2.3",
     description:
-      `Read the latest posts on ${siteConfig.name} video generation. Get tips, inspiration, feature updates, and creative use cases.`,
+      "Read the latest posts on Ltx 2.3 AI creative media tools. Get tips, inspiration, feature updates, and creative use cases.",
+    images: [`${websiteConfig.canonical.url}/og-share.png`],
+  },
+  alternates: {
+    canonical: `${websiteConfig.canonical.url}/blog`,
   },
 };
 
 // App Router中的数据获取函数
-async function getBlogPosts(): Promise<BlogPost[]> {
+async function getBlogPosts(classId: number = 0): Promise<BlogPost[]> {
   try {
-    const blogResponse = await serverCmsApi.getBlogList(1, 20, 0);
+    const blogResponse = await serverCmsApi.getBlogList(1, 20, classId);
     console.log(
       "App Router: Successfully fetched blog posts:",
       blogResponse.list.length
@@ -84,64 +110,46 @@ export default async function Blog() {
   const blogPosts = await getBlogPosts();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary/10 via-muted/20 to-primary/5 pt-10 pb-16">
-        <div className="container mx-auto px-6 max-w-7xl">
-          {/* Breadcrumb Navigation */}
-          <div className="mb-12">
-            <nav className="flex items-center space-x-2 text-sm">
-              <Link 
-                title={siteConfig.name}
-                href={siteConfig.url} 
-                className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors duration-200"
-              >
-                <Home className="w-4 h-4" />
-                {siteConfig.name}
-              </Link>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
-              <span className="text-foreground font-medium">
-                {siteConfig.name} Blog
-              </span>
-            </nav>
-          </div>
-          
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 font-nunito bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent leading-normal pb-2">
-              {siteConfig.name} Blog
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Discover insights, tutorials, and updates about AI video generation
-              and creative technology
-            </p>
-        
-          </div>
+    <div className="min-h-screen flex flex-col">
+      {/* Hero Section - match home section style */}
+      <section className="px-6 sm:px-10 lg:px-16 py-24 sm:py-32">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-xs tracking-[0.2em] text-muted-foreground uppercase mb-5">
+            <span className="text-foreground/30">//</span> Blog
+          </p>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground mb-6 leading-tight">
+            Ltx 2.3 Blog
+          </h1>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Discover insights, tutorials, and updates about AI creative media tools
+            and creative technology
+          </p>
         </div>
-      </div>
+      </section>
 
       {/* Blog Posts Section */}
-      <div className="container mx-auto px-6 py-16 flex-grow">
+      <section className="px-6 sm:px-10 lg:px-16 pb-20 flex-grow">
         {blogPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             {blogPosts.map((post) => (
               <Link href={`/blog/${generateSlug(post.title, post.url)}`} key={post.id}>
-                <article className="group bg-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-border overflow-hidden hover:-translate-y-2">
+                <article className="group rounded-2xl overflow-hidden border border-foreground/8 bg-background hover:bg-foreground/5 transition-all duration-300 hover:border-foreground/20">
                   {/* Thumbnail Image - 16:9 */}
                   {post.thumb ? (
-                    <div className="relative w-full aspect-video overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
+                    <div className="relative w-full aspect-video overflow-hidden bg-muted/30">
                       <Image
                         src={post.thumb}
                         alt={post.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     </div>
                   ) : (
-                    <div className="relative w-full aspect-video bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 flex items-center justify-center">
-                      <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center">
+                    <div className="relative w-full aspect-video bg-muted/30 flex items-center justify-center">
+                      <div className="w-16 h-16 bg-foreground/10 rounded-lg flex items-center justify-center">
                         <svg
-                          className="w-8 h-8 text-primary/40"
+                          className="w-8 h-8 text-foreground/30"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -158,33 +166,22 @@ export default async function Blog() {
                   )}
                   
                   {/* Article Header */}
-                  <div className="p-8">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-2 h-2 bg-primary rounded-full"></div>
-                      <span className="text-xs font-medium text-primary uppercase tracking-wider">
-                        Article
-                      </span>
-                    </div>
-
-                    <h2 className="text-2xl font-bold mb-4 text-foreground line-clamp-2 group-hover:text-primary transition-colors duration-200">
+                  <div className="p-6 sm:p-8">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-foreground line-clamp-2 group-hover:text-foreground/90 transition-colors duration-200">
                       {post.title}
                     </h2>
 
-                    <p className="text-muted-foreground text-base mb-6 line-clamp-2 leading-relaxed">
-                      {post.abstract}
-                    </p>
-
                     {/* Article Footer */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-primary to-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">
+                    <div className="flex items-center justify-between pt-4 border-t border-foreground/8">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 bg-foreground/10 rounded-full flex items-center justify-center">
+                          <span className="text-foreground/70 text-xs sm:text-sm font-bold">
                             V
                           </span>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-foreground">
-                            {siteConfig.name} Team
+                          <div className="text-xs sm:text-sm font-medium text-foreground">
+                            Ltx AI Team
                           </div>
                           <div className="text-xs text-muted-foreground">
                             {formatDate(post.created_time)}
@@ -192,10 +189,10 @@ export default async function Blog() {
                         </div>
                       </div>
 
-                      <div className="flex items-center text-primary group-hover:translate-x-1 transition-transform duration-200">
-                        <span className="text-sm font-medium">Read More</span>
+                      <div className="flex items-center text-foreground/70 group-hover:text-foreground group-hover:translate-x-1 transition-all duration-200">
+                        <span className="text-xs sm:text-sm font-medium">Read</span>
                         <svg
-                          className="w-4 h-4 ml-2"
+                          className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -216,10 +213,10 @@ export default async function Blog() {
           </div>
         ) : (
           /* Empty State */
-          <div className="text-center py-20">
-            <div className="w-24 h-24 bg-gradient-to-r from-primary/20 to-muted rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="text-center py-16 sm:py-20 max-w-6xl mx-auto">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-foreground/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
               <svg
-                className="w-12 h-12 text-primary"
+                className="w-10 h-10 sm:w-12 sm:h-12 text-foreground/30"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -232,18 +229,16 @@ export default async function Blog() {
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-foreground mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">
               No Blog Posts Yet
             </h3>
-            <p className="text-muted-foreground text-lg max-w-md mx-auto">
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-md mx-auto px-4">
               We're working on creating amazing content for you. Check back
               soon!
             </p>
           </div>
         )}
-      </div>
-
-   
+      </section>
 
       {/* Footer */}
       <Footer />

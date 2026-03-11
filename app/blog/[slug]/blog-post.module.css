@@ -14,9 +14,10 @@
 .richTextContent h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  margin-top: 1.5rem;
+  margin-top: 3rem;
   margin-bottom: 1rem;
   color: var(--foreground);
+  scroll-margin-top: 100px; /* 滚动时的偏移量，避免被导航栏遮挡 */
 }
 
 .richTextContent h3 {
@@ -66,17 +67,29 @@
 }
 
 .richTextContent a {
-  color: var(--primary);
+  /* 使用 primary 颜色，如果变量不存在则回退到蓝色 */
+  color: var(--primary, #3b82f6) !important;
   transition: all 0.2s;
+}
+
+/* 当 a 标签内有 strong 标签时，确保 strong 也使用 primary 颜色 */
+.richTextContent a strong {
+  color: var(--primary, #3b82f6) !important;
 }
 
 .richTextContent a:hover {
   text-decoration: underline;
+  color: var(--primary, #3b82f6) !important;
+  opacity: 0.8;
+}
+
+.richTextContent a:hover strong {
+  color: var(--primary, #3b82f6) !important;
 }
 
 .richTextContent blockquote {
   border-left-width: 4px;
-  border-color: var(--primary);
+  border-color: var(--foreground);
   padding-left: 1rem;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
@@ -84,7 +97,7 @@
   margin-bottom: 1rem;
   font-style: italic;
   color: var(--muted-foreground);
-  background-color: rgba(26, 26, 26, 0.2);
+  background-color: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 
 .richTextContent code {
@@ -110,7 +123,7 @@
 .richTextContent hr {
   border-width: 0;
   border-top-width: 1px;
-  border-color: #d1d5db;
+  border-color: color-mix(in srgb, var(--foreground) 8%, transparent);
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
@@ -127,24 +140,24 @@
 .richTextContent table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid var(--muted);
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
   margin-bottom: 1.5rem;
 }
 
 .richTextContent thead {
-  background-color: rgba(51, 51, 51, 0.5);
+  background-color: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 
 .richTextContent tr {
-  border-bottom: 1px solid var(--muted);
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
 }
 
 .richTextContent tr:hover {
-  background-color: rgba(51, 51, 51, 0.3);
+  background-color: color-mix(in srgb, var(--foreground) 3%, transparent);
 }
 
 .richTextContent th {
-  border: 1px solid var(--muted);
+  border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
   padding: 1rem;
   text-align: left;
   font-weight: 600;
@@ -152,7 +165,7 @@
 }
 
 .richTextContent td {
-  border: 1px solid var(--muted);
+  border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
   padding: 1rem;
   color: var(--muted-foreground);
 }
@@ -161,12 +174,51 @@
   max-width: 100%;
   height: auto;
   border-radius: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  border: 1px solid rgba(229, 231, 235, 0.5);
+  border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
   margin-left: auto;
   margin-right: auto;
   display: block;
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+
+/* CTA Button - 单独一行，居中显示 */
+/* 使用 :global() 确保外部 HTML 中的类名不被作用域化 */
+.richTextContent :global(.cta-button),
+.richTextContent a:global(.cta-button),
+.richTextContent a:global(.tiptap-link.cta-button),
+.richTextContent :global(.tiptap-link.cta-button) {
+  display: block !important;
+  width: fit-content !important;
+  margin: 2rem auto !important;
+  background: #2563eb !important;
+  color: white !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0.5rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  border: none !important;
+  text-align: center !important;
+}
+
+.richTextContent :global(.cta-button:hover),
+.richTextContent a:global(.cta-button:hover),
+.richTextContent a:global(.tiptap-link.cta-button:hover),
+.richTextContent :global(.tiptap-link.cta-button:hover) {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+  text-decoration: none !important;
+  color: white !important;
+  background: #1d4ed8 !important;
+}
+
+.richTextContent :global(.cta-button strong),
+.richTextContent a:global(.cta-button strong),
+.richTextContent a:global(.tiptap-link.cta-button strong),
+.richTextContent :global(.tiptap-link.cta-button strong) {
+  color: white !important;
 }
 

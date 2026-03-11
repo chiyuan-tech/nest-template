@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { cmsApi } from '../../../lib/api';
+import { cmsApi } from '@/lib/api';
 
 interface BlogViewTrackerProps {
   url: string;

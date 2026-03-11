@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Metadata } from 'next';
-import { siteConfig, siteUrl, contactConfig } from '@/website-config';
+import { siteConfig, siteUrl, contactConfig, websiteConfig } from '@/website-config';
 
 export const metadata: Metadata = {
   title: `Payment Failed | ${siteConfig.name}`,
@@ -19,12 +19,12 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: `${siteUrl}/payment-failed`,
+    canonical: `${websiteConfig.canonical.url}/payment-failed`,
   },
   openGraph: {
     title: `Payment Failed | ${siteConfig.name}`,
     description: 'Payment failed. Retry checkout or contact support.',
-    url: `${siteUrl}/payment-failed`,
+    url: `${websiteConfig.canonical.url}/payment-failed`,
     siteName: siteConfig.name,
     images: [
       {
