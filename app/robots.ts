@@ -20,15 +20,16 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: ['/', '/llms.txt'],
         disallow: ['/api/', '/admin/', '/profile/'],
       },
       {
         userAgent: AI_BOTS,
-        allow: ['/llms.txt'],
-        disallow: ['/'],
+        allow: ['/', '/llms.txt'],
+        disallow: ['/api/', '/admin/', '/profile/'],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
+    host: siteUrl,
   };
 }
