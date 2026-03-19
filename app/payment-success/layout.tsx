@@ -1,10 +1,12 @@
 import { Metadata } from 'next';
-import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
+import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
+
+const tdk = getPageTdk('/payment-success');
 
 export const metadata: Metadata = {
-  title: `Payment Successful | ${siteConfig.name}`,
-  description: `Your payment was successful. Your credits have been added to your account.`,
-  keywords: ['payment success', 'purchase complete', siteConfig.name],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: false,
     follow: true,
@@ -20,16 +22,16 @@ export const metadata: Metadata = {
     canonical: `${websiteConfig.canonical.url}/payment-success`,
   },
   openGraph: {
-    title: `Payment Successful | ${siteConfig.name}`,
-    description: `Your payment was successful. Your credits have been added to your account.`,
+    title: tdk.title,
+    description: tdk.description,
     url: `${websiteConfig.canonical.url}/payment-success`,
-    siteName: siteConfig.name,
+    siteName: SITE_NAME,
     images: [
       {
         url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: SITE_NAME,
       },
     ],
     locale: 'en_US',
@@ -37,9 +39,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: siteConfig.name,
-    title: `Payment Successful | ${siteConfig.name}`,
-    description: `Your payment was successful. Your credits have been added to your account.`,
+    site: SITE_NAME,
+    title: tdk.title,
+    description: tdk.description,
     images: [`${siteUrl}/share-img.png`],
   },
 };

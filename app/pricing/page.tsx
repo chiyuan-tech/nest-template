@@ -3,13 +3,15 @@ import Script from 'next/script';
 import { Footer } from '../../components/Footer';
 import PricingSection from '@/components/PricingSection';
 import PricingFAQ from './PricingFAQ';
-import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
+import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
+
+const tdk = getPageTdk('/pricing');
 
 // SEO metadata
 export const metadata: Metadata = {
-  title: `${siteConfig.name} Pricing - Video Generation Plans`,
-  description: `Discover ${siteConfig.name} pricing plans. Generate unlimited talking videos with our AI. Flexible billing options available.`,
-  keywords: ['AI video pricing', 'video generation cost', 'AI dubbing plans', siteConfig.name],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: true,
     follow: true,
@@ -25,16 +27,16 @@ export const metadata: Metadata = {
     canonical: `${websiteConfig.canonical.url}/pricing`,
   },
   openGraph: {
-    title: `${siteConfig.name} Pricing - Video Generation Plans`,
-    description: `Discover ${siteConfig.name} pricing plans. Generate unlimited talking videos with our AI. Flexible billing options available.`,
+    title: tdk.title,
+    description: tdk.description,
     url: `${websiteConfig.canonical.url}/pricing`,
-    siteName: siteConfig.name,
+    siteName: SITE_NAME,
     images: [
       {
         url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: `${siteConfig.name} Pricing Plans`,
+        alt: `${SITE_NAME} Pricing Plans`,
       },
     ],
     locale: 'en_US',
@@ -42,9 +44,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: siteConfig.name,
-    title: `${siteConfig.name} Pricing - Video Generation Plans`,
-    description: `Discover ${siteConfig.name} pricing plans. Generate unlimited talking videos with our AI.`,
+    site: SITE_NAME,
+    title: tdk.title,
+    description: tdk.description,
     images: [`${siteUrl}/share-img.png`],
   },
 };
@@ -53,11 +55,11 @@ export const metadata: Metadata = {
 const pricingSchemaData = {
   '@context': 'https://schema.org',
   '@type': 'Product',
-  name: siteConfig.name,
-  description: siteConfig.description,
+  name: SITE_NAME,
+  description: tdk.description,
   brand: {
     '@type': 'Brand',
-    name: siteConfig.name
+    name: SITE_NAME
   },
   url: websiteConfig.canonical.url,
   offers: [

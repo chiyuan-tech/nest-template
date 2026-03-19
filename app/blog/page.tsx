@@ -3,14 +3,15 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { Footer } from "@/components/Footer";
 import Image from "next/image";
-import { websiteConfig } from '@/website-config';
+import { SITE_NAME, websiteConfig, getPageTdk } from '@/website-config';
+
+const tdk = getPageTdk('/blog');
 
 // 页面metadata配置
 export const metadata: Metadata = {
-  title: "Ltx 2.3 Blog",
-  description:
-    "Read the latest posts on Ltx 2.3 AI creative media tools. Get tips, inspiration, feature updates, and creative use cases for image and video generation.",
-  keywords: ['Ltx 2.3 blog', 'AI creative tools blog', 'AI image tips', 'AI video tips', 'creative media blog'],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: true,
     follow: true,
@@ -23,29 +24,27 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Ltx 2.3 Blog",
-    description:
-      "Read the latest posts on Ltx 2.3 AI creative media tools. Get tips, inspiration, feature updates, and creative use cases for image and video generation.",
+    title: tdk.title,
+    description: tdk.description,
     url: `${websiteConfig.canonical.url}/blog`,
-    siteName: 'Ltx AI',
+    siteName: SITE_NAME,
     type: "website",
     locale: 'en_US',
     images: [
       {
-        url: `${websiteConfig.canonical.url}/og-share.png`,
+        url: `${websiteConfig.canonical.url}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: 'Ltx 2.3 Blog',
+        alt: `${SITE_NAME} Blog`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     site: '@ltxai',
-    title: "Blog | Ltx 2.3",
-    description:
-      "Read the latest posts on Ltx 2.3 AI creative media tools. Get tips, inspiration, feature updates, and creative use cases.",
-    images: [`${websiteConfig.canonical.url}/og-share.png`],
+    title: tdk.title,
+    description: tdk.description,
+    images: [`${websiteConfig.canonical.url}/share-img.png`],
   },
   alternates: {
     canonical: `${websiteConfig.canonical.url}/blog`,

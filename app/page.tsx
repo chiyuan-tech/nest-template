@@ -2,7 +2,9 @@ import { GoogleOneTapAuth } from '../components/auth';
 import { Footer } from '../components/Footer';
 import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
-import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
+import { SITE_NAME, SITE_DESCRIPTION, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
+
+const tdk = getPageTdk('/');
 
 // Client island - dynamically imported for code splitting
 const Hero = dynamic(() => import('../components/home/Hero'), {
@@ -13,11 +15,20 @@ const PricingSectionWithHeader = dynamic(() => import('../components/PricingSect
   loading: () => <div className="h-96 animate-pulse bg-muted/10 rounded-lg" />,
 });
 
+// JSON-LD WebSite for homepage
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  description: SITE_DESCRIPTION,
+  url: websiteConfig.canonical.url,
+};
+
 // SEO metadata
 export const metadata: Metadata = {
-  title: `${siteConfig.name} - AI Video Generation Platform`,
-  description: `${siteConfig.description}. Create infinite-length talking videos with accurate lip sync and natural motion.`,
-  keywords: ['AI video generation', 'talking video', 'video dubbing', 'lip sync', siteConfig.name],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: true,
     follow: true,
@@ -33,16 +44,16 @@ export const metadata: Metadata = {
     canonical: websiteConfig.canonical.url,
   },
   openGraph: {
-    title: `${siteConfig.name} - AI Video Generation Platform`,
-    description: `${siteConfig.description}. Create infinite-length talking videos with accurate lip sync and natural motion.`,
+    title: tdk.title,
+    description: tdk.description,
     url: websiteConfig.canonical.url,
-    siteName: siteConfig.name,
+    siteName: SITE_NAME,
     images: [
       {
         url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: SITE_NAME,
       },
     ],
     locale: 'en_US',
@@ -50,9 +61,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: siteConfig.name,
-    title: `${siteConfig.name} - AI Video Generation Platform`,
-    description: `${siteConfig.description}. Create infinite-length talking videos with accurate lip sync and natural motion.`,
+    site: SITE_NAME,
+    title: tdk.title,
+    description: tdk.description,
     images: [`${siteUrl}/share-img.png`],
   },
 };
@@ -61,8 +72,10 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
- 
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
       {/* Google One Tap Auth - only shown when user is not signed in */}
       <GoogleOneTapAuth
         cancelOnTapOutside={true}

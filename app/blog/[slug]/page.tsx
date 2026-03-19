@@ -8,7 +8,7 @@ import BlogViewTracker from './BlogViewTracker';
 // import LtxNavLinks from '@/components/ltx/nav/LtxNavLinks';
 // import LtxBreadcrumb from '@/components/ltx/nav/LtxBreadcrumb';
 import BlogTableOfContents from './BlogTableOfContents';
-import { websiteConfig } from '@/website-config';
+import { SITE_NAME, SITE_DESCRIPTION, websiteConfig, getPageTdk } from '@/website-config';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -159,24 +159,32 @@ async function getBlogPost(slug: string, classId: number = 0): Promise<{ post: B
   }
 }
 
-// 生成动态metadata
+// 生成动态metadata – description & keywords from @/website-config (getPageTdk('/blog'))
+const blogTdk = getPageTdk('/blog');
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const result = await getBlogPost(slug);
+  const description = blogTdk.description;
+  const baseKeywords = blogTdk.keywords;
 
   if (!result) {
     return {
       title: 'Blog Post Not Found',
-      description: 'The requested blog post could not be found.'
+      description,
+      keywords: baseKeywords,
     };
   }
 
   const { post } = result;
   const canonicalBase = websiteConfig.canonical.url;
+  const rawTitle = post.seo_name || post.title;
+  const safeTitle = rawTitle.length > 60 ? rawTitle.slice(0, 60).trim() : rawTitle;
+  const keywords = baseKeywords.length + safeTitle.length < 100 ? [...baseKeywords, safeTitle] : baseKeywords;
 
   return {
-    title: post.seo_name || post.title,
-    description: post.seo_desc || post.abstract || `Read about ${post.title} on Ltx 2.3 blog.`,
+    title: safeTitle,
+    description,
     robots: {
       index: true,
       follow: true,
@@ -189,17 +197,17 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       },
     },
     openGraph: {
-      title: post.seo_name || post.title,
-      description: post.seo_desc || post.abstract || `Read about ${post.title} on Ltx 2.3 blog.`,
+      title: safeTitle,
+      description,
       type: 'article',
       url: `${canonicalBase}/blog/${slug}`,
-      siteName: 'Ltx AI',
+      siteName: SITE_NAME,
       locale: 'en_US',
       publishedTime: new Date(post.created_time * 1000).toISOString(),
       authors: ['Ltx AI Team'],
       images: [
         {
-          url: post.thumb || `${canonicalBase}/og-share.png`,
+          url: post.thumb || `${canonicalBase}/share-img.png`,
           width: 1200,
           height: 630,
           alt: post.seo_name || post.title,
@@ -209,11 +217,11 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     twitter: {
       card: 'summary_large_image',
       site: '@ltxai',
-      title: post.seo_name || post.title,
-      description: post.seo_desc || post.abstract || `Read about ${post.title} on Ltx 2.3 blog.`,
-      images: [post.thumb || `${canonicalBase}/og-share.png`],
+      title: safeTitle,
+      description,
+      images: [post.thumb || `${canonicalBase}/share-img.png`],
     },
-    keywords: ['Ltx 2.3', 'blog', 'AI video', 'AI creative tools', post.title],
+    keywords,
     authors: [{ name: 'Ltx AI Team' }],
     category: 'Technology',
     alternates: {

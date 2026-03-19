@@ -4,12 +4,6 @@
  */
 
 export const websiteConfig = {
-  // Site Information
-  site: {
-    name: 'LTX AI',
-    description: 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.',
-  },
-
   // Contact Information
   contact: {
     supportEmail: 'support@ltxai.app',
@@ -30,16 +24,61 @@ export const websiteConfig = {
     // Static pages for sitemap generation
     staticPages: [
       '/',
-      '/ltx-2-3',
-      '/ltx-video-extend',
-      '/ltx-lipsync',
-      '/prompting-guide',
       '/pricing',
       '/blog',
       '/terms',
       '/privacy',
       '/refund',
     ],
+  },
+
+  // Page TDK (Title ≤60, Description ≤160, Keywords total <100) – import in app via getPageTdk(path)
+  pageTdk: {
+    '/': {
+      title: 'AI Video Generation Platform',
+      description: 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.',
+      keywords: ['AI video generation', 'talking video', 'video dubbing', 'lip sync'],
+    },
+    '/payment-failed': {
+      title: 'Payment Failed',
+      description: 'Your payment could not be completed. Please try again or contact support.',
+      keywords: ['payment failed', 'checkout error'],
+    },
+    '/payment-success': {
+      title: 'Payment Successful',
+      description: 'Your payment was successful. Your credits have been added to your account.',
+      keywords: ['payment success', 'purchase complete'],
+    },
+    '/referral': {
+      title: 'Referral Program',
+      description: 'Share your referral link and earn credits when friends join. Invite friends and earn rewards.',
+      keywords: ['referral program', 'earn credits', 'invite friends'],
+    },
+    '/pricing': {
+      title: 'Pricing - Video Generation Plans',
+      description: 'Discover pricing plans. Generate unlimited talking videos with our AI. Flexible billing options available.',
+      keywords: ['AI video pricing', 'video generation cost', 'AI dubbing plans'],
+    },
+    '/terms': {
+      title: 'Terms of Service',
+      description: 'Read the Terms of Service. Understand the terms and conditions for using our AI video generation service.',
+      keywords: ['terms of service', 'user agreement', 'legal'],
+    },
+    '/privacy': {
+      title: 'Privacy Policy',
+      description: 'Read the Privacy Policy. Learn how we collect, use, and protect your personal information.',
+      keywords: ['privacy policy', 'data protection', 'user privacy'],
+    },
+    '/refund': {
+      title: 'Refund Policy',
+      description: 'Read the Refund Policy. Learn about our refund guarantee and refund eligibility.',
+      keywords: ['refund policy', 'money back guarantee', 'refund'],
+    },
+    '/blog': {
+      title: 'Blog',
+      description: 'Read the latest posts on AI creative media tools. Tips, inspiration, feature updates, and creative use cases.',
+      keywords: ['blog', 'AI creative tools blog', 'AI image tips', 'AI video tips', 'creative media blog'],
+    },
   },
 
   // Pricing Configuration
@@ -129,7 +168,6 @@ export const websiteConfig = {
 };
 
 // Export individual sections for convenience
-export const siteConfig = websiteConfig.site;
 export const contactConfig = websiteConfig.contact;
 export const apiConfig = websiteConfig.api;
 export const seoConfig = websiteConfig.seo;
@@ -137,6 +175,26 @@ export const pricingConfig = websiteConfig.pricing;
 
 // Export siteUrl for convenience (alias of canonical.url)
 export const siteUrl = websiteConfig.canonical.url;
+
+// Site display name and description (for UI/metadata when needed)
+export const SITE_NAME = 'LTX AI';
+export const SITE_DESCRIPTION = 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.';
+
+// Backward compatibility: siteConfig for components that use siteConfig.name / siteConfig.description
+export const siteConfig = { name: SITE_NAME, description: SITE_DESCRIPTION };
+
+// Page TDK – use in app: import { getPageTdk } from '@/website-config'; const tdk = getPageTdk('/');
+export const pageTdk = websiteConfig.pageTdk;
+
+// Helper: get TDK for a path. Never returns null – unknown path falls back to homepage TDK.
+export function getPageTdk(path) {
+  const tdk = websiteConfig.pageTdk[path] ?? websiteConfig.pageTdk['/'];
+  return {
+    title: tdk.title,
+    description: tdk.description ?? SITE_DESCRIPTION,
+    keywords: tdk.keywords ?? [],
+  };
+}
 
 // Export staticPages for convenience
 export const staticPages = websiteConfig.seo.staticPages;

@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Metadata } from 'next';
-import { siteConfig, siteUrl, contactConfig, websiteConfig } from '@/website-config';
+import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
+
+const tdk = getPageTdk('/payment-failed');
 
 export const metadata: Metadata = {
-  title: `Payment Failed | ${siteConfig.name}`,
-  description: 'Your payment could not be completed. Please try again or contact support.',
-  keywords: ['payment failed', 'checkout error', siteConfig.name],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: false,
     follow: true,
@@ -22,16 +24,16 @@ export const metadata: Metadata = {
     canonical: `${websiteConfig.canonical.url}/payment-failed`,
   },
   openGraph: {
-    title: `Payment Failed | ${siteConfig.name}`,
-    description: 'Payment failed. Retry checkout or contact support.',
+    title: tdk.title,
+    description: tdk.description,
     url: `${websiteConfig.canonical.url}/payment-failed`,
-    siteName: siteConfig.name,
+    siteName: SITE_NAME,
     images: [
       {
         url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: SITE_NAME,
       },
     ],
     locale: 'en_US',
@@ -39,9 +41,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: siteConfig.name,
-    title: `Payment Failed | ${siteConfig.name}`,
-    description: 'Payment failed. Retry checkout or contact support.',
+    site: SITE_NAME,
+    title: tdk.title,
+    description: tdk.description,
     images: [`${siteUrl}/share-img.png`],
   },
 };

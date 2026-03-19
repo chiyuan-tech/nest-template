@@ -1,10 +1,12 @@
 import { Metadata } from 'next';
-import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
+import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
+
+const tdk = getPageTdk('/refund');
 
 export const metadata: Metadata = {
-  title: `Refund Policy | ${siteConfig.name}`,
-  description: `Read the Refund Policy for ${siteConfig.name}. Learn about our 7-day refund guarantee and refund eligibility.`,
-  keywords: ['refund policy', 'money back guarantee', 'refund', siteConfig.name],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: true,
     follow: true,
@@ -20,16 +22,16 @@ export const metadata: Metadata = {
     canonical: `${websiteConfig.canonical.url}/refund`,
   },
   openGraph: {
-    title: `Refund Policy | ${siteConfig.name}`,
-    description: `Read the Refund Policy for ${siteConfig.name}. Learn about our 7-day refund guarantee and refund eligibility.`,
+    title: tdk.title,
+    description: tdk.description,
     url: `${websiteConfig.canonical.url}/refund`,
-    siteName: siteConfig.name,
+    siteName: SITE_NAME,
     images: [
       {
         url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: SITE_NAME,
       },
     ],
     locale: 'en_US',
@@ -37,9 +39,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: siteConfig.name,
-    title: `Refund Policy | ${siteConfig.name}`,
-    description: `Read the Refund Policy for ${siteConfig.name}. Learn about our 7-day refund guarantee and refund eligibility.`,
+    site: SITE_NAME,
+    title: tdk.title,
+    description: tdk.description,
     images: [`${siteUrl}/share-img.png`],
   },
 };

@@ -10,6 +10,7 @@ description: Enforces Next.js website development standards including metadata r
 All pages in `app/` **MUST** export a `metadata` object, except:
 - `app/profile` - User profile page (excluded)
 - `app/sso-callback` - SSO callback page (excluded)
+- `app/share` - share Page (excluded)
 
 ### Required Metadata Structure
 
@@ -18,11 +19,18 @@ All pages in `app/` **MUST** export a `metadata` object, except:
 - **Description (D)**: ≤ 160 characters
 - **Keywords (K)**: < 100 characters (total length of all keywords combined)
 
+**TDK source (required):**
+- Each page **MUST** use TDK from `@/website-config`: import `getPageTdk(path)` or `pageTdk` and use the returned `title`, `description`, and `keywords` for `metadata` (and for `openGraph` / `twitter` title and description). Do not hardcode TDK in the page; define and maintain it in `website-config.js` → `pageTdk`.
+
 ```typescript
+import { getPageTdk, SITE_NAME, siteUrl, websiteConfig } from '@/website-config';
+
+const tdk = getPageTdk('/your-path');  // e.g. getPageTdk('/'), getPageTdk('/pricing')
+
 export const metadata: Metadata = {
-  title: string,                    // ≤ 60 characters
-  description: string,              // ≤ 160 characters
-  keywords: string[],               // total < 100 characters
+  title: tdk.title,                  // ≤ 60 characters (from pageTdk)
+  description: tdk.description,       // ≤ 160 characters (from pageTdk)
+  keywords: tdk.keywords,             // total < 100 characters (from pageTdk)
   robots: {
     index: boolean,
     follow: boolean,
@@ -127,10 +135,12 @@ openGraph: {
 ### Validation Checklist
 
 When creating or updating pages:
-- ✅ `metadata` is exported (except profile and sso-callback pages)
+- ✅ `metadata` is exported (except profile, sso-callback, and share pages)
+- ✅ **TDK is taken from `@/website-config`** (`getPageTdk(path)` or `pageTdk[path]`), not hardcoded in the page
 - ✅ Title length ≤ 60 characters
 - ✅ Description length ≤ 160 characters
 - ✅ Keywords total length < 100 characters
+- ✅ New or changed TDK is added/updated in `website-config.js` → `pageTdk`
 - ✅ Canonical URL uses `websiteConfig.canonical.url` from `@/website-config`
 - ✅ JSON-LD structured data included where applicable (WebPage, Article, etc.)
 - ✅ Share images use `/share-img.png` path

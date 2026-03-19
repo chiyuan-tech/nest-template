@@ -1,14 +1,16 @@
 import type { Metadata } from 'next';
-import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
+import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
 import dynamic from 'next/dynamic';
 import {Footer} from '@/components/Footer';
 
 const PromotionClient = dynamic(() => import('./PromotionClient'), { ssr: true });
 
+const tdk = getPageTdk('/referral');
+
 export const metadata: Metadata = {
-  title: `${siteConfig.name} Referral Program`,
-  description: `Share your referral link and earn credits when friends join ${siteConfig.name}.`,
-  keywords: ['referral program', 'earn credits', 'invite friends', siteConfig.name],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: true,
     follow: true,
@@ -24,16 +26,16 @@ export const metadata: Metadata = {
     canonical: `${websiteConfig.canonical.url}/referral`,
   },
   openGraph: {
-    title: `${siteConfig.name} Referral Program`,
-    description: `Invite friends and earn credits on ${siteConfig.name}.`,
+    title: tdk.title,
+    description: tdk.description,
     url: `${websiteConfig.canonical.url}/referral`,
-    siteName: siteConfig.name,
+    siteName: SITE_NAME,
     images: [
       {
         url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: SITE_NAME,
       },
     ],
     locale: 'en_US',
@@ -41,9 +43,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: siteConfig.name,
-    title: `${siteConfig.name} Referral Program`,
-    description: `Invite friends and earn credits on ${siteConfig.name}.`,
+    site: SITE_NAME,
+    title: tdk.title,
+    description: tdk.description,
     images: [`${siteUrl}/share-img.png`],
   },
 };

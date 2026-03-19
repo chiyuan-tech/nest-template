@@ -1,10 +1,12 @@
 import { Metadata } from 'next';
-import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
+import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
+
+const tdk = getPageTdk('/privacy');
 
 export const metadata: Metadata = {
-  title: `Privacy Policy | ${siteConfig.name}`,
-  description: `Read the Privacy Policy for ${siteConfig.name}. Learn how we collect, use, and protect your personal information.`,
-  keywords: ['privacy policy', 'data protection', 'user privacy', siteConfig.name],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: true,
     follow: true,
@@ -20,16 +22,16 @@ export const metadata: Metadata = {
     canonical: `${websiteConfig.canonical.url}/privacy`,
   },
   openGraph: {
-    title: `Privacy Policy | ${siteConfig.name}`,
-    description: `Read the Privacy Policy for ${siteConfig.name}. Learn how we collect, use, and protect your personal information.`,
+    title: tdk.title,
+    description: tdk.description,
     url: `${websiteConfig.canonical.url}/privacy`,
-    siteName: siteConfig.name,
+    siteName: SITE_NAME,
     images: [
       {
         url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: SITE_NAME,
       },
     ],
     locale: 'en_US',
@@ -37,9 +39,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: siteConfig.name,
-    title: `Privacy Policy | ${siteConfig.name}`,
-    description: `Read the Privacy Policy for ${siteConfig.name}. Learn how we collect, use, and protect your personal information.`,
+    site: SITE_NAME,
+    title: tdk.title,
+    description: tdk.description,
     images: [`${siteUrl}/share-img.png`],
   },
 };

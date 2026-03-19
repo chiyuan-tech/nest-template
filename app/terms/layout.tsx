@@ -1,10 +1,12 @@
 import { Metadata } from 'next';
-import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
+import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
+
+const tdk = getPageTdk('/terms');
 
 export const metadata: Metadata = {
-  title: `Terms of Service | ${siteConfig.name}`,
-  description: `Read the Terms of Service for ${siteConfig.name}. Understand the terms and conditions for using our AI video generation service.`,
-  keywords: ['terms of service', 'user agreement', 'legal', siteConfig.name],
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
   robots: {
     index: true,
     follow: true,
@@ -20,16 +22,16 @@ export const metadata: Metadata = {
     canonical: `${websiteConfig.canonical.url}/terms`,
   },
   openGraph: {
-    title: `Terms of Service | ${siteConfig.name}`,
-    description: `Read the Terms of Service for ${siteConfig.name}. Understand the terms and conditions for using our AI video generation service.`,
+    title: tdk.title,
+    description: tdk.description,
     url: `${websiteConfig.canonical.url}/terms`,
-    siteName: siteConfig.name,
+    siteName: SITE_NAME,
     images: [
       {
         url: `${siteUrl}/share-img.png`,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: SITE_NAME,
       },
     ],
     locale: 'en_US',
@@ -37,9 +39,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: siteConfig.name,
-    title: `Terms of Service | ${siteConfig.name}`,
-    description: `Read the Terms of Service for ${siteConfig.name}. Understand the terms and conditions for using our AI video generation service.`,
+    site: SITE_NAME,
+    title: tdk.title,
+    description: tdk.description,
     images: [`${siteUrl}/share-img.png`],
   },
 };
