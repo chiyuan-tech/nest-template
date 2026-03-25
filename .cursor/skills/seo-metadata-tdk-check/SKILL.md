@@ -20,7 +20,12 @@ All pages in `app/` **MUST** export a `metadata` object, except:
 - **Keywords (K)**: < 100 characters (total length of all keywords combined)
 
 **TDK source (required):**
-- Each page **MUST** use TDK from `@/website-config`: import `getPageTdk(path)` or `pageTdk` and use the returned `title`, `description`, and `keywords` for `metadata` (and for `openGraph` / `twitter` title and description). Do not hardcode TDK in the page; define and maintain it in `website-config.js` → `pageTdk`.
+- **Single source of truth**: TDK is defined **only** in `website-config.js` → `pageTdk`.
+- **Per-page enforcement**: Every page that exports `metadata` **MUST** reference `pageTdk` via `@/website-config` (`getPageTdk(path)` preferred, or `pageTdk[path]`) and use the returned `title`, `description`, and `keywords` for:
+  - `metadata.title` / `metadata.description` / `metadata.keywords`
+  - `metadata.openGraph.title` / `metadata.openGraph.description`
+  - `metadata.twitter.title` / `metadata.twitter.description`
+- **Forbidden**: Do not hardcode TDK values inside any page or layout component. If TDK needs to change, update `website-config.js` → `pageTdk`.
 
 ```typescript
 import { getPageTdk, SITE_NAME, siteUrl, websiteConfig } from '@/website-config';
@@ -182,11 +187,12 @@ openGraph: {
 
 When creating or updating pages:
 - ✅ `metadata` is exported (except profile, sso-callback, and share pages)
-- ✅ **TDK is taken from `@/website-config`** (`getPageTdk(path)` or `pageTdk[path]`), not hardcoded in the page
+- ✅ **TDK is taken from `website-config.js` → `pageTdk`** and referenced in the page via `@/website-config` (`getPageTdk(path)` or `pageTdk[path]`) — never hardcoded
+- ✅ `metadata.openGraph.title/description` and `metadata.twitter.title/description` also use the same TDK source
 - ✅ Title length ≤ 60 characters
 - ✅ Description length ≤ 160 characters
 - ✅ Keywords total length < 100 characters
-- ✅ New or changed TDK is added/updated in `website-config.js` → `pageTdk`
+- ✅ New or changed TDK is added/updated in `website-config.js` → `pageTdk` (single source of truth)
 - ✅ Canonical URL uses `websiteConfig.canonical.url` from `@/website-config`
 - ✅ JSON-LD included where applicable; types and fields follow **JSON-LD Structured Data** (global constraints + per-`@type` table); ratings/FAQ/HowTo match visible content
 - ✅ **Homepage (`/`)**: `SoftwareApplication` (or `WebApplication`), `HowTo`, and `FAQPage` per **Homepage JSON-LD priority** when content exists — not optional
