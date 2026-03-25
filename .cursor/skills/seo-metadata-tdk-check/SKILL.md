@@ -1,9 +1,9 @@
 ---
-name: website-development
-description: Enforces Next.js website development standards including metadata requirements, component library usage, and image/link components. Use when creating or updating pages in app/, working with Next.js components, or implementing SEO metadata.
+name: seo-metadata-tdk-check
+description: Validates SEO metadata and TDK (Title, Description, Keywords) requirements for Next.js pages. Use when creating or updating pages in app/ and checking metadata compliance.
 ---
 
-# Website Development Standards
+# SEO Metadata TDK Check Standards
 
 ## Metadata Requirements
 
