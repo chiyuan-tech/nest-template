@@ -71,17 +71,16 @@ export const metadata: Metadata = {
 
 ### JSON-LD Structured Data
 
-**REQUIRED**: Pages **SHOULD** include JSON-LD script for SEO. Add a `<script type="application/ld+json">` in the page or layout.
+**REQUIRED**: Pages **SHOULD** include JSON-LD script for SEO. Add a `<script type="application/ld+json">` in the page or layout (or a single script with `@graph`).
 
 ```typescript
-// Common types: WebSite, WebPage, Article, Organization
+// Example: one entity
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
   name: string,
   description: string,
   url: string,
-  // Add type-specific properties (e.g., Article: datePublished, author)
 };
 
 export default function Page() {
@@ -97,11 +96,46 @@ export default function Page() {
 }
 ```
 
-**Type guidelines:**
-- **WebSite**: Homepage, include `potentialAction` for SearchAction if applicable
-- **WebPage**: General pages
-- **Article**: Blog posts, include `datePublished`, `dateModified`, `author`, `image`
-- **Organization**: About/contact pages
+#### Global constraints (all types)
+
+- **`@context`**: Use `"https://schema.org"` unless you intentionally combine multiple vocabularies.
+- **`@type`**: String or array (e.g. `['Article', 'BlogPosting']`). Pick the most specific type that matches the visible content.
+- **URLs**: Use absolute URLs from `@/website-config` (`websiteConfig.canonical.url` / `siteUrl`) for `url`, `image`, `@id`, `item` in breadcrumbs, etc.
+- **Content parity**: FAQ, HowTo, Review, `aggregateRating`, and offers must **match what users see** on the page; do not invent ratings or steps.
+- **Multiple entities**: Either multiple `<script type="application/ld+json">` blocks or one object with `@graph: [...]`. Avoid duplicate `@id` for different things.
+- **Testing**: Google’s Rich Results Test lists only some types as “rich result” candidates; other types may still be valid for Google and should validate in Schema.org / URL Inspection.
+
+#### Types, fields, and constraints
+
+| `@type` | When to use | Required / strongly recommended | Optional but common | Notes |
+|--------|-------------|----------------------------------|----------------------|--------|
+| **WebSite** | Site-wide; usually homepage | `name`, `url` | `description`, `publisher` (Organization), `inLanguage`, `potentialAction` (SearchAction) | SearchAction needs `target` (URL template with `{search_term_string}`) and `query-input` |
+| **Organization** | Brand / legal entity | `name`, `url` | `description`, `logo` (`ImageObject` with `url`), `sameAs`, `contactPoint` | `logo` should be stable URL; prefer HTTPS |
+| **WebPage** | Any HTML page | `name`, `url` | `description`, `isPartOf` (WebSite), `inLanguage`, `breadcrumb` (BreadcrumbList), `primaryImageOfPage`, `@id` | Inherits from CreativeWork; align `name` with `<title>` / H1 where sensible |
+| **FAQPage** | Page whose main content is Q&A | `mainEntity`: array of **Question** | `name`, `description`, `url` on FAQPage itself | Each **Question** needs `name` + `acceptedAnswer` → **Answer** with `text`. Must mirror on-page FAQ copy. |
+| **Question** | Inside `FAQPage.mainEntity` | `name`, `acceptedAnswer` | — | `name` = question string; **Answer** must use `@type: 'Answer'` and `text` |
+| **HowTo** | Step-by-step instructions shown on page | `name`, `step` (array of **HowToStep**) | `description`, `totalTime` (ISO 8601 duration, e.g. `PT15M`), `image` (ImageObject or URL), `url` | For Google HowTo rich results, include `image` and clear steps; each **HowToStep** should have `position` (number) and `name` and/or `text` |
+| **HowToStep** | Child of HowTo | `name` or `text` (or both) | `position`, `url`, `image` | Order `position` 1..n |
+| **Article** / **BlogPosting** | Blog posts / news | `headline`, `author`, `datePublished`, `image` | `dateModified`, `description`, `publisher` (Organization), `mainEntityOfPage`, `inLanguage` | Dates in ISO 8601; `author` = Person or Organization with `name`; `image` URL(s) absolute |
+| **CollectionPage** | Index listing (e.g. blog index) | `name`, `url` | `description`, `isPartOf` (WebSite) | Optionally add `hasPart` / `ItemList` if listing URLs are stable |
+| **BreadcrumbList** | Visible breadcrumb trail | `itemListElement` (ListItem[]) | — | Each **ListItem**: `position` (1-based), `name`, `item` (URL). Must match UI order. |
+| **SoftwareApplication** | Desktop/mobile app or SaaS product | `name` | `applicationCategory`, `operatingSystem`, `url`, `description`, `offers` (Offer), `aggregateRating` | **aggregateRating** only if real user ratings exist: **AggregateRating** with `ratingValue`, `bestRating`, `worstRating`, and `ratingCount` and/or `reviewCount` |
+| **WebApplication** | Browser-only app | Same spirit as SoftwareApplication; `operatingSystem` often “Web” or “Web Browser” | `offers`, `aggregateRating` | Same honesty rules for ratings |
+| **Review** | Editorial or user review of a product | `itemReviewed`, `reviewRating` (**Rating**), `author` | `reviewBody`, `datePublished`, `url` | **Rating**: `ratingValue`, `bestRating`, `worstRating` (numeric strings allowed) |
+| **Product** | Physical/digital product with offer | `name` | `image`, `description`, `brand`, `offers` (with `price`, `priceCurrency`, `availability`) | Prefer schema.org `Offer`/`AggregateOffer` patterns; prices must match page |
+
+#### Nested types (reuse patterns)
+
+- **ImageObject**: `@type: 'ImageObject'`, `url`, and when known `width`, `height`.
+- **Offer** (under Product / SoftwareApplication): `@type: 'Offer'`, `price` (string or number per docs), `priceCurrency` (ISO 4217), `availability` (e.g. `https://schema.org/InStock`), `url` to purchase.
+- **AggregateRating**: `@type: 'AggregateRating'`, `ratingValue`, `bestRating`, `worstRating`, `ratingCount` and/or `reviewCount`.
+- **Rating** (single review): `@type: 'Rating'`, `ratingValue`, `bestRating`, `worstRating`.
+
+#### Homepage / layout composition (typical)
+
+- **Home**: `WebSite`, `Organization`, `WebPage`, optional `SoftwareApplication` or `WebApplication`, optional `HowTo` (on-page steps), optional `FAQPage` if FAQ exists — each as separate script or `@graph`.
+- **Article**: `Article` or `BlogPosting` + optional `BreadcrumbList`.
+- **Pricing**: `WebPage` + `SoftwareApplication` (or `Product`) + `FAQPage` if pricing FAQ exists + `BreadcrumbList`.
 
 ### Canonical URL
 
@@ -142,7 +176,7 @@ When creating or updating pages:
 - ✅ Keywords total length < 100 characters
 - ✅ New or changed TDK is added/updated in `website-config.js` → `pageTdk`
 - ✅ Canonical URL uses `websiteConfig.canonical.url` from `@/website-config`
-- ✅ JSON-LD structured data included where applicable (WebPage, Article, etc.)
+- ✅ JSON-LD included where applicable; types and fields follow **JSON-LD Structured Data** (global constraints + per-`@type` table); ratings/FAQ/HowTo match visible content
 - ✅ Share images use `/share-img.png` path
 - ✅ URLs use correct site URL from `@/website-config`
 
