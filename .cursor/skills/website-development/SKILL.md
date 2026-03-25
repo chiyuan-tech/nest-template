@@ -131,9 +131,21 @@ export default function Page() {
 - **AggregateRating**: `@type: 'AggregateRating'`, `ratingValue`, `bestRating`, `worstRating`, `ratingCount` and/or `reviewCount`.
 - **Rating** (single review): `@type: 'Rating'`, `ratingValue`, `bestRating`, `worstRating`.
 
+#### Homepage JSON-LD priority (**CRITICAL**)
+
+On **`/` (homepage)**, the following types are **highest priority** — implement them whenever the page has matching visible content (product/tool, how-to steps, FAQ). Do **not** treat them as optional extras:
+
+1. **`SoftwareApplication`** (or **`WebApplication`** if browser-only) — describes the product/service; include `applicationCategory`, `operatingSystem`, `url`, `offers` (if applicable), and `aggregateRating` only when authentic.
+2. **`HowTo`** — mirrors the on-page “how to use” / steps section; include `step` (HowToStep array) with `position`, `name` and/or `text`, `image` on HowTo when possible, `totalTime` if appropriate.
+3. **`FAQPage`** — mirrors the on-page FAQ; `mainEntity` must match visible Q&A; set `name`, `description`, `url` on the FAQPage node (e.g. `/#faq`).
+
+**Lower priority on home (still recommended):** `WebSite`, `Organization`, `WebPage` — add for site graph and page identity after the three above are satisfied.
+
+Order in HTML: priority is **logical**, not render order; multiple `<script type="application/ld+json">` blocks or one `@graph` are both fine.
+
 #### Homepage / layout composition (typical)
 
-- **Home**: `WebSite`, `Organization`, `WebPage`, optional `SoftwareApplication` or `WebApplication`, optional `HowTo` (on-page steps), optional `FAQPage` if FAQ exists — each as separate script or `@graph`.
+- **Home**: **Required priority:** `SoftwareApplication` or `WebApplication`, `HowTo` (if steps section exists), `FAQPage` (if FAQ section exists). **Also include:** `WebSite`, `Organization`, `WebPage` — each as separate script or `@graph`.
 - **Article**: `Article` or `BlogPosting` + optional `BreadcrumbList`.
 - **Pricing**: `WebPage` + `SoftwareApplication` (or `Product`) + `FAQPage` if pricing FAQ exists + `BreadcrumbList`.
 
@@ -177,6 +189,7 @@ When creating or updating pages:
 - ✅ New or changed TDK is added/updated in `website-config.js` → `pageTdk`
 - ✅ Canonical URL uses `websiteConfig.canonical.url` from `@/website-config`
 - ✅ JSON-LD included where applicable; types and fields follow **JSON-LD Structured Data** (global constraints + per-`@type` table); ratings/FAQ/HowTo match visible content
+- ✅ **Homepage (`/`)**: `SoftwareApplication` (or `WebApplication`), `HowTo`, and `FAQPage` per **Homepage JSON-LD priority** when content exists — not optional
 - ✅ Share images use `/share-img.png` path
 - ✅ URLs use correct site URL from `@/website-config`
 
