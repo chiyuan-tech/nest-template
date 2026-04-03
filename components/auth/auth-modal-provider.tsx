@@ -1,7 +1,10 @@
 'use client';
 
-import React, { createContext, useCallback, useContext, useMemo, startTransition } from 'react';
-import { useClerk } from '@clerk/nextjs';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
+import { SignInButton, SignUpButton } from '@clerk/nextjs';
+
+const SIGN_IN_TRIGGER_ID = '__auth_modal_sign_in_trigger';
+const SIGN_UP_TRIGGER_ID = '__auth_modal_sign_up_trigger';
 
 type View = 'signin' | 'signup' | 'verify-email';
 
@@ -16,34 +19,37 @@ const AuthModalContext = createContext<AuthModalContextValue>({
 });
 
 export function AuthModalProvider({ children }: { children: React.ReactNode }) {
-  const { openSignIn, openSignUp, closeSignIn, closeSignUp } = useClerk();
+  const openAuthModal = useCallback((initialView: View = 'signin') => {
+    requestAnimationFrame(() => {
+      const id = initialView === 'signup' ? SIGN_UP_TRIGGER_ID : SIGN_IN_TRIGGER_ID;
+      document.getElementById(id)?.click();
+    });
+  }, []);
 
-  const openAuthModal = useCallback(
-    (view: View = 'signin') => {
-      requestAnimationFrame(() => {
-        startTransition(() => {
-          if (view === 'signup') {
-            openSignUp();
-          } else {
-            openSignIn();
-          }
-        });
-      });
-    },
-    [openSignIn, openSignUp],
-  );
-
-  const closeAuthModal = useCallback(() => {
-    closeSignIn();
-    closeSignUp();
-  }, [closeSignIn, closeSignUp]);
+  const closeAuthModal = useCallback(() => {}, []);
 
   const value = useMemo<AuthModalContextValue>(
     () => ({ openAuthModal, closeAuthModal }),
-    [openAuthModal, closeAuthModal],
+    [openAuthModal, closeAuthModal]
   );
 
-  return <AuthModalContext.Provider value={value}>{children}</AuthModalContext.Provider>;
+  return (
+    <AuthModalContext.Provider value={value}>
+      {children}
+      <div className="fixed left-0 top-0 -z-[1] h-px w-px overflow-hidden opacity-0" aria-hidden>
+        <SignInButton mode="modal">
+          <button id={SIGN_IN_TRIGGER_ID} type="button" tabIndex={-1} className="sr-only">
+            Sign in
+          </button>
+        </SignInButton>
+        <SignUpButton mode="modal">
+          <button id={SIGN_UP_TRIGGER_ID} type="button" tabIndex={-1} className="sr-only">
+            Sign up
+          </button>
+        </SignUpButton>
+      </div>
+    </AuthModalContext.Provider>
+  );
 }
 
 export function useAuthModal(): AuthModalContextValue {
