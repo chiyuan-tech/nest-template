@@ -1,9 +1,8 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { Button } from '../../components/ui/button';
 import { useEffect, useState } from 'react';
-import { CustomSignModal } from './custom-sign-modal';
 
 // 模块级预热状态
 let prewarmed = false;
@@ -33,7 +32,7 @@ const prewarmModules = () => {
 
 export default function AuthButton() {
   const { isSignedIn, user, isLoaded } = useUser();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openSignIn } = useClerk();
   const [isPrewarmed, setIsPrewarmed] = useState(prewarmed);
 
   // 预热模块
@@ -75,22 +74,18 @@ export default function AuthButton() {
   }
 
   const handleLoginClick = () => {
-    // 使用 requestAnimationFrame 确保视觉反馈先绘制
     requestAnimationFrame(() => {
-      setIsModalOpen(true);
+      openSignIn();
     });
   };
 
   return (
-    <>
-      <Button
-        variant="default"
-        className="bg-primary text-white hover:bg-primary/90 px-6 py-2 rounded-full transition-colors"
-        onClick={handleLoginClick}
-      >
-        Login
-      </Button>
-      <CustomSignModal open={isModalOpen} onOpenChange={setIsModalOpen} initialView="signin" />
-    </>
+    <Button
+      variant="default"
+      className="bg-primary text-white hover:bg-primary/90 px-6 py-2 rounded-full transition-colors"
+      onClick={handleLoginClick}
+    >
+      Login
+    </Button>
   );
 }
