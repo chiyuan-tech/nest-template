@@ -10,7 +10,8 @@ import { Eye, EyeOff, X } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { siteConfig } from '@/website-config';
 
-type View = 'signin' | 'signup' | 'verify-email';
+type View = 'signin' | 'signup' | 'verify-email' | 'signin-2fa';
+type MfaStrategy = 'totp' | 'phone_code' | 'email_code' | 'backup_code';
 
 interface CustomSignModalProps {
   open: boolean;
@@ -18,6 +19,17 @@ interface CustomSignModalProps {
   initialView?: View;
   // When true, keep the modal mounted even when not open (render hidden)
   forceMount?: boolean;
+}
+
+function pickDefaultMfaStrategy(
+  factors: { strategy: string }[] | null | undefined,
+): MfaStrategy | null {
+  const list = factors ?? [];
+  const order: MfaStrategy[] = ['totp', 'phone_code', 'email_code', 'backup_code'];
+  for (const s of order) {
+    if (list.some((f) => f.strategy === s)) return s;
+  }
+  return null;
 }
 
 // Memoize the component to prevent unnecessary re-renders
@@ -28,6 +40,9 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
   const [showPassword, setShowPassword] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [resendCountdown, setResendCountdown] = useState(0);
+  const [secondFactorCode, setSecondFactorCode] = useState('');
+  const [mfaStrategy, setMfaStrategy] = useState<MfaStrategy | null>(null);
+  const [secondFactorResendCountdown, setSecondFactorResendCountdown] = useState(0);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
@@ -62,6 +77,9 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
       setEmail('');
       setPassword('');
       setVerificationCode('');
+      setSecondFactorCode('');
+      setMfaStrategy(null);
+      setSecondFactorResendCountdown(0);
       setError(null);
       setPasswordError(null);
       setPasswordTouched(false);
@@ -78,6 +96,13 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
       return () => clearTimeout(timer);
     }
   }, [resendCountdown]);
+
+  useEffect(() => {
+    if (secondFactorResendCountdown > 0) {
+      const timer = setTimeout(() => setSecondFactorResendCountdown(secondFactorResendCountdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [secondFactorResendCountdown]);
 
   // Escape key to close (lightweight, no modal)
   useEffect(() => {
@@ -146,6 +171,40 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
         password,
       });
 
+      if (result.status === 'needs_second_factor') {
+        const factors = result.supportedSecondFactors ?? [];
+        const chosen = pickDefaultMfaStrategy(factors);
+        if (!chosen) {
+          setError('Second factor is required but no supported method is available. Please contact support.');
+          return;
+        }
+        setMfaStrategy(chosen);
+        setSecondFactorCode('');
+        if (chosen === 'phone_code') {
+          const phoneFactor = factors.find((f) => f.strategy === 'phone_code');
+          if (phoneFactor && phoneFactor.strategy === 'phone_code') {
+            await signIn.prepareSecondFactor({
+              strategy: 'phone_code',
+              phoneNumberId: phoneFactor.phoneNumberId,
+            });
+            setSecondFactorResendCountdown(30);
+          }
+        } else if (chosen === 'email_code') {
+          const emailFactor = factors.find((f) => (f.strategy as string) === 'email_code') as
+            | { strategy: string; emailAddressId: string }
+            | undefined;
+          if (emailFactor) {
+            await (signIn.prepareSecondFactor as Function)({
+              strategy: 'email_code',
+              emailAddressId: emailFactor.emailAddressId,
+            });
+            setSecondFactorResendCountdown(30);
+          }
+        }
+        setView('signin-2fa');
+        return;
+      }
+
       if (result.status === 'complete') {
         await setActiveSignIn({ session: result.createdSessionId });
         onOpenChange(false);
@@ -167,6 +226,121 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
       setIsLoading(false);
     }
   }, [signInLoaded, signIn, email, password, isLoading, isOAuthLoading, setActiveSignIn, onOpenChange, router]);
+
+  const handleSecondFactorSubmit = useCallback(async () => {
+    if (!signInLoaded || !signIn || isLoading || isOAuthLoading) return;
+    if (!mfaStrategy) {
+      setError('Verification method unavailable. Go back and sign in again.');
+      return;
+    }
+    const code = secondFactorCode.trim();
+    if (!code) {
+      setError('Enter your verification code.');
+      return;
+    }
+
+    setError(null);
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(true);
+    }, 50);
+
+    try {
+      const attempt =
+        mfaStrategy === 'totp'
+          ? { strategy: 'totp' as const, code }
+          : mfaStrategy === 'backup_code'
+            ? { strategy: 'backup_code' as const, code }
+            : mfaStrategy === 'email_code'
+              ? ({ strategy: 'email_code', code } as any)
+              : { strategy: 'phone_code' as const, code };
+
+      const result = await signIn.attemptSecondFactor(attempt);
+
+      if (result.status === 'complete' && result.createdSessionId) {
+        await setActiveSignIn({ session: result.createdSessionId });
+        onOpenChange(false);
+        router.refresh();
+      } else {
+        setError('Verification incomplete. Please try again.');
+      }
+    } catch (err: any) {
+      setError(err.errors?.[0]?.message || 'Verification failed');
+      setSecondFactorCode('');
+    } finally {
+      clearTimeout(loadingTimeout);
+      setIsLoading(false);
+    }
+  }, [signInLoaded, signIn, mfaStrategy, secondFactorCode, isLoading, isOAuthLoading, setActiveSignIn, onOpenChange, router]);
+
+  const handleResendSecondFactorSms = useCallback(async () => {
+    if (!signInLoaded || !signIn || secondFactorResendCountdown > 0 || isLoading || isOAuthLoading) return;
+    if (mfaStrategy !== 'phone_code' && mfaStrategy !== 'email_code') return;
+    try {
+      setError(null);
+      if (mfaStrategy === 'phone_code') {
+        const phoneFactor = signIn.supportedSecondFactors?.find((f) => f.strategy === 'phone_code');
+        if (!phoneFactor || phoneFactor.strategy !== 'phone_code') return;
+        await signIn.prepareSecondFactor({
+          strategy: 'phone_code',
+          phoneNumberId: phoneFactor.phoneNumberId,
+        });
+      } else {
+        const emailFactor = signIn.supportedSecondFactors?.find((f) => (f.strategy as string) === 'email_code') as
+          | { strategy: string; emailAddressId: string }
+          | undefined;
+        if (!emailFactor) return;
+        await (signIn.prepareSecondFactor as Function)({
+          strategy: 'email_code',
+          emailAddressId: emailFactor.emailAddressId,
+        });
+      }
+      setSecondFactorResendCountdown(30);
+    } catch (err: any) {
+      setError(err.errors?.[0]?.message || 'Failed to resend code');
+    }
+  }, [signInLoaded, signIn, mfaStrategy, secondFactorResendCountdown, isLoading, isOAuthLoading]);
+
+  const handleMfaStrategyChange = useCallback(
+    async (next: MfaStrategy) => {
+      if (!signIn || isLoading || isOAuthLoading) return;
+      setMfaStrategy(next);
+      setSecondFactorCode('');
+      setError(null);
+      if (next === 'phone_code') {
+        const phoneFactor = signIn.supportedSecondFactors?.find((f) => f.strategy === 'phone_code');
+        if (phoneFactor && phoneFactor.strategy === 'phone_code') {
+          try {
+            setIsLoading(true);
+            await signIn.prepareSecondFactor({ strategy: 'phone_code', phoneNumberId: phoneFactor.phoneNumberId });
+            setSecondFactorResendCountdown(30);
+          } catch (err: any) {
+            setError(err.errors?.[0]?.message || 'Failed to send code');
+          } finally {
+            setIsLoading(false);
+          }
+        }
+      } else if (next === 'email_code') {
+        const emailFactor = signIn.supportedSecondFactors?.find((f) => (f.strategy as string) === 'email_code') as
+          | { strategy: string; emailAddressId: string }
+          | undefined;
+        if (emailFactor) {
+          try {
+            setIsLoading(true);
+            await (signIn.prepareSecondFactor as Function)({
+              strategy: 'email_code',
+              emailAddressId: emailFactor.emailAddressId,
+            });
+            setSecondFactorResendCountdown(30);
+          } catch (err: any) {
+            setError(err.errors?.[0]?.message || 'Failed to send code');
+          } finally {
+            setIsLoading(false);
+          }
+        }
+      }
+    },
+    [signIn, isLoading, isOAuthLoading],
+  );
 
   const handleSignUp = useCallback(async () => {
     if (!signUpLoaded || !signUp || isLoading || isOAuthLoading) return;
@@ -281,12 +455,14 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
   const title = useMemo(() => {
     if (view === 'signin') return `Sign in to ${siteConfig.name}`;
     if (view === 'signup') return 'Create your account';
+    if (view === 'signin-2fa') return 'Two-step verification';
     return 'Verify your email';
   }, [view]);
 
   const description = useMemo(() => {
     if (view === 'signin') return 'Welcome back! Please sign in to continue';
     if (view === 'signup') return 'Welcome! Please fill in the details to get started.';
+    if (view === 'signin-2fa') return 'Your account requires a second verification step.';
     return null;
   }, [view]);
 
@@ -457,6 +633,157 @@ export const CustomSignModal = memo(function CustomSignModal({ open, onOpenChang
                   disabled={isLoading || isOAuthLoading}
                 >
                   Sign up
+                </button>
+              </p>
+            </>
+          )}
+
+          {view === 'signin-2fa' && signIn && (
+            <>
+              <p className="text-xs text-gray-700 mb-4 text-center">
+                {mfaStrategy === 'totp' && 'Open your authenticator app and enter the 6-digit code.'}
+                {mfaStrategy === 'phone_code' && (
+                  <>
+                    Enter the code sent to{' '}
+                    {(() => {
+                      const pf = signIn.supportedSecondFactors?.find((f) => f.strategy === 'phone_code') as
+                        | { safeIdentifier?: string }
+                        | undefined;
+                      return pf?.safeIdentifier ?? 'your phone';
+                    })()}
+                    .
+                  </>
+                )}
+                {(mfaStrategy as string) === 'email_code' && (
+                  <>
+                    Enter the code sent to{' '}
+                    {(() => {
+                      const ef = signIn.supportedSecondFactors?.find((f) => (f.strategy as string) === 'email_code') as
+                        | { safeIdentifier?: string }
+                        | undefined;
+                      return ef?.safeIdentifier ?? 'your email';
+                    })()}
+                    .
+                  </>
+                )}
+                {mfaStrategy === 'backup_code' && 'Enter one of your backup codes.'}
+              </p>
+
+              {(signIn.supportedSecondFactors ?? []).length > 1 && (
+                <div className="mb-3">
+                  <Label htmlFor="mfa-method" className="text-xs font-medium text-gray-900 mb-1 block">
+                    Method
+                  </Label>
+                  <select
+                    id="mfa-method"
+                    className="w-full h-9 rounded-md border border-gray-300 bg-gray-50 text-sm text-gray-900 px-2"
+                    value={mfaStrategy ?? ''}
+                    onChange={(e) => void handleMfaStrategyChange(e.target.value as MfaStrategy)}
+                    disabled={isLoading || isOAuthLoading}
+                  >
+                    {(signIn.supportedSecondFactors ?? []).map((f) =>
+                      f.strategy === 'totp' ? (
+                        <option key="totp" value="totp">
+                          Authenticator app
+                        </option>
+                      ) : f.strategy === 'phone_code' ? (
+                        <option key="phone_code" value="phone_code">
+                          SMS code
+                        </option>
+                      ) : (f.strategy as string) === 'email_code' ? (
+                        <option key="email_code" value="email_code">
+                          Email code
+                        </option>
+                      ) : f.strategy === 'backup_code' ? (
+                        <option key="backup_code" value="backup_code">
+                          Backup code
+                        </option>
+                      ) : null,
+                    )}
+                  </select>
+                </div>
+              )}
+
+              <div className="mb-4">
+                <Label htmlFor="second-factor-code" className="text-xs font-medium text-gray-900 mb-1 block">
+                  Verification code
+                </Label>
+                <Input
+                  id="second-factor-code"
+                  type="text"
+                  inputMode={mfaStrategy === 'backup_code' ? 'text' : 'numeric'}
+                  autoComplete="one-time-code"
+                  value={secondFactorCode}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (mfaStrategy === 'backup_code') {
+                      setSecondFactorCode(v);
+                    } else {
+                      setSecondFactorCode(v.replace(/\D/g, '').slice(0, 6));
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && secondFactorCode.trim()) {
+                      handleSecondFactorSubmit();
+                    }
+                  }}
+                  className="h-9 bg-gray-50 border-gray-300 focus:bg-white text-gray-900 placeholder:text-gray-400 text-center text-base font-semibold tracking-widest"
+                  placeholder={mfaStrategy === 'backup_code' ? 'Backup code' : '000000'}
+                  disabled={isLoading || isOAuthLoading}
+                />
+              </div>
+
+              {(mfaStrategy === 'phone_code' || (mfaStrategy as string) === 'email_code') && (
+                <div className="text-center mb-4">
+                  <button
+                    type="button"
+                    onClick={() => void handleResendSecondFactorSms()}
+                    disabled={secondFactorResendCountdown > 0 || isLoading || isOAuthLoading}
+                    className="text-xs text-gray-700 hover:text-gray-900 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  >
+                    Didn&apos;t receive a code? Resend{' '}
+                    {secondFactorResendCountdown > 0 && `(${secondFactorResendCountdown})`}
+                  </button>
+                </div>
+              )}
+
+              {error && (
+                <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-md text-xs text-red-600">{error}</div>
+              )}
+
+              <Button
+                type="button"
+                onClick={() => void handleSecondFactorSubmit()}
+                disabled={isLoading || isOAuthLoading || !secondFactorCode.trim()}
+                className="w-full h-9 bg-black text-white hover:bg-gray-800 active:scale-[0.98] active:bg-gray-900 transition-transform duration-75 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    Continue
+                    <svg className="w-3.5 h-3.5 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
+              </Button>
+
+              <p className="mt-4 text-center text-xs text-gray-700">
+                <button
+                  type="button"
+                  onClick={() => {
+                    startTransition(() => {
+                      setView('signin');
+                      setSecondFactorCode('');
+                      setMfaStrategy(null);
+                      setError(null);
+                    });
+                  }}
+                  className="text-gray-900 font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading || isOAuthLoading}
+                >
+                  Back to sign in
                 </button>
               </p>
             </>
