@@ -100,7 +100,17 @@ export function InvoiceDialog({ open, onOpenChange, payLogId, payLogList }: Invo
         margin: [0, 0, 0, 0] as [number, number, number, number],
         filename: `invoice-${invoiceNumber}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          onclone: (clonedDoc: Document) => {
+            // Strip stylesheets so html2canvas does not parse unsupported oklch() from globals.css
+            clonedDoc
+              .querySelectorAll('style, link[rel="stylesheet"]')
+              .forEach((el) => el.remove());
+          },
+        },
         jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const },
       };
 
