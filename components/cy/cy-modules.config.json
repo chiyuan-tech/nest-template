@@ -1,0 +1,625 @@
+{
+  "VideoHeroCase1": {
+    "title": "Create Stunning Videos with LTX 2.3",
+    "badgeText": "Wan 3.0 · AI video",
+    "subtitle": "Next-Gen AI Video Generation: Text to Video, Image to Video, and More. Transform your ideas into cinematic visuals in seconds.",
+    "ctaButtons": [
+      {
+        "text": "Start Creating Free",
+        "href": "#cta"
+      },
+      {
+        "text": "Read LTX 2.3 Review",
+        "href": "#review"
+      }
+    ],
+    "socialProof": "Trusted by 1,000,000+ creators worldwide",
+    "heroPoster": "/video/hero/hf_20260401.png",
+    "heroVideo": "/video/hero/hf_20260401.mp4"
+  },
+  "VideoHeroCase2": {
+    "title": "Create Stunning Videos with LTX 2.3",
+    "badgeText": "LTX 2.3 is now available",
+    "subtitle": "Next-Gen AI Video Generation: Text to Video, Image to Video, and More. Transform your ideas into cinematic visuals in seconds.",
+    "ctaButtons": [
+      {
+        "text": "Start Creating Free",
+        "href": "#cta"
+      },
+      {
+        "text": "Read LTX 2.3 Review",
+        "href": "#review"
+      }
+    ],
+    "heroPoster": "/video/hero/hf_20260401.png",
+    "heroVideo": "/video/hero/hf_20260401.mp4",
+    "socialProof": "Trusted by 1,000,000+ creators worldwide"
+  },
+  "VideoHeroCase3": {
+    "title": "Create Stunning Videos with LTX 2.3",
+    "badgeText": "AI Video to Audio Generator",
+    "subtitle": "Next-Gen AI Video Generation: Text to Video, Image to Video, and More. Transform your ideas into cinematic visuals in seconds.",
+    "ctaButtons": [
+      {
+        "text": "Start Creating Free",
+        "href": "#cta"
+      },
+      {
+        "text": "Read LTX 2.3 Review",
+        "href": "#review"
+      }
+    ],
+    "socialProof": "Trusted by 1,000,000+ creators worldwide",
+    "heroPoster": "/video/hero/hf_20260401.png",
+    "heroVideo": "/video/hero/hf_20260401.mp4",
+    "heroStats": [
+      {
+        "label": "Speed",
+        "value": "0.63s Generation"
+      },
+      {
+        "label": "Quality",
+        "value": "Spatial Stereo Audio"
+      },
+      {
+        "label": "Foundation",
+        "value": "ICLR 2026 Research"
+      },
+      {
+        "label": "Integration",
+        "value": "Works with Sora & Veo3"
+      }
+    ]
+  },
+  "ImageHeroCase1": {
+    "title": "GPT Image 2.0 Free GPT Image 2 Generator",
+    "subtitle": "Create photorealistic images, posters, UI mockups, and multilingual visuals in seconds. GPT Image 2 helps you move from idea to production-ready assets without design bottlenecks.",
+    "ctaButtons": [
+      {
+        "text": "Generate Free Images Now",
+        "href": "#"
+      },
+      {
+        "text": "Open Prompt Guide",
+        "href": "#"
+      }
+    ],
+    "heroImage": "/video/hero/hf_20260401.png",
+    "featureChips": [
+      "No sign-up required",
+      "Text + image editing",
+      "Multilingual rendering",
+      "Free to start"
+    ],
+    "liveBriefEmphasis": "Live brief",
+    "liveBriefTail": "posters · film stills · manga · bilingual labels · product sets"
+  },
+  "ImageHeroCase2": {
+    "title": "Seedream 4.5 Multi-Modal AI Image Generator & Editing",
+    "badgeText": "ByteDance's Latest AI Model",
+    "subtitle": "Create photorealistic images, posters, UI mockups, and multilingual visuals in seconds. GPT Image 2 helps you move from idea to production-ready assets without design bottlenecks.",
+    "ctaButtons": [
+      {
+        "text": "Generate Free Images Now",
+        "href": "#"
+      },
+      {
+        "text": "Open Prompt Guide",
+        "href": "#"
+      }
+    ],
+    "logoImages": [
+      "https://cfsource.seedancepro.com/seedream4-5/hero-1.jpeg",
+      "https://cfsource.seedancepro.com/seedream4-5/hero-2.jpeg",
+      "https://cfsource.seedancepro.com/seedream4-5/hero-3.jpeg",
+      "https://cfsource.seedancepro.com/seedream4-5/hero-4.jpeg"
+    ],
+    "featureChips": [
+      "No sign-up required",
+      "Text + image editing",
+      "Multilingual rendering",
+      "Free to start"
+    ],
+    "liveBriefEmphasis": "Live brief",
+    "liveBriefTail": "posters · film stills · manga · bilingual labels · product sets"
+  },
+  "KeyFeatureCase1": {
+    "kicker": "Features",
+    "decorIndex": "01",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "Why GPT Image 2 Is Different From Every AI Image Tool You've Tried",
+    "subtitle": "Whether you are a designer, marketer, or solo creator, GPT Image 2 delivers a practical feature set that is powerful and easy to use.",
+    "items": [
+      {
+        "title": "Perfect Text Inside Images",
+        "text": "Every other AI image model treats text as an afterthought. Signs come out garbled. Posters look like ransom notes. GPT Image 2 was rebuilt from scratch to render readable, properly placed text on the first try - headlines, buttons, labels, and even mixed-language layouts.",
+        "bestFor": "Best for: Event posters, product banners, social graphics, UI wireframes, promotional materials.",
+        "image": "https://cysource.gptimage.tools/home/assets/action_1.jpg?v=1"
+      },
+      {
+        "title": "Reasoning Before Generating",
+        "text": "GPT Image 2 does not just match your words to pixels. It reasons through your request: understanding spatial relationships, planning the composition, and verifying accuracy before the first pixel renders. Ask it to generate a poster for a current event and it will look up the details in real time.",
+        "bestFor": "Best for: Storytelling, product visualization, scene construction, character design.",
+        "video": "/video/hero/hf_20260401.mp4",
+        "videoPoster": "/video/hero/hf_20260401.png"
+      },
+      {
+        "title": "Multilingual Visual Content",
+        "text": "Working across global markets? GPT Image 2 natively supports Japanese, Korean, Chinese, Hindi, Bengali, and all Latin-script languages - rendered correctly inside images, not translated after the fact. Build one visual campaign that works everywhere.",
+        "bestFor": "Best for: Graphic novel artists, UX storyboarders, brand campaign creators.",
+        "image": "https://cysource.gptimage.tools/home/hero/feature-3.webp"
+      },
+      {
+        "title": "Production-Ready Resolution",
+        "text": "Generate high-resolution visuals for posters, thumbnails, UI mockups, and product concepts. Paid plans may include higher-resolution export or upscaling options depending on availability. No watermarks. Outputs are royalty-free and cleared for commercial use under OpenAI's content policy.",
+        "bestFor": "Best for: Teams testing multiple creative directions quickly.",
+        "image": "https://cysource.gptimage.tools/home/hero/gpt-image-2-16_9-low-1k.png"
+      },
+      {
+        "title": "Image-to-Image Editing",
+        "text": "Upload any reference photo and describe what you want to change. GPT Image 2 edits with surgical precision - swap backgrounds, change colors, localize designs, or remove objects while preserving everything else exactly as-is.",
+        "bestFor": "Best for: Concept prototyping, fast ideation, and creative exploration loops.",
+        "image": "https://cysource.gptimage.tools/home/hero/feature-5.webp"
+      }
+    ]
+  },
+  "KeyFeatureCase2": {
+    "kicker": "Audience",
+    "decorIndex": "02",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "Who Uses PrismAudio?",
+    "subtitle": "From solo creators to studios — pick a workflow to preview how PrismAudio fits your stack.",
+    "cards": [
+      {
+        "title": "AI Video Creators",
+        "description": "I generate videos with Sora and Kling every day. PrismAudio turns them into something I can actually publish.",
+        "ctaLabel": "Try Creator Workflow",
+        "ctaHref": "/generator",
+          "image": "https://cysource.gptimage.tools/home/assets/action_1.jpg?v=1"
+      },
+      {
+        "title": "Filmmakers & Editors",
+        "description": "Recording foley takes days. PrismAudio gives me a working draft in seconds that I can refine or use directly.",
+        "ctaLabel": "See Pro Use Cases",
+        "ctaHref": "/compare",
+        "video": "/video/hero/hf_20260401.mp4",
+        "videoPoster": "/video/hero/hf_20260401.png"
+      },
+      {
+        "title": "Game Developers",
+        "description": "I use it for cutscene prototypes and environment audio. Fast enough to test in the same session I design.",
+        "ctaLabel": "Explore Real Results",
+        "ctaHref": "/best-video-to-audio-ai",
+        "video": "/video/hero/hf_20260401.mp4",
+        "videoPoster": "/video/hero/hf_20260401.png"
+      },
+      {
+        "title": "Content Creators",
+        "description": "My Reels and TikToks finally sound as good as they look. One upload, done.",
+        "ctaLabel": "Start Free",
+        "ctaHref": "/generator",
+        "video": "/video/hero/hf_20260401.mp4",
+        "videoPoster": "/video/hero/hf_20260401.png"
+      }
+    ]
+  },
+  
+  "UseCasesGalleryCase1": {
+    "kicker": "Gallery",
+    "decorIndex": "01",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "See ERNIE Image in Action - Real Outputs, Real Results",
+    "subtitle": "The best way to understand ERNIE Image is to see what it produces. Below are real examples generated with ERNIE Image — no post-processing, no Photoshop, just raw AI output.",
+    "items": [
+      {
+        "id": "1",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_1.png",
+        "desc": "[Image reference/object/person] as a [movie/TV show genre] movie storyboard, six sequential panels, pencil sketch with tonal shading, cinematic camera angles, shot type labels, director's notes in margins, 4K storyboard sheet, aspect ratio 3:4",
+        "url": "https://example.com/one",
+        "height": 600
+      },
+      {
+        "id": "8",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_8.png",
+        "url": "https://example.com/two",
+        "desc": "Technical architectural blueprint of a Classic Smash Burger on deep navy drafting paper. Hyperrealistic food hero centered-left, dramatically lit from upper left, warm studio spotlight, cross-section view revealing every layer in precise stack order, lacy-edged patties visible in full photorealistic color, cheese mid-cascade, bun toasted golden, sauce pooling at base catching warm light. Blueprint linework in electric blue, precise measurement lines, stack height callouts, patty thickness cross-section, bun diameter diagram, sauce trajectory arc, grid overlay. Labels connected by thin glowing CAD elbow-joint lines, no crossovers: \"{argument name=\\\"label 1\\\" default=\\\"BRIOCHE BUN sesame-crowned, butter-toasted, 11cm diameter\\\"}\" \"{argument name=\\\"label 2\\\" default=\\\"SMASH PATTY ×2 80/20 chuck, 85g each, crust-temp 220°C\\\"}\" \"{argument name=\\\"label 3\\\" default=\\\"AMERICAN CHEESE single-fold melt, 2 slices, full cascade\\\"}\" \"CARAMELIZED ONION 45min low-heat, moisture-reduced, dark\" \"BREAD & BUTTER PICKLE 4mm slice, brine-bright, translucent\" \"HOUSE SAUCE thousand island base, 18g applied, amber\". Labels clustered right and top, white Helvetica Neue Light uppercase, thin italic descriptors below. Compass rose bottom-left, scale bar bottom-center, revision block top-right. Title block double-border bottom-right: \"DISH: THE SMASH // CLASSIFICATION: AMERICAN CLASSIC // BUILD SPEC: Engineered to be the last burger you ever need.\" 4K, tack sharp, electric blue linework glowing softly, warm golden burger tones popping against cool navy. Craveable, aspect ratio 3:4",
+        "height": 600
+      },
+      {
+        "id": "9",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_9.png",
+        "url": "https://example.com/three",
+        "desc": "Eco-Friendly Skincare Product \u201cMinimalist skincare bottle made of frosted glass, placed in a serene natural setting with flowing water, green leaves, and soft sunlight rays, clean aesthetic inspired by The Body Shop, sustainability-focused branding, soft pastel tones, high-end product photography, calm and pure atmosphere\u201d, aspect ratio 4:3, photorealistic, high resolution",
+        "height": 600
+      },
+      {
+        "id": "18",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_18.png",
+        "url": "https://example.com/three",
+        "desc": "A minimalist, ultra-realistic product shot of a premium ice cream bar inspired by {argument name=\"country\" default=\"Kazakhstan\"}. The popsicle is coated in glossy {argument name=\"icing color\" default=\"turquoise\"} icing with elegant gold ornamental patterns and the word \u201cQAZAQSTAN\u201d embossed in metallic gold, featuring a golden sun-and-eagle motif. The lower half reveals creamy vanilla ice cream with smooth texture and subtle melting drips. Wooden stick engraved with traditional Kazakh patterns. Clean white studio background, soft diffused lighting, sharp focus, luxury food branding aesthetic, high-detail textures, modern cultural fusion design, 8K quality, aspect ratio 9:16",
+        "height": 600
+      },
+      {
+        "id": "19",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_19.png",
+        "url": "https://example.com/one",
+        "desc": "Hyper-realistic photograph of an adorable handmade patchwork fabric amigurumi {argument name=\"subject\" default=\"SUBJECT\"} made from upcycled cotton scraps, extremely detailed visible mismatched seams, frayed thread edges, varied fabric prints and textures, soft stuffed volume with gentle puckering and folds, charming handmade imperfections, professional product photography, studio lighting, subtle bokeh, against {argument name=\"background description\" default=\"BACKGROUND DESCRIPTION\"}, vertical composition, ultra-detailed, 2k, photorealistic, macro photography style --ar [X:X]--stylize 250 --v 6 --q 2",
+        "height": 600
+      },
+      {
+        "id": "3",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_3.png",
+        "url": "https://example.com/three",
+        "desc": "oden mantel, flooring specialists laying rich dark wooden flooring, interior installers mounting a modern chandelier, furniture movers bringing a modern sofa, leather armchairs, wooden coffee table and patterned rug, decorators placing plants, books, sculptures and vases on illuminated shelves, curtains installed on a large window with sunlight streaming in, TV mounted on the wall with a modern console beneath it, lit fireplace creating a cozy warm glow, dust and construction debris disappearing as the room becomes clean and organized, transition from dull construction lighting to warm elegant interior lighting, final scene showing a modern luxury American living room, warm ambient lighting, elegant furniture, decorated shelves, wooden flooring, cozy atmosphere, hyper-realistic cinematic renovation moment, natural worker motion blur, extremely detailed interior, 4K photorealism, volumetric light, depth of field, wide angle interior shot, aspect ratio 2:3",
+        "height": 600
+      },
+      {
+        "id": "5",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_5.png",
+        "url": "https://example.com/two",
+        "desc": "<instructions> Input: A classic album (e.g., {argument name=\"album name\" default=\"Pink Floyd - Dark Side of the Moon\"}). Action: A vinyl record spinning on a turntable. Visual: The grooves of the record rise up to form the circular landscape of the album's theme (e.g., {argument name=\"landscape theme\" default=\"a prism city\"}). The needle is a tiny car/character driving through the groove-canyons. </instructions>, photorealistic, high resolution",
+        "height": 600
+      },
+      {
+        "id": "4",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_4.png",
+        "url": "https://example.com/one",
+        "desc": "their hands with natural grip and finger tension—no book or extra props. Keep scale tiny yet believable; show thick bottle lip, optical refraction, soft caustics on the table, micro-scratches, faint dust and smudges on the glass. Warm studio key light from the right, subtle bounce from the left; soft reflections on the bottle; gentle shadow beneath. Bottle floor: fine sand with small shells and a thin turquoise water rim, grains sharply resolved. On the upper-left of the glass, add a handwritten white marker note: \"{argument name=\"glass text\" default=\"GLASS_TEXT\"}\" with correct superscripts. Background: warm beige, softly blurred. Tilt-shift/macro look, 85mm aesthetic, f/1.8 depth of field; crisp textures (skin pores, hair flyaways, fabric weave, metal/plastic/glass of the accessory). Centered framing, vertical 3:4 ratio, HDR detail, subtle vignette, premium cinematic hyper-real miniature style, photorealistic, high resolution",
+        "height": 350
+      },
+      {
+        "id": "6",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_6.png",
+        "url": "https://example.com/three",
+        "desc": "High-end commercial product photography of a {argument name=\"product type\" default=\"yogurt cup\"} labeled \"{argument name=\"product name\" default=\"Creamy Fruit Yogurt Blueberry Mix\"}\", captured mid-air with dynamic motion as the cup slightly tilts forward, surrounded by a dramatic {argument name=\"splash type\" default=\"milk splash explosion\"} forming a fluid crown around the base. The container features a clean (white and soft blue packaging design with blueberry illustrations) and subtle condensation droplets for a fresh chilled look. Multiple (fresh blueberries and a few stylized berries) are suspended in the air around the product, along with small floating droplets of milk to enhance motion and energy. Background is a smooth (soft purple-blue gradient backdrop) creating a playful yet premium dairy aesthetic. Composition is a (dynamic front-facing angle with slight tilt) emphasizing movement and impact while keeping the product as the focal point. Lighting is soft studio lighting with bright highlights on the milk splash, gentle shadows under the cup, and glossy reflections on the surface, enhancing texture and realism. Fine details like milk droplets, fruit skin texture, and packaging print are highly visible. Clean, vibrant, high-energy composition emphasizing freshness, creaminess, and flavor. Ultra-realistic, hyper-detailed textures, professional food advertising photography, high resolution, 8k, aspect ratio 9:16",
+        "height": 600
+      },
+      {
+        "id": "7",
+        "img": "https://cysource.gptimage.tools/home/assets/userCase_7.png",
+        "url": "https://example.com/one",
+        "desc": "A cinematic portrait of a handsome young man with neatly styled brown hair and light stubble, wearing a cream-colored tailored suit with subtle gold trim details, paired with a black dress shirt and black tie. He is adjusting his jacket with one hand, wearing a luxury wristwatch. The background is dark and minimal, creating a dramatic contrast. Soft studio lighting highlights his face and the texture of the suit, with a moody, elegant, high-fashion editorial style. Ultra-realistic, sharp focus, shallow depth of field, 85mm lens, professional photography, luxury aesthetic, high contrast, warm tones.",
+        "height": 750
+      }
+    ]
+  },
+  "FaqCase1": {
+    "sectionTitle": "Frequently Asked Questions About Wan 3.0",
+    "defaultOpenItemIndex": 0,
+    "items": [
+      {
+        "question": "What is Wan 3.0 and how is it different from Wan 2.7?",
+        "answer": "Wan 3.0 is the third major generation of Alibaba's open-source Wan video generation model series. Unlike Wan 2.7, which maxed out at 1080p and 16-second clips, Wan 3.0 supports native 4K resolution, 60fps output, and videos up to 60 seconds long. More significantly, Wan 3.0 introduces a neural physics engine for realistic object behavior, synchronized audio generation, and cross-shot character consistency that holds up through full multi-shot sequences. It's not an incremental patch — the model architecture has been substantially redesigned."
+      },
+      {
+        "question": "Is Wan 3.0 free to use?",
+        "answer": "Yes — Wan 3.0 has a free plan that includes 5 generations per month at up to 1080p resolution. Free-plan videos include a watermark and are for personal, non-commercial use only. For unlimited 4K generation, no watermark, and commercial use rights, a Pro plan is available. The underlying model weights are also free to download and self-host under an open-source license. If you want to test output quality before subscribing, the free plan is the right starting point."
+      },
+      {
+        "question": "Can I use Wan 3.0-generated videos for commercial projects?",
+        "answer": "Yes. All paid Wan 3.0 plans include full commercial use rights. Videos generated on the Free plan include a watermark and are licensed for personal, non-commercial use only. If you're producing content for clients, running ads, monetizing a YouTube channel, or any other revenue-generating use case, a Pro or API plan is required. The open-source model weights also permit commercial use with attribution — check the LICENSE file in the GitHub repository for specifics."
+      },
+      {
+        "question": "Does Wan 3.0 support image-to-video generation?",
+        "answer": "Yes. Wan 3.0 accepts a reference image as input alongside (or instead of) a text prompt. You can provide a product photo, a character illustration, a landscape shot, or any other visual reference, and the model generates video that maintains the visual identity of that image while adding natural motion, lighting changes, and camera movement. This is especially useful for e-commerce product videos and brand-consistent content where you need the generated footage to match existing visual assets."
+      },
+      {
+        "question": "Is Wan 3.0 open-source? Where can I download the model?",
+        "answer": "Yes — the core Wan 3.0 model weights are publicly available on Hugging Face and GitHub under a license that permits commercial use with attribution. You can download them, run them on your own GPU hardware, fine-tune them on custom datasets, and integrate them into your own products. The cloud platform at wan30.co is a managed, hosted version of the same model, optimized for speed and ease of use without any infrastructure overhead."
+      },
+      {
+        "question": "Does Wan 3.0 generate audio along with the video?",
+        "answer": "Yes. Wan 3.0 includes a native audio generation capability conditioned on the visual content of the video — not a separate model applied after the fact. When you enable audio generation, the model produces sound that matches the visual scene: ambient environment noise, object impact sounds, movement audio, and atmospheric texture. You can also generate the video without audio if you prefer to add your own soundtrack in post-production. Audio generation is available on Pro and API plans."
+      },
+      {
+        "question": "How do I write effective prompts for Wan 3.0?",
+        "answer": "Wan 3.0 responds well to prompts that describe four things: the subject, the action, the environment, and the camera. A prompt like \"a barista pouring latte art in a sunlit coffee shop, close-up, slow motion, shallow depth of field\" will produce a more precise result than \"coffee shop video.\" Lighting conditions (golden hour, overcast, neon), camera movement (dolly in, handheld, aerial), and surface detail (wet pavement, rough concrete, polished marble) all influence the output. For image-to-video prompts, focus on describing the motion rather than the appearance, since the appearance is anchored by your reference image."
+      },
+      {
+        "question": "What are the system requirements to run Wan 3.0 locally?",
+        "answer": "To run Wan 3.0 on your own hardware, you need a CUDA-compatible NVIDIA GPU with a minimum of 24GB VRAM for 1080p generation. For 4K output, 40GB+ VRAM is recommended (NVIDIA A100 or H100). The model supports both single-GPU and multi-GPU setups. A Docker image is available for simplified deployment. Full system requirements, setup instructions, and a configuration guide are in the Wan 3.0 GitHub repository. If local hardware isn't available, the managed cloud platform runs the same model without any setup required."
+      },
+      {
+        "question": "Why do AI-generated video characters look different between shots? Does Wan 3.0 fix this?",
+        "answer": "Character drift — where a person's face, clothing, or surroundings change slightly (or dramatically) between generated shots — is one of the most common problems in AI video. It happens because most models treat each video generation as a fresh inference with no persistent memory of the character's visual identity. Wan 3.0 addresses this with a structural identity preservation mechanism that tracks key visual attributes (facial structure, clothing, hair, environment) across cuts. In sequences up to 60 seconds, Wan 3.0 maintains character and scene consistency through wide shots, medium shots, and close-ups without drift."
+      }
+    ]
+  },
+  "TestimonialGridCase1": {
+    "kicker": "Voices",
+    "decorIndex": "01",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "What Professionals Are Saying",
+    "dragThresholdPx": 6,
+    "subtitle": "Real GPT Image 2 workflows: fast text-to-image generation, poster-ready layouts, and structured infographic visuals for ads, social, and product teams.",
+    "items": [
+      {
+        "tweetId": "2046670977145372771",
+        "accountName": "OpenAl",
+        "handle": "OpenAl",
+        "avatarSrc": "https://cysource.gptimage.tools/x/x_1.jpg",
+        "mediaSrc": [
+          "https://cysource.gptimage.tools/x/x_1_source.mp4"
+        ],
+        "timestamp": "7:16 PM · Apr 21, 2026",
+        "likesLabel": "25K",
+        "repliesLabel": "Reply",
+        "footerReplyLabel": "Read 1 reply",
+        "contentLines": "Introducing ChatGPT Images 2.0\n\nA state-of-the-art image model that can take on complex visual tasks and produce precise, immediately usable visuals, with sharper editing, richer layouts, and thinking-level intelligence.\n\nVideo made with ChatGPT Images"
+      },
+      {
+        "tweetId": "2046548575358972192",
+        "accountName": "ViralOps",
+        "handle": "ViralOps_",
+        "avatarSrc": "https://cysource.gptimage.tools/x/x_2.jpg",
+        "mediaSrc": [
+          "https://cysource.gptimage.tools/x/x_2_source_1.jpg",
+          "https://cysource.gptimage.tools/x/x_2_source_2.jpg"
+        ],
+        "timestamp": "3:22 AM · Apr 22, 2026",
+        "likesLabel": "26",
+        "repliesLabel": "Reply",
+        "footerReplyLabel": "Read 1 reply",
+        "contentLines": "gpt-image-2 is now available to everyone.\n\ni tried generating the same image using nano banana pro and gpt-image-2.\n\nthe difference is clear, it is way better than nb pro.\n\nhere are the results:\n\ngpt-image-2 vs nb pro"
+      },
+      {
+        "tweetId": "2046708539557601321",
+        "accountName": "Mark Kretschmann",
+        "handle": "mark_k",
+        "avatarSrc": "https://cysource.gptimage.tools/x/x_3.jpg",
+        "mediaSrc": [
+          "https://cysource.gptimage.tools/x/x_3_source.jpg"
+        ],
+        "timestamp": "5:51 AM · Apr 22, 2026",
+        "likesLabel": "34",
+        "repliesLabel": "Reply",
+        "footerReplyLabel": "Read 56 reply",
+        "contentLines": "This image below reveals an artifact problem with GPT Images 2 that you can see in many generations:\n\nThere are dots everywhere. The bananas have dark dots on them, the fire above the pan has bright dots, and even the sugar has some kind of dotted pattern."
+      },
+      {
+        "tweetId": "2046576484291416290",
+        "accountName": "Toolfolio",
+        "handle": "toolfolio",
+        "avatarSrc": "https://cysource.gptimage.tools/x/x_4.jpg",
+        "mediaSrc": [
+          "https://cysource.gptimage.tools/x/x_4_source_1.jpg",
+          "https://cysource.gptimage.tools/x/x_4_source_2.jpg"
+        ],
+        "timestamp": "9:07 PM · Apr 21, 2026",
+        "likesLabel": "142",
+        "repliesLabel": "Reply",
+        "footerReplyLabel": "Read 26 reply",
+        "contentLines": "OMG, GPT Image 2 is insanely GOOD\n\nIt can generate 100 completely unique pixel art items with labels… in ONE shot\n\nThis is the first time image gen feels production-ready\n\nIt's rolling out for everyone\n\n(Examples below)"
+      },
+      {
+        "tweetId": "2046732155829604550",
+        "accountName": "can",
+        "handle": "marmaduke091",
+        "avatarSrc": "https://cysource.gptimage.tools/x/x_5.jpg",
+        "mediaSrc": [
+          "https://cysource.gptimage.tools/x/x_5_source.jpg"
+        ],
+        "timestamp": "7:25 AM · Apr 22, 2026",
+        "likesLabel": "189",
+        "repliesLabel": "Reply",
+        "footerReplyLabel": "Read 26 reply",
+        "contentLines": "Speed is livestreaming Grand Theft Auto 6\n\nby GPT Image 2"
+      },
+      {
+        "tweetId": "2046272578705068476",
+        "accountName": "Fix",
+        "handle": "FixlationAI",
+        "avatarSrc": "https://cysource.gptimage.tools/x/x_6.jpg",
+        "mediaSrc": [
+          "https://cysource.gptimage.tools/x/x_6_source_1.jpg",
+          "https://cysource.gptimage.tools/x/x_6_source_2.jpg"
+        ],
+        "timestamp": "12:59 AM · Apr 21, 2026",
+        "likesLabel": "25",
+        "repliesLabel": "Reply",
+        "footerReplyLabel": "Read 10 reply",
+        "contentLines": "🚨 GPT-Image 2 is rolling out now on ChatGPT!\n\nHere's an easy prompt to test if you have it or not as V2 is the ONLY model that can do this:\n\n\"an ingame screenshot of rust\"\n\nLeft image = GPT-Image 1.5 (Rust/CoD/Tarkov mix)\nRight image = GPT-Image 2 (Literally Rust)"
+      }
+    ]
+  },
+  "TestimonialGridCase2": {
+    "kicker": "Voices",
+    "decorIndex": "02",
+    "titleLayout": "homeSplitHeader",
+    "title": "What Creators Are Saying About Wan 3.0",
+    "description": "Wan 3.0 is being used by content creators, agencies, and indie filmmakers across the US. Here's what some of them have shared.",
+    "items": [
+      {
+        "quote": "The physics in Wan 3.0 genuinely surprised me. I generated a pour shot for a coffee brand — the liquid moved exactly how you'd want it to. I would have paid a production crew $800 for that shot.",
+        "author": "Marcus T.",
+        "role": "Freelance Commercial Videographer",
+        "location": "Austin TX",
+        "avatar": "/avatarJpg/avatar_1.jpg"
+      },
+      {
+        "quote": "I produce explainer videos for SaaS companies. Wan 3.0 cut my production time in half. The 60-second multi-shot capability is the thing that actually made it useful — I can generate a full narrative sequence without the characters falling apart.",
+        "author": "Priya S.",
+        "role": "Video Content Strategist",
+        "location": "San Francisco CA",
+        "avatar": "/avatarJpg/avatar_2.jpg"
+      },
+      {
+        "quote": "We tested every major AI video tool before committing. Wan 3.0 won on output quality and open-source flexibility. The API integration took less than a day to set up, and we've been running it in production for three months.",
+        "author": "Jordan W.",
+        "role": "CTO at a boutique creative agency",
+        "location": "New York NY",
+        "avatar": "/avatarJpg/avatar_3.jpg"
+      },
+      {
+        "quote": "I run a one-person studio and Wan 3.0 lets me deliver campaign variants in hours. I can match brand moodboards quickly and still keep motion believable.",
+        "author": "Olivia R.",
+        "role": "Social Video Producer",
+        "location": "Los Angeles CA",
+        "avatar": "/avatarJpg/avatar_4.jpg"
+      },
+      {
+        "quote": "The prompt adherence is strong enough for ad testing. We generate 10-15 hooks per week and iterate faster than our old edit pipeline.",
+        "author": "Daniel M.",
+        "role": "Performance Creative Lead",
+        "location": "Miami FL",
+        "avatar": "/avatarJpg/avatar_5.jpg"
+      },
+      {
+        "quote": "For product shots, reflections and small object motion are much more stable than what we saw in other tools. That consistency matters for ecommerce.",
+        "author": "Nina K.",
+        "role": "Ecommerce Content Manager",
+        "location": "Seattle WA",
+        "avatar": "/avatarJpg/avatar_6.jpg"
+      },
+      {
+        "quote": "I teach editing workshops and students understand scene construction faster when they can prototype ideas in Wan 3.0 before touching a timeline.",
+        "author": "Thomas L.",
+        "role": "Film Educator",
+        "location": "Chicago IL",
+        "avatar": "/avatarJpg/avatar_7.jpg"
+      },
+      {
+        "quote": "We use it for pre-visualization before live shoots. It cuts alignment time with clients because they can approve pacing and framing early.",
+        "author": "Maya C.",
+        "role": "Creative Director",
+        "location": "Boston MA",
+        "avatar": "/avatarJpg/avatar_8.jpg"
+      },
+      {
+        "quote": "The multilingual prompt quality is better than expected. Our EU team uses the same workflow and output quality stays consistent.",
+        "author": "Luca P.",
+        "role": "Global Content Ops",
+        "location": "Berlin DE",
+        "avatar": "/avatarJpg/avatar_9.jpg"
+      },
+      {
+        "quote": "I replaced expensive stock footage for explainer intros. The turnaround is fast enough to publish the same day for trend-based content.",
+        "author": "Sarah J.",
+        "role": "YouTube Strategist",
+        "location": "Toronto CA",
+        "avatar": "/avatarJpg/avatar_10.jpg"
+      },
+      {
+        "quote": "Scene continuity over longer clips made the difference for us. We can actually chain shots without everything resetting stylistically.",
+        "author": "Jake N.",
+        "role": "Motion Designer",
+        "location": "London UK",
+        "avatar": "/avatarJpg/avatar_11.jpg"
+      },
+      {
+        "quote": "I generate fitness demo backgrounds and b-roll in batches now. It saves us from repeating outdoor shoots every week.",
+        "author": "Amanda F.",
+        "role": "Fitness Content Creator",
+        "location": "Denver CO",
+        "avatar": "/avatarJpg/avatar_12.jpg"
+      }
+    ]
+  },
+  "TestimonialGridCase3": {
+    "kicker": "Voices",
+    "decorIndex": "03",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "What Users Say About Seedream 5.0 AI Image Generator",
+    "subtitle": "Hear from creators who have transformed their workflow with Seedream 5.0",
+    "sectionId": "SocialProof",
+    "autoplayDelayMs": 3000,
+    "stopOnInteraction": false,
+    "testimonials": [
+      {
+        "id": 1,
+        "name": "Sarah Chen",
+        "role": "Marketing Director, Tech Startup",
+        "content": "Seedream 5.0 has revolutionized our content creation process. We now generate stunning marketing visuals in minutes that used to take our design team hours to create. The quality is exceptional, and our social media engagement has increased by 40%.",
+        "rating": 5,
+        "avatar": "/avater/1.webp"
+      },
+      {
+        "id": 2,
+        "name": "Michael Torres",
+        "role": "Creative Director, Advertising Agency",
+        "content": "As a creative director, I'm always looking for tools that can help my team work faster without sacrificing quality. Seedream 5.0 delivers on both fronts. The AI's understanding of context and ability to generate on-brand visuals is impressive.",
+        "rating": 5,
+        "avatar": "/avater/2.webp"
+      },
+      {
+        "id": 3,
+        "name": "Emily Watson",
+        "role": "E-commerce Entrepreneur",
+        "content": "Seedream 5.0 has been a game-changer for my online store. I can now create professional product images without expensive photoshoots. The consistency across all my product listings has improved my brand perception and increased sales.",
+        "rating": 5,
+        "avatar": "/avater/3.webp"
+      },
+      {
+        "id": 4,
+        "name": "James Wilson",
+        "role": "Content Creator, YouTube",
+        "content": "As a content creator, visuals are everything. Seedream 5.0 helps me create thumbnails and Image graphics that stand out. The real-time web search feature ensures my visuals are always current and relevant to my content.",
+        "rating": 5,
+        "avatar": "/avater/4.webp"
+      },
+      {
+        "id": 5,
+        "name": "Lisa Zhang",
+        "role": "Graphic Designer, Freelance",
+        "content": "I use Seedream 5.0 as a tool to generate ideas and speed up my workflow. It's not a replacement for my skills, but it's an invaluable assistant that helps me explore more creative directions and deliver projects faster to my clients.",
+        "rating": 5,
+        "avatar": "/avater/5.webp"
+      }
+    ]
+  },
+  "HowToStepsCase1": {
+    "decorIndex": "03",
+    "kicker": "Guide",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "How to Use GPT Image 2 - 3 Simple Steps",
+    "subtitle": "Using GPT Image 2 on gptimage.tools requires no technical background, no model downloads, and no complex setup.",
+    "steps": [
+      {
+        "name": "Step 1: Describe Your Vision",
+        "image": "https://cysource.gptimage.tools/home/assets/step-1.webp",
+        "text": "Type your prompt in plain English. Include subject, style, and any exact text you want in the image."
+      },
+      {
+        "name": "Step 2: Choose Your Settings",
+        "image": "https://cysource.gptimage.tools/home/assets/step-2.webp",
+        "text": "Choose aspect ratio and quality based on your output target: social, banner, UI mockup, or print draft."
+      },
+      {
+        "name": "Step 3: Generate and Download",
+        "image": "https://cysource.gptimage.tools/home/assets/step-3.webp",
+        "text": "Generate, refine in natural language, and download your final watermark-free image in seconds."
+      }
+    ]
+  },
+  "ComparisonTableCase1": {
+    "decorIndex": "04",
+    "kicker": "Compare",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "GPT Image 2 vs. GPT Image 1.5 vs. Nano Banana 2 vs. Midjourney V8",
+    "subtitle": "Feature-by-feature comparison across leading image generation tools.",
+    "columnHeaders": [
+      "Feature",
+      "GPT Image 2 ★",
+      "GPT Image 1.5",
+      "Nano Banana 2",
+      "Midjourney V8"
+    ],
+    "rows": [
+      ["Text Rendering Accuracy", "✅ ~99% first-pass", "⚠️ ~85%", "⚠️ ~90%", "❌ ~60%"],
+      ["Character Consistency", "✅ Good", "✅ Good", "✅ Strongest (14 ref images)", "✅ Good"],
+      ["Native Resolution", "✅ 2K (2048px)", "⚠️ 1K (1024px)", "✅ 2K", "✅ 2K"],
+      ["4K Upscaling", "✅", "❌", "✅", "✅"],
+      ["Generation Speed", "⚡ 5-15s", "⚡ 5-10s", "⚡ 1-3s (fastest)", "🐢 20-40s"],
+      ["Image-to-Image Editing", "✅ Enhanced", "✅", "✅", "⚠️ Limited"],
+      ["Multilingual Text in Images", "✅ Full support", "⚠️ Partial", "✅", "❌ Poor"],
+      ["Reasoning Layer", "✅", "❌", "❌", "❌"],
+      ["Real-Time Web Search", "✅", "❌", "✅ (Google)", "❌"],
+      ["AI Arena Elo Score", "🥇 1512 (#1)", "1264", "1360", "No API, not ranked"],
+      ["Public API", "✅", "✅", "✅", "❌ None"],
+      ["No Discord Required", "✅", "✅", "✅", "❌ Required"],
+      ["Free Tier Available", "✅ (via gptimage.tools)", "✅ (3rd party)", "✅ (Gemini app)", "❌ Subscription only"],
+      ["Commercial Use", "✅", "✅", "✅", "⚠️ Paid plans only"],
+      ["Best For", "Text + complex layouts + all-round", "Text-heavy editing", "High-speed batch / portraits", "Pure artistic style"]
+    ]
+  }
+}

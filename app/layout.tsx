@@ -2,11 +2,12 @@ import './globals.css'
 import Script from 'next/script';
 import type { Metadata } from 'next';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 import { ToastProvider } from '@/components/ui/toast-provider';
 import { UserProvider } from '@/lib/providers';
 import dynamic from 'next/dynamic';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
-
+import { ScrollRevealInit } from '@/components/animations/ScrollRevealInit';
 export const metadata: Metadata = {
   icons: {
     icon: [
@@ -42,7 +43,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://c.cnzz.com" />
       </head>
       <body className="bg-background text-foreground">
-     
+        <ScrollRevealInit />
         <ClerkProviderWithLocale>
           <ToastProvider>
             <UserProvider>
@@ -51,6 +52,7 @@ export default function RootLayout({
                 <main className="min-h-[calc(100vh-80px)]">
                   {children}
                 </main>
+                <Footer />
               </AuthModalProvider>
             </UserProvider>
           </ToastProvider>

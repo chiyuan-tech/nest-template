@@ -1,0 +1,270 @@
+{
+    "theme": {
+        "--primary": "oklch(0.5567042428687489 0.23345790001164438 339.99267786413805)",
+        "--ring": "oklch(0.5567042428687489 0.23345790001164438 339.99267786413805)",
+        "--sidebar-primary": "oklch(0.5567042428687489 0.23345790001164438 339.99267786413805)",
+        "--sidebar-ring": "oklch(0.5567042428687489 0.23345790001164438 339.99267786413805)",
+        "--primary-foreground": "oklch(0.9846253159451991 0.001706075627243846 247.83938351399394)",
+        "--sidebar-primary-foreground": "oklch(0.9846253159451991 0.001706075627243846 247.83938351399394)"
+    },
+    "VideoHeroCase1": {
+        "title": "Create Stunning Videos with LTX 2.3",
+        "badgeText": "Wan 3.0 · AI video",
+        "subtitle": "Next-Gen AI Video Generation: Text to Video, Image to Video, and More. Transform your ideas into cinematic visuals in seconds.",
+        "ctaButtons": [
+            {
+                "text": "Start Creating Free",
+                "href": "#cta"
+            },
+            {
+                "text": "Read LTX 2.3 Review",
+                "href": "#review"
+            }
+        ],
+        "socialProof": "Trusted by 1,000,000+ creators worldwide",
+        "heroPoster": "/video/hero/hf_20260401.png",
+        "heroVideo": "/video/hero/hf_20260401.mp4",
+        "__cyComponentPath": "@/components/cy/HeroSection/video/videoHero_case1.tsx"
+    },
+    "KeyFeatureCase1": {
+        "kicker": "Features",
+        "decorIndex": "01",
+        "titleLayout": "headerVertical",
+        "sectionTitle": "Why GPT Image 2 Is Different From Every AI Image Tool You've Tried",
+        "subtitle": "Whether you are a designer, marketer, or solo creator, GPT Image 2 delivers a practical feature set that is powerful and easy to use.",
+        "items": [
+            {
+                "title": "Perfect Text Inside Images",
+                "text": "Every other AI image model treats text as an afterthought. Signs come out garbled. Posters look like ransom notes. GPT Image 2 was rebuilt from scratch to render readable, properly placed text on the first try - headlines, buttons, labels, and even mixed-language layouts.",
+                "bestFor": "Best for: Event posters, product banners, social graphics, UI wireframes, promotional materials.",
+                "image": "https://cysource.gptimage.tools/home/assets/action_1.jpg?v=1"
+            },
+            {
+                "title": "Reasoning Before Generating",
+                "text": "GPT Image 2 does not just match your words to pixels. It reasons through your request: understanding spatial relationships, planning the composition, and verifying accuracy before the first pixel renders. Ask it to generate a poster for a current event and it will look up the details in real time.",
+                "bestFor": "Best for: Storytelling, product visualization, scene construction, character design.",
+                "video": "/video/hero/hf_20260401.mp4",
+                "videoPoster": "/video/hero/hf_20260401.png"
+            },
+            {
+                "title": "Multilingual Visual Content",
+                "text": "Working across global markets? GPT Image 2 natively supports Japanese, Korean, Chinese, Hindi, Bengali, and all Latin-script languages - rendered correctly inside images, not translated after the fact. Build one visual campaign that works everywhere.",
+                "bestFor": "Best for: Graphic novel artists, UX storyboarders, brand campaign creators.",
+                "image": "https://cysource.gptimage.tools/home/hero/feature-3.webp"
+            },
+            {
+                "title": "Production-Ready Resolution",
+                "text": "Generate high-resolution visuals for posters, thumbnails, UI mockups, and product concepts. Paid plans may include higher-resolution export or upscaling options depending on availability. No watermarks. Outputs are royalty-free and cleared for commercial use under OpenAI's content policy.",
+                "bestFor": "Best for: Teams testing multiple creative directions quickly.",
+                "image": "https://cysource.gptimage.tools/home/hero/gpt-image-2-16_9-low-1k.png"
+            },
+            {
+                "title": "Image-to-Image Editing",
+                "text": "Upload any reference photo and describe what you want to change. GPT Image 2 edits with surgical precision - swap backgrounds, change colors, localize designs, or remove objects while preserving everything else exactly as-is.",
+                "bestFor": "Best for: Concept prototyping, fast ideation, and creative exploration loops.",
+                "image": "https://cysource.gptimage.tools/home/hero/feature-5.webp"
+            }
+        ],
+        "__cyComponentPath": "@/components/cy/KeyFeature/keyfeatureCase_1.tsx"
+    },
+    "HowToStepsCase1": {
+        "decorIndex": "03",
+        "kicker": "Guide",
+        "titleLayout": "headerVertical",
+        "sectionTitle": "How to Use GPT Image 2 - 3 Simple Steps",
+        "subtitle": "Using GPT Image 2 on gptimage.tools requires no technical background, no model downloads, and no complex setup.",
+        "steps": [
+            {
+                "name": "Step 1: Describe Your Vision",
+                "image": "https://cysource.gptimage.tools/home/assets/step-1.webp",
+                "text": "Type your prompt in plain English. Include subject, style, and any exact text you want in the image."
+            },
+            {
+                "name": "Step 2: Choose Your Settings",
+                "image": "https://cysource.gptimage.tools/home/assets/step-2.webp",
+                "text": "Choose aspect ratio and quality based on your output target: social, banner, UI mockup, or print draft."
+            },
+            {
+                "name": "Step 3: Generate and Download",
+                "image": "https://cysource.gptimage.tools/home/assets/step-3.webp",
+                "text": "Generate, refine in natural language, and download your final watermark-free image in seconds."
+            }
+        ],
+        "__cyComponentPath": "@/components/cy/HowToSteps/how_to_steps_case1.tsx"
+    },
+    "ComparisonTableCase1": {
+        "decorIndex": "04",
+        "kicker": "Compare",
+        "titleLayout": "headerVertical",
+        "sectionTitle": "GPT Image 2 vs. GPT Image 1.5 vs. Nano Banana 2 vs. Midjourney V8",
+        "subtitle": "Feature-by-feature comparison across leading image generation tools.",
+        "columnHeaders": [
+            "Feature",
+            "GPT Image 2 ★",
+            "GPT Image 1.5",
+            "Nano Banana 2",
+            "Midjourney V8"
+        ],
+        "rows": [
+            [
+                "Text Rendering Accuracy",
+                "✅ ~99% first-pass",
+                "⚠️ ~85%",
+                "⚠️ ~90%",
+                "❌ ~60%"
+            ],
+            [
+                "Character Consistency",
+                "✅ Good",
+                "✅ Good",
+                "✅ Strongest (14 ref images)",
+                "✅ Good"
+            ],
+            [
+                "Native Resolution",
+                "✅ 2K (2048px)",
+                "⚠️ 1K (1024px)",
+                "✅ 2K",
+                "✅ 2K"
+            ],
+            [
+                "4K Upscaling",
+                "✅",
+                "❌",
+                "✅",
+                "✅"
+            ],
+            [
+                "Generation Speed",
+                "⚡ 5-15s",
+                "⚡ 5-10s",
+                "⚡ 1-3s (fastest)",
+                "🐢 20-40s"
+            ],
+            [
+                "Image-to-Image Editing",
+                "✅ Enhanced",
+                "✅",
+                "✅",
+                "⚠️ Limited"
+            ],
+            [
+                "Multilingual Text in Images",
+                "✅ Full support",
+                "⚠️ Partial",
+                "✅",
+                "❌ Poor"
+            ],
+            [
+                "Reasoning Layer",
+                "✅",
+                "❌",
+                "❌",
+                "❌"
+            ],
+            [
+                "Real-Time Web Search",
+                "✅",
+                "❌",
+                "✅ (Google)",
+                "❌"
+            ],
+            [
+                "AI Arena Elo Score",
+                "🥇 1512 (#1)",
+                "1264",
+                "1360",
+                "No API, not ranked"
+            ],
+            [
+                "Public API",
+                "✅",
+                "✅",
+                "✅",
+                "❌ None"
+            ],
+            [
+                "No Discord Required",
+                "✅",
+                "✅",
+                "✅",
+                "❌ Required"
+            ],
+            [
+                "Free Tier Available",
+                "✅ (via gptimage.tools)",
+                "✅ (3rd party)",
+                "✅ (Gemini app)",
+                "❌ Subscription only"
+            ],
+            [
+                "Commercial Use",
+                "✅",
+                "✅",
+                "✅",
+                "⚠️ Paid plans only"
+            ],
+            [
+                "Best For",
+                "Text + complex layouts + all-round",
+                "Text-heavy editing",
+                "High-speed batch / portraits",
+                "Pure artistic style"
+            ]
+        ],
+        "__cyComponentPath": "@/components/cy/Comparison/comparison_table_case1.tsx"
+    },
+    "TestimonialGridCase3": {
+        "kicker": "Voices",
+        "decorIndex": "03",
+        "titleLayout": "headerVertical",
+        "sectionTitle": "What Users Say About Seedream 5.0 AI Image Generator",
+        "subtitle": "Hear from creators who have transformed their workflow with Seedream 5.0",
+        "sectionId": "SocialProof",
+        "autoplayDelayMs": 3000,
+        "stopOnInteraction": false,
+        "testimonials": [
+            {
+                "id": 1,
+                "name": "Sarah Chen",
+                "role": "Marketing Director, Tech Startup",
+                "content": "Seedream 5.0 has revolutionized our content creation process. We now generate stunning marketing visuals in minutes that used to take our design team hours to create. The quality is exceptional, and our social media engagement has increased by 40%.",
+                "rating": 5,
+                "avatar": "/avater/1.webp"
+            },
+            {
+                "id": 2,
+                "name": "Michael Torres",
+                "role": "Creative Director, Advertising Agency",
+                "content": "As a creative director, I'm always looking for tools that can help my team work faster without sacrificing quality. Seedream 5.0 delivers on both fronts. The AI's understanding of context and ability to generate on-brand visuals is impressive.",
+                "rating": 5,
+                "avatar": "/avater/2.webp"
+            },
+            {
+                "id": 3,
+                "name": "Emily Watson",
+                "role": "E-commerce Entrepreneur",
+                "content": "Seedream 5.0 has been a game-changer for my online store. I can now create professional product images without expensive photoshoots. The consistency across all my product listings has improved my brand perception and increased sales.",
+                "rating": 5,
+                "avatar": "/avater/3.webp"
+            },
+            {
+                "id": 4,
+                "name": "James Wilson",
+                "role": "Content Creator, YouTube",
+                "content": "As a content creator, visuals are everything. Seedream 5.0 helps me create thumbnails and Image graphics that stand out. The real-time web search feature ensures my visuals are always current and relevant to my content.",
+                "rating": 5,
+                "avatar": "/avater/4.webp"
+            },
+            {
+                "id": 5,
+                "name": "Lisa Zhang",
+                "role": "Graphic Designer, Freelance",
+                "content": "I use Seedream 5.0 as a tool to generate ideas and speed up my workflow. It's not a replacement for my skills, but it's an invaluable assistant that helps me explore more creative directions and deliver projects faster to my clients.",
+                "rating": 5,
+                "avatar": "/avater/5.webp"
+            }
+        ],
+        "__cyComponentPath": "@/components/cy/UsersSay/testimonial_grid_case3.tsx"
+    }
+}
