@@ -266,5 +266,95 @@
             }
         ],
         "__cyComponentPath": "@/components/cy/UsersSay/testimonial_grid_case3.tsx"
+    },
+    "PricingCase1": {
+  "decorIndex": "05",
+  "kicker": "Plans",
+  "titleLayout": "headerVertical",
+  "sectionTitle": "Choose Your Seedance Credit Pack",
+  "subtitle": "Get credits to create high-quality videos from text or images in seconds with Seedance. All plans include ultra HD quality, lightning-fast generation, multi-shot storytelling, and one-time payment.",
+  "badgeText": "Seedance Pricing",
+  "plans": [
+    {
+      "key": "base",
+      "popular": false,
+      "priceId": "price_1T9Ep9QeNOvbi7iexShMkWvX",
+      "title": "Base",
+      "price": "$9.9",
+      "credits": 99,
+      "ctaLabel": "Get 99 Credits",
+      "ctaHref": "#",
+      "features": [
+        "99 Credits",
+        "Up to 49 videos generated",
+        "Text-to-Video & Image-to-Video",
+        "480p, 720p, 1080p generation",
+        "5s & 10s video duration",
+        "Standard generation speed"
+      ]
+    },
+    {
+      "key": "pro",
+      "popular": true,
+      "priceId": "price_1T9EpQQeNOvbi7ieNreeDNvb",
+      "title": "Pro",
+      "price": "$29.9",
+      "credits": 370,
+      "ctaLabel": "Get 370 Credits",
+      "ctaHref": "#",
+      "features": [
+        "370 Credits",
+        "Up to 185 videos generated",
+        "Lightning-fast generation",
+        "Multi-shot storytelling",
+        "Advanced camera movements",
+        "Priority processing"
+      ]
+    },
+    {
+      "key": "ultimate",
+      "popular": false,
+      "priceId": "price_1T9Ep3QeNOvbi7ieb9YwE1WZ",
+      "title": "Ultimate",
+      "price": "$49.9",
+      "credits": 700,
+      "ctaLabel": "Get 700 Credits",
+      "ctaHref": "#",
+      "features": [
+        "700 Credits",
+        "Up to 350 videos generated",
+        "Extended video duration",
+        "Advanced AI characters",
+        "Cinematic camera controls",
+        "Priority processing"
+      ]
+    },
+    {
+      "key": "creator",
+      "popular": false,
+      "priceId": "price_1T9Eq3QeNOvbi7ied2IVXKmY",
+      "title": "Creator",
+      "price": "$99.9",
+      "credits": 1665,
+      "ctaLabel": "Get 1665 Credits",
+      "ctaHref": "#",
+      "features": [
+        "1665 Credits",
+        "Up to 832 videos generated",
+        "Fastest generation speed",
+        "Commercial license",
+        "Highest priority processing",
+        "All style presets & custom styles"
+      ]
     }
+  ],
+  "bottomTagline": "Choose one-time credits • Flexible billing options",
+  "bottomChecks": [
+    "Choose one-time",
+    "Credits never expire",
+    "Secure payments"
+  ],
+  "supportMailDomain": "seedance20.com",
+  "__cyComponentPath": "@/components/cy/Pricing/pricing_case1.tsx"
+}
 }

@@ -7,7 +7,8 @@ export type CyCategorySlug =
   | "users-say"
   | "key-features"
   | "how-to-steps"
-  | "comparison";
+  | "comparison"
+  | "pricing";
 
 export interface CyDemoItem {
   slug: string;
@@ -124,6 +125,17 @@ export const cyRegistry: CyCategory[] = [
         slug: "collapsible-faq",
         title: "Collapsible FAQ",
         description: "可展开常见问题模块，适合落地页信息补充。",
+      },
+    ],
+  },
+  {
+    slug: "pricing",
+    label: "Pricing",
+    demos: [
+      {
+        slug: "plans",
+        title: "Pricing",
+        description: "价卡栅格与定价 FAQ，数据来自 cy-modules（无 Clerk / 支付耦合）。",
       },
     ],
   },

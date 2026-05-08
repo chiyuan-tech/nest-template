@@ -4,6 +4,6 @@ import cyModulesConfig from "@/components/cy/cy-modules.config.json";
 import type { ImageHeroData } from "@/components/cy/HeroSection/image/types";
 
 export default function Page() {
-  const data = cyModulesConfig.imageHero_case1 as ImageHeroData;
+  const data = cyModulesConfig.ImageHeroCase1 as ImageHeroData;
   return <ImageHeroCase1 data={data} />;
 }
