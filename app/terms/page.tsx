@@ -24,6 +24,10 @@ export default function TermsOfServicePage() {
         content: `${siteConfig.name} provides an AI-powered video generation service. You may use our service only as permitted by law and these Terms. You agree not to misuse our service or help anyone else to do so.`
       },
       {
+        title: "Prohibited Content (No NSFW)",
+        content: `You must not use ${siteConfig.name} to create, upload, submit, prompt, or share not safe for work (NSFW) content. This includes sexually explicit material, pornography, graphic sexual acts, and any sexualized depictions of minors. We may remove such content, refuse processing, suspend or terminate your account, and cooperate with law enforcement where appropriate.`
+      },
+      {
         title: "User Content",
         content: "Our service allows you to upload, submit, store, and share content. You retain all rights to your content, but you grant us a license to use, host, store, reproduce, modify, and distribute your content solely for the purpose of providing and improving the service. You are responsible for any content you upload and must have the necessary rights to share that content."
       },
