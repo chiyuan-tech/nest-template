@@ -25,10 +25,10 @@ export const websiteConfig = {
     staticPages: [
       '/',
       '/pricing',
-      '/blog',
-      '/terms',
-      '/privacy',
-      '/refund',
+      // '/blog',
+      // '/terms',
+      // '/privacy',
+      // '/refund',
     ],
   },
 
