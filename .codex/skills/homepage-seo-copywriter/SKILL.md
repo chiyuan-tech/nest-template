@@ -34,20 +34,26 @@ Optional inputs:
 
 If long-tail keywords are missing, proceed without them and mark them as not provided.
 
-If conversion goal, tone, or geography are missing, use the product, primary keyword, and any reference sites to propose concise options for the user to choose from before writing the full copy pack. Recommend one default option in each missing category and explain why in one short phrase. If the user explicitly asks to proceed without choosing, use the recommended options and list them as assumptions in the `Inputs` section.
+Before writing the full copy pack, use the product, primary keyword, and any reference sites to propose 2-3 Homepage Angle options. Recommend one default angle and explain why in one short phrase.
+
+If conversion goal, tone, or geography are missing, propose concise options for the user to choose from before writing the full copy pack. Recommend one default option in each missing category and explain why in one short phrase. If the user explicitly asks to proceed without choosing, use the recommended options and list them as assumptions in the `Inputs` section.
 
 If reference sites are provided, inspect or summarize them only when the user explicitly asks to use them for source information. Use reference sites for structure, positioning, module ideas, terminology, and option suggestions. Do not copy their sentences, claims, FAQ wording, or unique examples.
 
 ## Workflow
 
 1. Restate the provided inputs briefly.
-2. If conversion goal, tone, or geography are missing, propose 2-3 options for each missing category, mark a recommended option, and wait for the user's selection unless they asked to proceed automatically.
-3. Classify search intent and homepage positioning.
-4. Create the TDK.
-5. Create a keyword map across homepage modules.
-6. Write the homepage modules in Markdown.
-7. Draft JSON-LD structured data using Google Search Gallery eligibility as the main reference for rich-result-oriented schema choices, and count every schema item clearly.
-8. Run copy, SEO, keyword-density, and structured-data QA.
+2. If reference sites are provided and the user asks to use them, produce Reference Site Notes before suggesting setup options.
+3. Propose 2-3 Homepage Angle options, mark one recommended option, and wait for the user's selection unless they asked to proceed automatically.
+4. Propose a Module Order Strategy for the recommended Homepage Angle, and adjust it after the user chooses an angle.
+5. If conversion goal, tone, or geography are missing, propose 2-3 options for each missing category, mark a recommended option, and wait for the user's selection unless they asked to proceed automatically.
+6. Classify search intent and homepage positioning.
+7. Create the TDK.
+8. Create a keyword map across homepage modules.
+9. Write the homepage modules in Markdown using the selected Module Order Strategy.
+10. Draft JSON-LD structured data using Google Search Gallery eligibility as the main reference for rich-result-oriented schema choices, and count every schema item clearly.
+11. Add Facts Needed Before Publishing.
+12. Run copy, SEO, keyword-density, and structured-data QA.
 
 Use `references/copy-rules.md` for writing and QA rules. Use `references/jsonld-rules.md` when generating structured data.
 
@@ -76,6 +82,14 @@ Return this Markdown structure:
 - Search Intent:
 - Page Positioning:
 - Primary Message:
+- Homepage Angle:
+- Module Order Strategy:
+
+## Reference Site Notes
+- Common Positioning:
+- Useful Module Patterns:
+- Useful Terminology:
+- Claims To Avoid Copying:
 
 ## Keyword Map
 | Module | Keyword Usage |
@@ -107,6 +121,18 @@ Return this Markdown structure:
 |---|---:|---|---|---|---|
 
 ## JSON-LD Draft
+
+## Facts Needed Before Publishing
+- Final homepage URL:
+- Brand name:
+- Organization legal name:
+- Logo URL:
+- sameAs social profile URLs:
+- Pricing or offer details:
+- Ratings/reviews:
+- App category:
+- Video/image URLs:
+- Visible FAQ confirmation:
 
 ## Copy QA
 - H1 includes the primary keyword or a natural close variant:
@@ -148,6 +174,94 @@ Add optional modules only when useful for the website type:
 - Comparison
 - Trust / Social Proof
 - Pricing CTA
+
+## Homepage Angle
+
+Always suggest a Homepage Angle before writing the full copy pack, unless the user already provided one.
+
+Common angles:
+
+- Tool-first: prioritize immediate action, upload, generation, search, or conversion.
+- Example-first: prioritize visual outputs, demos, gallery, templates, or before/after examples.
+- Use-case-first: prioritize practical scenarios and workflows.
+- Comparison-first: prioritize why this product is better than an old workflow or alternative.
+- Template-gallery: prioritize reusable templates, examples, or downloadable assets.
+- Trust-first: prioritize credibility, compliance, reliability, or business proof.
+
+Use the primary keyword to infer intent. For example, task keywords usually fit Tool-first, visual generation keywords often fit Example-first, and "best" or "alternative" keywords often fit Comparison-first.
+
+Output setup suggestions in this format before the full copy pack:
+
+```md
+## Suggested Setup
+
+### Homepage Angle
+1. Tool-first (Recommended) - the keyword suggests users want to complete a task immediately.
+2. Example-first - useful if generated outputs are the strongest proof.
+3. Use-case-first - useful if the product serves several workflows.
+
+### Module Order Strategy
+- Recommended:
+- Why:
+
+### Conversion Goal
+...
+
+### Tone
+...
+
+### Target Geography
+...
+```
+
+## Reference Site Notes
+
+If reference sites are provided and the user asks to use them, summarize them before suggesting setup options:
+
+- Common positioning
+- Useful module patterns
+- Useful terminology
+- CTA patterns
+- FAQ topics
+- Claims to avoid copying
+
+Use reference sites for structure, positioning, and terminology only. Do not copy wording, claims, examples, reviews, or FAQ text.
+
+## Module Order Strategy
+
+Choose module order from the selected Homepage Angle and search intent. The final homepage copy should follow the chosen order unless there is a clear reason to change it.
+
+Recommended defaults:
+
+- Tool-first: Hero -> Explore / Examples -> How to Use -> Features -> Use Cases / Benefits -> FAQ -> Footer SEO Copy
+- Example-first: Hero -> Explore / Examples -> Features -> Use Cases / Benefits -> How to Use -> FAQ -> Footer SEO Copy
+- Use-case-first: Hero -> Use Cases / Benefits -> Explore / Examples -> Features -> How to Use -> FAQ -> Footer SEO Copy
+- Comparison-first: Hero -> Benefits -> Comparison -> Features -> Explore / Examples -> FAQ -> Footer SEO Copy
+- Template-gallery: Hero -> Explore / Examples -> Use Cases / Benefits -> Features -> How to Use -> FAQ -> Footer SEO Copy
+- Trust-first: Hero -> Trust / Social Proof -> Features -> Use Cases / Benefits -> How to Use -> FAQ -> Footer SEO Copy
+
+If the chosen order includes an optional module such as Comparison or Trust / Social Proof, include it only when the product facts support it. Otherwise replace it with Features or Use Cases / Benefits.
+
+In the SEO Brief, state the selected Module Order Strategy and one short reason.
+
+## Facts Needed Before Publishing
+
+Always include a final checklist of facts that need confirmation before publishing. Include only facts relevant to the generated copy and JSON-LD draft.
+
+Common items:
+
+- Final homepage URL
+- Brand name
+- Organization legal name
+- Logo URL
+- sameAs social profile URLs
+- Pricing or offer details
+- Real ratings or reviews
+- App category for SoftwareApplication schema
+- Product/service availability
+- Video thumbnail, upload date, and embed/content URLs
+- Image creator, license, or source URLs
+- FAQ list confirmed as visible on the page
 
 ## Hero Rules
 

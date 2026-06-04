@@ -85,5 +85,6 @@ Check:
 - Schema count matches the draft.
 - FAQ count matches visible FAQ entries.
 - Placeholder fields are listed for user confirmation.
+- Facts Needed Before Publishing lists every placeholder or unverified fact used by the JSON-LD draft.
 - Each rich-result-oriented schema maps to a Google Search Gallery type or is explicitly marked as general schema only.
 - No schema is included only because it is possible; it must match visible page content and verified facts.
