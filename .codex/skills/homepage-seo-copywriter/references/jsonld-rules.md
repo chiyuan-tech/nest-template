@@ -67,6 +67,7 @@ Count FAQPage questions separately from schema types.
 
 - FAQPage questions and answers must match visible FAQ copy.
 - Do not add FAQPage if the homepage does not show the same FAQ content to users.
+- When FAQPage is used, generate at least 8 visible FAQ items unless the user explicitly requests fewer.
 - Do not use Product, ReviewSnippet, or SoftwareApplication ratings unless real rating data is provided.
 - Do not create fake ratings, reviews, awards, download counts, customer counts, or usage claims.
 - Do not create fake sameAs profiles.

@@ -40,14 +40,28 @@ Avoid generic AI-sounding phrases:
 - Blend the primary keyword, close variants, or long-tail keywords into module headings where natural.
 - Use the exact primary keyword in only 1-2 important headings; use variants elsewhere.
 
+## Word Count and Keyword Density
+
+- Count only homepage-facing copy, not TDK labels, JSON-LD, QA checklists, or instructions.
+- Target around 1000 words for a full homepage draft.
+- Use 850-1200 words as the acceptable full-page range.
+- Count exact primary keyword phrase occurrences.
+- Count close variants separately and list which variants were counted.
+- Estimate density as `combined keyword occurrences / total homepage copy word count * 100`.
+- Use 4%-4.5% as a reference target, not a hard writing constraint.
+- If density is above 5%, revise to reduce repetition.
+- If density is below target but the copy reads naturally, keep the natural copy and explain the decision.
+
 ## Module Guidance
 
 File Output:
 
-- Save the final copy pack as a Markdown file by default.
-- Use `docs/seo-copy/homepage-seo-[primary-keyword-slug].md` unless the user specifies another workspace path.
-- Do not overwrite an existing file without asking.
-- In chat, summarize the saved path and key remaining confirmations instead of pasting the full file.
+- Save two Markdown files by default.
+- Use `docs/seo-copy/homepage-copy-[primary-keyword-slug].md` for TDK, user-facing homepage copy, FAQ, and JSON-LD.
+- Use `docs/seo-copy/homepage-seo-notes-[primary-keyword-slug].md` for SEO strategy, word count, keyword density, QA, and publishing notes.
+- Do not overwrite existing files without asking.
+- In chat, summarize both saved paths and key remaining confirmations instead of pasting the full files.
+- Keep the landing-page content file clean: no SEO Brief, Keyword Map, QA, assumptions, or internal notes.
 
 Suggested Setup:
 
@@ -105,6 +119,7 @@ How to Use:
 FAQ:
 
 - Use realistic search questions.
+- Generate at least 8 FAQ items by default.
 - Keep answers concise.
 - Include the primary keyword or long-tail variants only when natural.
 
@@ -130,6 +145,7 @@ Check:
 - CTA wording matches the conversion goal.
 - Homepage Angle is explicit and reflected in module order.
 - Module Order Strategy is stated and followed.
+- Word count and keyword density are calculated and reported.
 - Keyword density is reviewed but not forced.
 - No keyword stuffing or repeated unnatural phrasing.
 - No unsupported ranking, performance, pricing, review, or usage claims.

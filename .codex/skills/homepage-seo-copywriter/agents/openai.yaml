@@ -1,4 +1,4 @@
 interface:
   display_name: "Homepage SEO Copywriter"
-  short_description: "Create English homepage SEO copy files."
-  default_prompt: "Use $homepage-seo-copywriter to create an English homepage SEO Markdown file."
+  short_description: "Create homepage copy and SEO notes files."
+  default_prompt: "Use $homepage-seo-copywriter to create English homepage copy and SEO notes Markdown files."

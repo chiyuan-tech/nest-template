@@ -7,7 +7,7 @@ description: Generate English homepage SEO copy packs as Markdown files for webs
 
 ## Scope
 
-Generate English homepage SEO copy packs for website starter templates. Save the final copy pack as a Markdown file unless the user explicitly asks for chat-only output.
+Generate English homepage SEO copy for website starter templates. Save the final output as two Markdown files by default: one landing-page content file with TDK, homepage copy, FAQ, and JSON-LD, and one supporting SEO notes file for strategy, counts, and QA.
 
 Do not edit implementation files, perform technical SEO fixes, audit a full website, promise rankings, or rely on live keyword metrics unless explicitly requested.
 
@@ -53,14 +53,51 @@ If reference sites are provided, inspect or summarize them only when the user ex
 9. Write the homepage modules in Markdown using the selected Module Order Strategy.
 10. Draft JSON-LD structured data using Google Search Gallery eligibility as the main reference for rich-result-oriented schema choices, and count every schema item clearly.
 11. Add Facts Needed Before Publishing.
-12. Save the final copy pack as a Markdown file.
+12. Calculate Word Count and Keyword Density.
 13. Run copy, SEO, keyword-density, and structured-data QA.
+14. Save the final output as two Markdown files: a copy-only file and a supporting notes file.
 
 Use `references/copy-rules.md` for writing and QA rules. Use `references/jsonld-rules.md` when generating structured data.
 
 ## Output Format
 
-Save a Markdown file with this structure:
+Save two Markdown files by default.
+
+The landing-page content file should contain TDK, homepage-facing copy, FAQ, and JSON-LD:
+
+```md
+# Homepage Landing Page Content
+
+## TDK
+- Title:
+- Description:
+- Keywords:
+
+## Hero
+### H1
+
+### Subtitle
+
+### CTAs
+- Primary:
+- Secondary:
+
+## [Distinctive Features Heading]
+
+## [Distinctive Explore / Examples Heading]
+
+## [Distinctive How to Use Heading]
+
+## [Distinctive Use Cases / Benefits Heading]
+
+## [Distinctive FAQ Heading]
+
+## Footer SEO Copy
+
+## JSON-LD
+```
+
+The supporting notes file should contain SEO strategy, counts, and QA:
 
 ```md
 # Homepage SEO Copy Pack
@@ -73,11 +110,6 @@ Save a Markdown file with this structure:
 - Tone:
 - Reference Sites:
 - Assumptions:
-
-## TDK
-- Title:
-- Description:
-- Keywords:
 
 ## SEO Brief
 - Search Intent:
@@ -120,8 +152,6 @@ Save a Markdown file with this structure:
 ## JSON-LD Structured Data Plan
 | Schema Type | Count | Eligibility | Purpose | Source Module | Needs Confirmation |
 |---|---:|---|---|---|---|
-
-## JSON-LD Draft
 
 ## Facts Needed Before Publishing
 - Final homepage URL:
@@ -177,6 +207,19 @@ Add optional modules only when useful for the website type:
 - Trust / Social Proof
 - Pricing CTA
 
+## FAQ Rules
+
+Generate at least 8 FAQ items by default.
+
+Rules:
+
+- Use realistic search questions.
+- Include the primary keyword or close variants only where natural.
+- Use long-tail keywords in FAQ questions when provided.
+- Keep each answer concise, but substantive enough to be useful.
+- FAQPage JSON-LD must match the visible FAQ exactly.
+- Do not create fake product claims in FAQ answers.
+
 ## Module Heading Rules
 
 Write distinctive section headings for every homepage module. Blend the primary keyword, close variants, or long-tail keywords into headings where it reads naturally.
@@ -199,10 +242,11 @@ Examples:
 
 ## File Output
 
-Save the final copy pack to:
+Save two Markdown files by default:
 
 ```text
-docs/seo-copy/homepage-seo-[primary-keyword-slug].md
+docs/seo-copy/homepage-copy-[primary-keyword-slug].md
+docs/seo-copy/homepage-seo-notes-[primary-keyword-slug].md
 ```
 
 Create `docs/seo-copy/` if it does not exist.
@@ -212,11 +256,25 @@ Filename rules:
 - Convert the primary keyword to lowercase kebab case.
 - Remove punctuation that is unsafe for filenames.
 - Keep the filename concise.
-- Do not overwrite an existing file without asking.
+- Do not overwrite existing files without asking.
 
 If the user provides a specific output path, use that path instead if it is inside the current workspace.
 
-After saving, summarize the output path and any facts that still need confirmation. Do not paste the full file content into chat unless the user asks.
+The landing-page content file should contain TDK, user-facing homepage copy, visible FAQ, and JSON-LD. Do not include SEO Brief, Keyword Map, word-count calculations, QA, assumptions, or publishing notes in the landing-page content file.
+
+The notes file should contain:
+
+- Inputs and assumptions
+- SEO Brief
+- Reference Site Notes
+- Keyword Map
+- Word Count & Keyword Density
+- JSON-LD Structured Data Plan
+- Facts Needed Before Publishing
+- Copy QA
+- Structured Data QA
+
+After saving, summarize both output paths and any facts that still need confirmation. Do not paste the full file contents into chat unless the user asks.
 
 ## Homepage Angle
 
@@ -323,6 +381,44 @@ Keep Hero copy short enough to fit a polished landing page:
 Target roughly 1000 words of total homepage copy when the user wants a full page draft.
 
 Use 4%-4.5% as a QA reference for the primary keyword plus natural close variants. Do not force this target if it makes the copy repetitive or unnatural. Natural language, search intent, and conversion clarity take priority over density.
+
+## Word Count and Keyword Density Check
+
+Before saving the final Markdown file, calculate and include a `Word Count & Keyword Density` section.
+
+Count only homepage-facing copy sections, not metadata labels, JSON-LD code, QA checklists, or instructions. Include Hero, Features, Explore / Examples, How to Use, Use Cases / Benefits, FAQ, Footer SEO Copy, and any optional visible modules.
+
+Calculate:
+
+- Total homepage copy word count
+- Exact primary keyword phrase occurrences
+- Close variant keywords counted
+- Close variant occurrences
+- Combined keyword occurrences
+- Estimated keyword density
+- Density decision
+
+Formula:
+
+```text
+estimated keyword density = combined keyword occurrences / total homepage copy word count * 100
+```
+
+Targets:
+
+- Full page word count: around 1000 words.
+- Acceptable full page range: 850-1200 words.
+- Keyword density reference target: 4%-4.5%.
+- If natural copy lands below target, prefer natural copy over stuffing.
+- If density is above 5%, revise to reduce repetition.
+
+Counting rules:
+
+- Count exact primary keyword as phrase occurrences, not individual words.
+- Count close variants only when they are semantically equivalent or clearly search-relevant.
+- List the close variants that were counted.
+- Treat the density value as an estimate, not a ranking promise.
+- If the selected module order or compact page style makes 850-1200 words inappropriate, state the reason in `Density Decision`.
 
 Include the primary keyword or a natural close variant in:
 
