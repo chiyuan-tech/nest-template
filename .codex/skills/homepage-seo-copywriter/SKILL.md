@@ -1,15 +1,15 @@
 ---
 name: homepage-seo-copywriter
-description: Generate English homepage SEO copy packs in Markdown for website templates. Use when drafting or rewriting homepage TDK, SEO brief, keyword map, Hero copy, Features, Explore or Examples, How to Use, FAQ, Footer SEO copy, JSON-LD structured data drafts, keyword-density QA, and anti-generic-AI-copy checks. Requires a primary keyword before generating copy.
+description: Generate English homepage SEO copy packs as Markdown files for website templates. Use when drafting or rewriting homepage TDK, SEO brief, keyword map, Hero copy, Features, Explore or Examples, How to Use, FAQ, Footer SEO copy, JSON-LD structured data drafts, keyword-density QA, and anti-generic-AI-copy checks. Requires a primary keyword before generating copy.
 ---
 
 # Homepage SEO Copywriter
 
 ## Scope
 
-Generate English homepage SEO copy packs for website starter templates. Produce Markdown only unless the user explicitly asks for implementation.
+Generate English homepage SEO copy packs for website starter templates. Save the final copy pack as a Markdown file unless the user explicitly asks for chat-only output.
 
-Do not edit project files, perform technical SEO fixes, audit a full website, promise rankings, or rely on live keyword metrics unless explicitly requested.
+Do not edit implementation files, perform technical SEO fixes, audit a full website, promise rankings, or rely on live keyword metrics unless explicitly requested.
 
 ## Required Inputs
 
@@ -53,13 +53,14 @@ If reference sites are provided, inspect or summarize them only when the user ex
 9. Write the homepage modules in Markdown using the selected Module Order Strategy.
 10. Draft JSON-LD structured data using Google Search Gallery eligibility as the main reference for rich-result-oriented schema choices, and count every schema item clearly.
 11. Add Facts Needed Before Publishing.
-12. Run copy, SEO, keyword-density, and structured-data QA.
+12. Save the final copy pack as a Markdown file.
+13. Run copy, SEO, keyword-density, and structured-data QA.
 
 Use `references/copy-rules.md` for writing and QA rules. Use `references/jsonld-rules.md` when generating structured data.
 
 ## Output Format
 
-Return this Markdown structure:
+Save a Markdown file with this structure:
 
 ```md
 # Homepage SEO Copy Pack
@@ -137,6 +138,7 @@ Return this Markdown structure:
 ## Copy QA
 - H1 includes the primary keyword or a natural close variant:
 - Hero length is within limit:
+- Module headings are distinctive and use keywords naturally:
 - Primary keyword density target checked:
 - No keyword stuffing:
 - No generic AI phrases:
@@ -174,6 +176,47 @@ Add optional modules only when useful for the website type:
 - Comparison
 - Trust / Social Proof
 - Pricing CTA
+
+## Module Heading Rules
+
+Write distinctive section headings for every homepage module. Blend the primary keyword, close variants, or long-tail keywords into headings where it reads naturally.
+
+Rules:
+
+- Do not use generic headings such as `Features`, `Benefits`, `Explore`, or `How It Works` as the only visible heading unless the surrounding copy adds a stronger SEO phrase.
+- Prefer specific headings that communicate the product outcome.
+- Use the exact primary keyword in 1-2 important headings only, such as Hero, Explore, FAQ, or Footer SEO Copy.
+- Use close variants, action phrases, and long-tail keywords in other module headings.
+- Do not force the keyword into every heading.
+- Keep headings concise enough for UI sections and cards.
+
+Examples:
+
+- Instead of `Features`, use `AI Background Remover Features Built for Product Photos`.
+- Instead of `Explore`, use `Explore Clean Product Cutouts and Background Edits`.
+- Instead of `How to Use`, use `How to Remove Image Backgrounds in Three Steps`.
+- Instead of `FAQ`, use `AI Background Remover Questions, Answered`.
+
+## File Output
+
+Save the final copy pack to:
+
+```text
+docs/seo-copy/homepage-seo-[primary-keyword-slug].md
+```
+
+Create `docs/seo-copy/` if it does not exist.
+
+Filename rules:
+
+- Convert the primary keyword to lowercase kebab case.
+- Remove punctuation that is unsafe for filenames.
+- Keep the filename concise.
+- Do not overwrite an existing file without asking.
+
+If the user provides a specific output path, use that path instead if it is inside the current workspace.
+
+After saving, summarize the output path and any facts that still need confirmation. Do not paste the full file content into chat unless the user asks.
 
 ## Homepage Angle
 

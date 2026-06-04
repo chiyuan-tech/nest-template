@@ -37,8 +37,17 @@ Avoid generic AI-sounding phrases:
 - Do not repeat the same phrase in adjacent sentences.
 - Do not sacrifice clarity to hit a keyword-density number.
 - Prefer long-tail keywords in FAQ questions, How to Use steps, Explore copy, and Use Cases.
+- Blend the primary keyword, close variants, or long-tail keywords into module headings where natural.
+- Use the exact primary keyword in only 1-2 important headings; use variants elsewhere.
 
 ## Module Guidance
+
+File Output:
+
+- Save the final copy pack as a Markdown file by default.
+- Use `docs/seo-copy/homepage-seo-[primary-keyword-slug].md` unless the user specifies another workspace path.
+- Do not overwrite an existing file without asking.
+- In chat, summarize the saved path and key remaining confirmations instead of pasting the full file.
 
 Suggested Setup:
 
@@ -56,6 +65,14 @@ Module Order Strategy:
 - Put Benefits or Comparison near the top when users are evaluating alternatives.
 - Include optional modules only when they are supported by real product facts.
 - Reflect the chosen order in the generated copy.
+
+Module Headings:
+
+- Write distinctive section headings instead of generic labels.
+- Avoid using `Features`, `Benefits`, `Explore`, `How It Works`, or `FAQ` as the only visible heading.
+- Make headings describe the product outcome or user action.
+- Keep headings concise enough for landing-page UI.
+- Do not force the keyword into every heading.
 
 Reference Site Notes:
 
@@ -109,6 +126,7 @@ Check:
 
 - H1 is unique and includes the primary keyword or a natural close variant.
 - Hero text is visually short.
+- Module headings are distinctive and keyword-aware without stuffing.
 - CTA wording matches the conversion goal.
 - Homepage Angle is explicit and reflected in module order.
 - Module Order Strategy is stated and followed.
