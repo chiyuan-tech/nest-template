@@ -1,0 +1,4 @@
+interface:
+  display_name: "Homepage SEO Copywriter"
+  short_description: "Draft English homepage SEO copy packs."
+  default_prompt: "Use $homepage-seo-copywriter to draft an English homepage SEO copy pack."
