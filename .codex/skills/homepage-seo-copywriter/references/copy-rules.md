@@ -112,9 +112,14 @@ Explore / Examples:
 
 How to Use:
 
-- Use 3-5 steps.
+- Use exactly 3 steps by default.
+- Follow this default pattern: upload resources; write the prompt or set parameters; wait, share, or download the result.
+- Step 1 should cover uploading, importing, pasting, selecting, or adding the user's input resource.
+- Step 2 should cover writing a prompt or setting key parameters such as duration, quality, resolution, style, format, language, or output options.
+- Step 3 should cover waiting for generation or processing, then sharing, exporting, saving, or downloading the result.
 - Start each step with a verb.
 - Keep each step short enough for UI cards.
+- Do not add extra steps unless the user explicitly asks for a more detailed workflow.
 
 FAQ:
 

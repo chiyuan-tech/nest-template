@@ -220,6 +220,24 @@ Rules:
 - FAQPage JSON-LD must match the visible FAQ exactly.
 - Do not create fake product claims in FAQ answers.
 
+## How to Use Rules
+
+Write the How to Use module as exactly 3 steps by default.
+
+Default step pattern:
+
+1. Upload resources
+2. Write the prompt or set parameters
+3. Wait, share, or download the result
+
+Adapt the labels to the product, but keep the structure:
+
+- Step 1 should cover uploading, importing, pasting, selecting, or adding the user's input resource.
+- Step 2 should cover writing a prompt or setting key parameters such as duration, quality, resolution, style, format, language, or output options.
+- Step 3 should cover waiting for generation or processing, then sharing, exporting, saving, or downloading the result.
+
+Keep each step short enough for a UI card. Do not add extra steps unless the user explicitly asks for a more detailed workflow.
+
 ## Module Heading Rules
 
 Write distinctive section headings for every homepage module. Blend the primary keyword, close variants, or long-tail keywords into headings where it reads naturally.
