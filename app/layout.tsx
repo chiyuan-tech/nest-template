@@ -8,14 +8,7 @@ import dynamic from 'next/dynamic';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
 
 export const metadata: Metadata = {
-  icons: {
-    icon: [
-      { url: '/logo.webp', type: 'image/webp' },
-      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
-    ],
-    apple: '/logo.webp',
-    shortcut: '/logo.webp',
-  },
+  manifest: '/site.webmanifest',
 };
 
 

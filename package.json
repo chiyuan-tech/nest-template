@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "icon": "python scripts/generate-icons.py"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.17.0",
