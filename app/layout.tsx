@@ -8,6 +8,15 @@ import dynamic from 'next/dynamic';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
 
 export const metadata: Metadata = {
+  icons: {
+    icon: [
+      { url: '/favicon-32.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/favicon-48.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/favicon-96.ico', sizes: '96x96', type: 'image/x-icon' },
+    ],
+    shortcut: '/favicon-96.ico',
+    apple: '/apple-icon.png',
+  },
   manifest: '/site.webmanifest',
 };
 

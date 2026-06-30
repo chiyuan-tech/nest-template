@@ -10,6 +10,8 @@ Outputs (Next.js App Router conventions):
   app/apple-icon.png
   public/icon-192.png
   public/icon-512.png
+  public/favicon-32.ico
+  public/favicon-48.ico
   public/favicon-96.ico
 """
 from __future__ import annotations
@@ -64,7 +66,13 @@ def main() -> None:
     save_png(source, APP / "apple-icon.png", 180)
     save_png(source, PUBLIC / "icon-192.png", 192)
     save_png(source, PUBLIC / "icon-512.png", 512)
-    save_ico(source, PUBLIC / "favicon-96.ico", (96,))
+
+    favicon_sizes = (32, 48, 96)
+    generated_public_favicons: list[Path] = []
+    for size in favicon_sizes:
+        path = PUBLIC / f"favicon-{size}.ico"
+        save_ico(source, path, (size,))
+        generated_public_favicons.append(path)
 
     print(f"Source: {source_path.relative_to(ROOT)}")
     print("Generated icons:")
@@ -74,7 +82,7 @@ def main() -> None:
         APP / "apple-icon.png",
         PUBLIC / "icon-192.png",
         PUBLIC / "icon-512.png",
-        PUBLIC / "favicon-96.ico",
+        *generated_public_favicons,
     ]:
         print(f"  {path.relative_to(ROOT)} ({path.stat().st_size} bytes)")
 
