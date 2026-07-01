@@ -1,19 +1,4 @@
-"""Generate favicon and PWA icons from public/logo.webp or public/logo.png.
-
-Usage:
-  pip install pillow
-  npm run icon
-
-Outputs (Next.js App Router conventions):
-  app/favicon.ico
-  app/icon.png
-  app/apple-icon.png
-  public/icon-192.png
-  public/icon-512.png
-  public/favicon-32.ico
-  public/favicon-48.ico
-  public/favicon-96.ico
-"""
+"""Generate favicon and PWA icons from public/logo.png."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -21,24 +6,13 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_CANDIDATES = (
-    ROOT / "public" / "logo.webp",
-    ROOT / "public" / "logo.png",
-)
+SOURCE = ROOT / "public" / "logo.png"
 APP = ROOT / "app"
 PUBLIC = ROOT / "public"
 
 
-def resolve_source() -> Path:
-    for path in SOURCE_CANDIDATES:
-        if path.exists():
-            return path
-    candidates = ", ".join(str(path.relative_to(ROOT)) for path in SOURCE_CANDIDATES)
-    raise SystemExit(f"Missing source image. Add one of: {candidates}")
-
-
-def load_source(path: Path) -> Image.Image:
-    with Image.open(path) as img:
+def load_source() -> Image.Image:
+    with Image.open(SOURCE) as img:
         return img.convert("RGBA")
 
 
@@ -58,10 +32,12 @@ def save_ico(img: Image.Image, path: Path, sizes: tuple[int, ...]) -> None:
 
 
 def main() -> None:
-    source_path = resolve_source()
-    source = load_source(source_path)
+    if not SOURCE.exists():
+        raise SystemExit(f"Missing source image: {SOURCE}")
 
-    save_ico(source, APP / "favicon.ico", (16, 32, 48, 96))
+    source = load_source()
+
+    save_ico(source, APP / "favicon.ico", (48,))
     save_png(source, APP / "icon.png", 32)
     save_png(source, APP / "apple-icon.png", 180)
     save_png(source, PUBLIC / "icon-192.png", 192)
@@ -74,7 +50,6 @@ def main() -> None:
         save_ico(source, path, (size,))
         generated_public_favicons.append(path)
 
-    print(f"Source: {source_path.relative_to(ROOT)}")
     print("Generated icons:")
     for path in [
         APP / "favicon.ico",
