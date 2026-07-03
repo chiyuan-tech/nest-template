@@ -75,7 +75,11 @@ export default function AuthButton() {
 
   const handleLoginClick = () => {
     requestAnimationFrame(() => {
-      openSignIn();
+      openSignIn({
+        oauthFlow: 'popup',
+        fallbackRedirectUrl: '/',
+        signUpFallbackRedirectUrl: '/',
+      });
     });
   };
 
