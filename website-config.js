@@ -6,17 +6,17 @@
 export const websiteConfig = {
   // Contact Information
   contact: {
-    supportEmail: 'support@ltxai.app',
+    supportEmail: 'support@example.com',
   },
 
   // Canonical / site URL - single source for all public URLs (canonical, OG, sitemap, share images)
   canonical: {
-    url:'https://ltxai.app',
+    url: 'https://example.com',
   },
   // API Configuration
   api: {
-    baseUrl: 'https://svc.ltxai.app',
-    appId: 'ltx23',
+    baseUrl: 'https://api.example.com',
+    appId: 'template-app',
   },
 
   // SEO Configuration
@@ -35,9 +35,9 @@ export const websiteConfig = {
   // Page TDK (Title ≤60, Description ≤160, Keywords total <100) – import in app via getPageTdk(path)
   pageTdk: {
     '/': {
-      title: 'AI Video Generation Platform',
-      description: 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.',
-      keywords: ['AI video generation', 'talking video', 'video dubbing', 'lip sync'],
+      title: 'Website Template',
+      description: 'A reusable website template with configurable pages, pricing, authentication, and SEO settings.',
+      keywords: ['website template', 'startup template', 'SaaS template', 'Next.js template'],
     },
     '/payment-failed': {
       title: 'Payment Failed',
@@ -55,13 +55,13 @@ export const websiteConfig = {
       keywords: ['referral program', 'earn credits', 'invite friends'],
     },
     '/pricing': {
-      title: 'Pricing - Video Generation Plans',
-      description: 'Discover pricing plans. Generate unlimited talking videos with our AI. Flexible billing options available.',
-      keywords: ['AI video pricing', 'video generation cost', 'AI dubbing plans'],
+      title: 'Pricing',
+      description: 'Explore pricing plans and choose the option that fits your project.',
+      keywords: ['pricing', 'plans', 'subscription', 'credits'],
     },
     '/terms': {
       title: 'Terms of Service',
-      description: 'Read the Terms of Service. Understand the terms and conditions for using our AI video generation service.',
+      description: 'Read the Terms of Service. Understand the terms and conditions for using this website.',
       keywords: ['terms of service', 'user agreement', 'legal'],
     },
     '/privacy': {
@@ -76,8 +76,8 @@ export const websiteConfig = {
     },
     '/blog': {
       title: 'Blog',
-      description: 'Read the latest posts on AI creative media tools. Tips, inspiration, feature updates, and creative use cases.',
-      keywords: ['blog', 'AI creative tools blog', 'AI image tips', 'AI video tips', 'creative media blog'],
+      description: 'Read the latest posts, product updates, tutorials, and company news.',
+      keywords: ['blog', 'updates', 'tutorials', 'news'],
     },
   },
 
@@ -177,8 +177,8 @@ export const pricingConfig = websiteConfig.pricing;
 export const siteUrl = websiteConfig.canonical.url;
 
 // Site display name and description (for UI/metadata when needed)
-export const SITE_NAME = 'LTX AI';
-export const SITE_DESCRIPTION = 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.';
+export const SITE_NAME = 'Website Template';
+export const SITE_DESCRIPTION = 'A reusable website template with configurable pages, pricing, authentication, and SEO settings.';
 
 // Backward compatibility: siteConfig for components that use siteConfig.name / siteConfig.description
 export const siteConfig = { name: SITE_NAME, description: SITE_DESCRIPTION };
