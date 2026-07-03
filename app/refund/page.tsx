@@ -7,7 +7,7 @@ export default function RefundPolicyPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-grow py-12 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <article className="prose prose-xl lg:prose-2xl max-w-none rounded-[40px] bg-card p-8 shadow-custom md:p-12">
+          <article className="prose max-w-none rounded border border-border bg-card p-4 shadow-sm md:p-6">
             <h1 className="mb-4 text-center font-poppins text-3xl font-medium text-foreground md:text-4xl">Refund Policy</h1>
             <p className="text-center text-base text-muted-foreground mb-10">Effective Date: October 14, 2025</p>
 

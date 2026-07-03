@@ -54,7 +54,7 @@ export default function PricingFAQ() {
               Get answers to common questions about {siteConfig.name} pricing, subscriptions, and payment options.
             </p>
             <div className="hidden lg:block">
-              <div className="mb-4 h-px w-24 bg-[#F37338]"></div>
+              <div className="mb-4 h-px w-24 bg-ring"></div>
               <p className="text-muted-foreground">
                 Still have questions? Contact our support team for personalized assistance.
               </p>
@@ -66,11 +66,11 @@ export default function PricingFAQ() {
             {faqItems.map((item, index) => (
               <div
                 key={index}
-                className="rounded-[32px] border border-border bg-card"
+                className="rounded-[20px] border border-transparent bg-card"
               >
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="flex w-full items-center justify-between rounded-[32px] px-6 py-5 text-left transition-all duration-200 hover:bg-muted/40"
+                  className="flex w-full items-center justify-between rounded-[20px] px-6 py-5 text-left transition-all duration-200 hover:bg-accent"
                 >
                   <h3 className="pr-4 text-lg font-semibold text-foreground">
                     {item.question}
@@ -101,7 +101,7 @@ export default function PricingFAQ() {
             ))}
 
             {/* Contact support card */}
-            <div className="mt-8 rounded-[32px] border border-border bg-card p-6">
+            <div className="mt-8 rounded-[20px] border border-transparent bg-card p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">
                 Need more help?
               </h3>

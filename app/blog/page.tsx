@@ -111,11 +111,11 @@ export default async function Blog() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section - match home section style */}
-      <section className="px-6 sm:px-10 lg:px-16 py-24 sm:py-32">
+      <section className="border-b border-border px-4 py-8">
         <div className="max-w-6xl mx-auto text-center">
           <p className="mc-eyebrow mb-5 justify-center">Blog</p>
-          <h1 className="mb-6 text-4xl leading-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-            Ltx 2.3 Blog
+          <h1 className="mb-2 text-[28px] font-bold leading-[1.2] tracking-[-0.01em] text-foreground">
+            Blog
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Discover insights, tutorials, and updates about AI creative media tools
@@ -125,12 +125,12 @@ export default async function Blog() {
       </section>
 
       {/* Blog Posts Section */}
-      <section className="px-6 sm:px-10 lg:px-16 pb-20 flex-grow">
+      <section className="flex-grow px-4 py-8">
         {blogPosts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             {blogPosts.map((post) => (
               <Link href={`/blog/${generateSlug(post.title, post.url)}`} key={post.id}>
-                <article className="group overflow-hidden rounded-[40px] border border-border bg-card transition-all duration-300 hover:border-foreground/20">
+                <article className="group overflow-hidden rounded border border-border bg-card transition-colors duration-150 hover:border-primary/40">
                   {/* Thumbnail Image - 16:9 */}
                   {post.thumb ? (
                     <div className="relative w-full aspect-video overflow-hidden bg-muted/30">

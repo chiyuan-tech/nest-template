@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useUser, useAuth } from '@clerk/nextjs';
 import { Footer } from '../../components/Footer';
@@ -45,12 +45,12 @@ export default function ProfilePage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const { userId } = useAuth();
 
-  // API 数据状态 (用户信息)
+  // API 鏁版嵁鐘舵€?(鐢ㄦ埛淇℃伅)
   const [userApiInfo, setUserApiInfo] = useState<UserApiInfo | null>(null);
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState(true);
   const [userInfoError, setUserInfoError] = useState<string | null>(null);
 
-  // 图片历史记录状态
+  // 鍥剧墖鍘嗗彶璁板綍鐘舵€?
   const [historyList, setHistoryList] = useState<GenerationHistoryItem[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [historyError, setHistoryError] = useState<string | null>(null);
@@ -60,10 +60,10 @@ export default function ProfilePage() {
   const historyPageSize = 16;
   const autoRefreshRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 友情链接状态
+  // 鍙嬫儏閾炬帴鐘舵€?
   const [friendlyLinks, setFriendlyLinks] = useState<FriendLink[]>([]);
 
-  // 对话框状态
+  // 瀵硅瘽妗嗙姸鎬?
   const [isPayLogDialogOpen, setIsPayLogDialogOpen] = useState(false);
   const [isTimesLogDialogOpen, setIsTimesLogDialogOpen] = useState(false);
   const [isSubscriptionDialogOpen, setIsSubscriptionDialogOpen] = useState(false);
@@ -71,21 +71,21 @@ export default function ProfilePage() {
   const [selectedPayLogId, setSelectedPayLogId] = useState<number | null>(null);
   const [payLogList, setPayLogList] = useState<any[]>([]);
 
-  // 视频详情弹窗状态
+  // 瑙嗛璇︽儏寮圭獥鐘舵€?
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [selectedVideoDetail, setSelectedVideoDetail] = useState<GenerationHistoryItem | null>(null);
 
-  // 打开发票弹窗
+  // 鎵撳紑鍙戠エ寮圭獥
   const handleOpenInvoiceDialog = (payLogId: number) => {
     setSelectedPayLogId(payLogId);
     setIsInvoiceDialogOpen(true);
   };
 
-  // 获取支付记录（用于发票对话框）
+  // 鑾峰彇鏀粯璁板綍锛堢敤浜庡彂绁ㄥ璇濇锛?
   const fetchPayLogForInvoice = async () => {
     if (!isLoaded || !userId) return;
     try {
-      const result = await api.user.getPayLog(1, 100); // 获取足够的数据用于发票
+      const result = await api.user.getPayLog(1, 100); // 鑾峰彇瓒冲鐨勬暟鎹敤浜庡彂绁?
       if (result.code === 200 && result.data) {
         setPayLogList(result.data.list || []);
       }
@@ -94,12 +94,12 @@ export default function ProfilePage() {
     }
   };
 
-  // 修改useEffect，添加userId作为依赖项以确保登录时触发
+  // 淇敼useEffect锛屾坊鍔爑serId浣滀负渚濊禆椤逛互纭繚鐧诲綍鏃惰Е鍙?
   useEffect(() => {
-    // 删除修改document.title的代码，保持网站原有标题不变
+    // 鍒犻櫎淇敼document.title鐨勪唬鐮侊紝淇濇寔缃戠珯鍘熸湁鏍囬涓嶅彉
   }, [isLoaded, user]);
 
-  // 获取友情链接数据
+  // 鑾峰彇鍙嬫儏閾炬帴鏁版嵁
   useEffect(() => {
     const fetchFriendlyLinks = async () => {
       try {
@@ -117,13 +117,13 @@ export default function ProfilePage() {
     };
 
     fetchFriendlyLinks();
-  }, []); // 只在组件挂载时执行一次
+  }, []); // 鍙湪缁勪欢鎸傝浇鏃舵墽琛屼竴娆?
 
-  // API 调用 Effect (获取用户信息) - 添加userId监听
+  // API 璋冪敤 Effect (鑾峰彇鐢ㄦ埛淇℃伅) - 娣诲姞userId鐩戝惉
   useEffect(() => {
     const fetchUserInfo = async () => {
       if (!isLoaded || !userId) {
-        // 还未加载完成或用户未登录
+        // 杩樻湭鍔犺浇瀹屾垚鎴栫敤鎴锋湭鐧诲綍
         setIsLoadingUserInfo(false);
         setUserApiInfo(null);
         return;
@@ -150,11 +150,11 @@ export default function ProfilePage() {
     fetchUserInfo();
   }, [isLoaded, userId]);
 
-  // 修改获取作品历史记录的useEffect，移除定时器
+  // 淇敼鑾峰彇浣滃搧鍘嗗彶璁板綍鐨剈seEffect锛岀Щ闄ゅ畾鏃跺櫒
   useEffect(() => {
     const fetchGenerationHistory = async (page: number) => {
       if (!isLoaded || !userId) {
-        // 还未加载完成或用户未登录
+        // 杩樻湭鍔犺浇瀹屾垚鎴栫敤鎴锋湭鐧诲綍
         setIsLoadingHistory(false);
         setHistoryList([]);
         setTotalPages(0);
@@ -189,18 +189,18 @@ export default function ProfilePage() {
       }
     };
 
-    // 首次加载数据
+    // 棣栨鍔犺浇鏁版嵁
     fetchGenerationHistory(currentPage);
-  }, [isLoaded, userId, currentPage]); // 使用userId替换user作为依赖项
+  }, [isLoaded, userId, currentPage]); // 浣跨敤userId鏇挎崲user浣滀负渚濊禆椤?
 
-  // Auto-refresh effect - 每30秒自动刷新一次
+  // Auto-refresh effect - 姣?0绉掕嚜鍔ㄥ埛鏂颁竴娆?
   useEffect(() => {
     if (!isLoaded || !userId) return;
 
     const startAutoRefresh = () => {
-      if (autoRefreshRef.current) return; // 已存在则不重复创建
+      if (autoRefreshRef.current) return; // 宸插瓨鍦ㄥ垯涓嶉噸澶嶅垱寤?
       autoRefreshRef.current = setInterval(() => {
-        // 静默刷新，不显示loading状态
+        // 闈欓粯鍒锋柊锛屼笉鏄剧ずloading鐘舵€?
         const fetchGenerationHistory = async (page: number) => {
           try {
             const result = await api.user.getUserOpusList(page, historyPageSize);
@@ -214,7 +214,7 @@ export default function ProfilePage() {
           }
         };
         fetchGenerationHistory(currentPage);
-      }, 30000); // 30秒
+      }, 30000); // 30绉?
     };
 
     const stopAutoRefresh = () => {
@@ -235,14 +235,14 @@ export default function ProfilePage() {
     startAutoRefresh();
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // 清理：页面卸载或路由变更时停止轮询并移除监听
+    // 娓呯悊锛氶〉闈㈠嵏杞芥垨璺敱鍙樻洿鏃跺仠姝㈣疆璇㈠苟绉婚櫎鐩戝惉
     return () => {
       stopAutoRefresh();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [isLoaded, userId, currentPage]);
 
-  // 处理分页变化
+  // 澶勭悊鍒嗛〉鍙樺寲
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
       setCurrentPage(newPage);
@@ -254,13 +254,13 @@ export default function ProfilePage() {
   };
 
 
-  // 打开视频详情弹窗
+  // 鎵撳紑瑙嗛璇︽儏寮圭獥
   const handleOpenDetailDialog = (item: GenerationHistoryItem) => {
     setSelectedVideoDetail(item);
     setIsDetailDialogOpen(true);
   };
 
-  // 刷新历史记录
+  // 鍒锋柊鍘嗗彶璁板綍
   const refreshHistory = () => {
     const fetchGenerationHistory = async (page: number) => {
       if (!isLoaded || !userId) {
@@ -318,7 +318,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex flex-col">
         <main className="flex-grow py-12 px-6">
           <div className="container mx-auto max-w-lg">
-            <div className="rounded-[40px] border border-border bg-card p-8 text-center shadow-custom">
+            <div className="rounded border border-border bg-card p-8 text-center shadow-custom">
               <h1 className="text-2xl font-bold mb-4 text-card-foreground">Profile</h1>
               <p className="mb-6 text-muted-foreground">Please sign in to view your profile</p>
               <Link href="/sign-in">
@@ -336,12 +336,12 @@ export default function ProfilePage() {
 
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
 
-  // 根据 API 数据计算使用率
+  // 鏍规嵁 API 鏁版嵁璁＄畻浣跨敤鐜?
   const usagePercentage = userApiInfo?.total_limit && userApiInfo.total_limit > 0
     ? (userApiInfo.use_limit / userApiInfo.total_limit) * 100
     : 0;
 
-  // 获取用户等级名称
+  // 鑾峰彇鐢ㄦ埛绛夌骇鍚嶇О
   const getUserLevelName = (level: number | undefined) => {
     switch (level) {
       case 0: return 'Free';
@@ -360,7 +360,7 @@ export default function ProfilePage() {
   // Grouped history by date
   const groupedHistory = groupHistoryByDate(historyList);
 
-  // 用户信息卡片统计项
+  // 鐢ㄦ埛淇℃伅鍗＄墖缁熻椤?
   const stats = [
     {
       label: 'Membership Level',
@@ -392,10 +392,10 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-grow pt-20">
-        {/* 顶部用户信息卡片 */}
+        {/* 椤堕儴鐢ㄦ埛淇℃伅鍗＄墖 */}
         <div className="container mx-auto mt-8 mb-8">
-          <div className="flex flex-col items-center gap-8 rounded-[40px] bg-card px-10 py-8 shadow-card md:flex-row md:items-start">
-            {/* 头像 */}
+          <div className="flex flex-col items-center gap-8 rounded bg-card px-10 py-8 shadow-sm md:flex-row md:items-start">
+            {/* 澶村儚 */}
             <div className="flex-shrink-0">
               <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-border">
                 <div className="relative w-full h-full">
@@ -412,29 +412,29 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            {/* 用户信息和统计 */}
+            {/* 鐢ㄦ埛淇℃伅鍜岀粺璁?*/}
             <div className="flex-1 flex flex-col gap-4">
               <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
                 <span className="text-2xl font-bold text-card-foreground">{user.fullName || user.username}</span>
                 <span className="text-muted-foreground text-base">{user.primaryEmailAddress?.emailAddress}</span>
               </div>
               <div className="flex flex-wrap gap-4 mt-2">
-                {/* 会员等级/积分/生成数/API调用数 */}
-                <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-muted-foreground">
+                {/* 浼氬憳绛夌骇/绉垎/鐢熸垚鏁?API璋冪敤鏁?*/}
+                <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
                   <span>Membership Level</span>
                   <span className="ml-2 rounded-full bg-muted px-2 py-0.5 font-bold text-primary">
                     {userLevelName}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
                   <span>Points Remaining</span>
                   <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.remaining_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
                   <span>Points Used</span>
                   <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.use_limit || 0}</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
                   <span>Total Points</span>
                   <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.total_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
@@ -499,7 +499,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Generation History 标题 - 添加刷新按钮 */}
+        {/* Generation History 鏍囬 - 娣诲姞鍒锋柊鎸夐挳 */}
         <div className="container mx-auto mb-4">
           <div className="flex justify-between items-center">
             <h2 className="text-primary text-2xl font-bold mb-4">Video Generation History</h2>
@@ -528,17 +528,17 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        {/* 视频历史区域（按日期分组） */}
+        {/* 瑙嗛鍘嗗彶鍖哄煙锛堟寜鏃ユ湡鍒嗙粍锛?*/}
         <div className="container mx-auto pb-16">
           {historyList.length > 0 ? (
             <div className="space-y-8">
               {groupedHistory.map((group, groupIndex) => (
                 <div key={groupIndex} className="space-y-4">
-                  {/* 日期标题 */}
+                  {/* 鏃ユ湡鏍囬 */}
                   <h3 className="text-xl font-semibold text-card-foreground border-b border-border pb-2">
                     {group.date}
                   </h3>
-                  {/* 分组内网格 */}
+                  {/* 鍒嗙粍鍐呯綉鏍?*/}
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {group.items
                       .filter(item => item.status === 0 || item.status === 1 || (item.status === -1 && item.generate_image === ''))
@@ -550,7 +550,7 @@ export default function ProfilePage() {
                           return modelMatch ? modelMatch[1].trim() : null;
                         };
                         const getResolution = (sizeImage: string) => {
-                          // 匹配 resolution: 后面的内容，直到遇到下一个字段或字符串结束
+                          // 鍖归厤 resolution: 鍚庨潰鐨勫唴瀹癸紝鐩村埌閬囧埌涓嬩竴涓瓧娈垫垨瀛楃涓茬粨鏉?
                           const resolutionMatch = sizeImage.match(/resolution:\s*([^\s;]+)/i);
                           return resolutionMatch ? resolutionMatch[1].trim() : null;
                         };
@@ -559,7 +559,7 @@ export default function ProfilePage() {
                         return (
                           <div 
                             key={item.id} 
-                            className={`relative flex flex-col overflow-hidden rounded-[32px] border border-border bg-card shadow-card transition-all duration-200 ${!isFailed && !isGenerating ? 'cursor-pointer hover:border-primary/50 hover:shadow-xl' : ''}`}
+                            className={`relative flex flex-col overflow-hidden rounded border border-border bg-card shadow-sm transition-all duration-200 ${!isFailed && !isGenerating ? 'cursor-pointer hover:border-primary/50 hover:shadow-xl' : ''}`}
                             onClick={() => {
                               if (!isFailed && !isGenerating) {
                                 handleOpenDetailDialog(item);
@@ -595,7 +595,7 @@ export default function ProfilePage() {
                                 <div className="w-full h-full bg-gradient-to-br from-red-500/10 to-red-600/20 flex flex-col items-center justify-center border-2 border-dashed border-red-300/50">
                                   <div className="text-center p-4">
                                     <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                                      <span className="text-red-400 text-2xl">⚠️</span>
+                                      <span className="text-red-400 text-2xl">鈿狅笍</span>
                                     </div>
                                     <p className="text-red-400 font-semibold text-sm mb-1">Generation Failed</p>
                                     <p className="text-red-300/70 text-xs">Please try again</p>
@@ -650,7 +650,7 @@ export default function ProfilePage() {
             <div className="text-center text-muted-foreground py-12">No videos yet.</div>
           )}
 
-          {/* 分页组件 */}
+          {/* 鍒嗛〉缁勪欢 */}
           <div className="flex justify-center mt-8">
             <Pagination>
               <PaginationContent>
@@ -700,7 +700,7 @@ export default function ProfilePage() {
         </div>
 
 
-        {/* 发票对话框 */}
+        {/* 鍙戠エ瀵硅瘽妗?*/}
         <InvoiceDialog
           open={isInvoiceDialogOpen}
           onOpenChange={setIsInvoiceDialogOpen}
@@ -708,7 +708,7 @@ export default function ProfilePage() {
           payLogList={payLogList}
         />
 
-        {/* 视频详情对话框 */}
+        {/* 瑙嗛璇︽儏瀵硅瘽妗?*/}
         <VideoDetailDialog
           open={isDetailDialogOpen}
           onOpenChange={setIsDetailDialogOpen}

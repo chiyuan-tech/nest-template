@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useMemo } from 'react';
 import { Upload, X, Play, Download, Sparkles, Zap, Cpu, Grid3x3, ChevronDown, Trash2, Copy, History as HistoryIcon, Maximize2 } from 'lucide-react';
@@ -107,10 +107,10 @@ export default function Hero() {
     { label: '10s', value: 10 }
   ];
 
-  // 使用 Policy 系统评估当前状态
+  // 浣跨敤 Policy 绯荤粺璇勪及褰撳墠鐘舵€?
   const policyDecision = useMemo(() => {
     if (!userInfo) {
-      // 用户信息未加载，返回默认值
+      // 鐢ㄦ埛淇℃伅鏈姞杞斤紝杩斿洖榛樿鍊?
       return {
         voucherEligible: false,
         voucherRestricted: false,
@@ -153,7 +153,7 @@ export default function Hero() {
     }
   };
 
-  // 下载视频函数
+  // 涓嬭浇瑙嗛鍑芥暟
   const handleDownload = async () => {
     if (generatedVideoUrl) {
       setIsDownloading(true);
@@ -221,7 +221,7 @@ export default function Hero() {
       return;
     }
 
-    // 使用 Policy 决策
+    // 浣跨敤 Policy 鍐崇瓥
     if (!policyDecision.allowed) {
       if (policyDecision.primaryAction === 'signin') {
         openAuthModal('signin');
@@ -237,8 +237,8 @@ export default function Hero() {
         setIsInsufficientCreditsModalOpen(true);
         return;
       }
-      // 其他情况显示错误
-      showError(policyDecision.message || '无法生成视频');
+      // 鍏朵粬鎯呭喌鏄剧ず閿欒
+      showError(policyDecision.message || '鏃犳硶鐢熸垚瑙嗛');
       return;
     }
 
@@ -369,7 +369,7 @@ export default function Hero() {
     <div className="w-full">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Content: 3-Column Layout */}
-        <div className="grid grid-cols-1 gap-6 rounded-[40px] border border-border/50 bg-card p-4 shadow-card lg:grid-cols-12 lg:p-6">
+        <div className="grid grid-cols-1 gap-6 rounded border border-border/50 bg-card p-4 shadow-sm lg:grid-cols-12 lg:p-6">
             
             {/* Left Column: Controls (4 cols) */}
             <div className="lg:col-span-3 flex flex-col gap-3 overflow-y-auto pr-1 xmk-scrollbar">
@@ -387,7 +387,7 @@ export default function Hero() {
                                 >
                                     <Textarea 
                                         placeholder="Please enter a prompt..."
-                                        className="min-h-[140px] resize-none border-border/50 bg-white text-sm cursor-pointer"
+                                        className="min-h-[140px] resize-none border-border/50 bg-secondary text-sm cursor-pointer"
                                         value=""
                                         readOnly
                                     />
@@ -396,7 +396,7 @@ export default function Hero() {
                                 <>
                                     <Textarea 
                                         placeholder="Please enter a prompt..."
-                                        className="min-h-[140px] resize-none border-border/50 bg-white text-sm"
+                                        className="min-h-[140px] resize-none border-border/50 bg-secondary text-sm"
                                         value={formData.prompt}
                                         onChange={(e) => setFormData(prev => ({ ...prev, prompt: e.target.value }))}
                                         maxLength={2000}
@@ -418,7 +418,7 @@ export default function Hero() {
                                  {!isSignedIn ? (
                                      <div 
                                          onClick={() => openAuthModal('signin')}
-                                         className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-border bg-white p-3 text-center transition-colors hover:bg-muted/40"
+                                         className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded border border-dashed border-border bg-secondary p-3 text-center transition-colors hover:bg-muted/40"
                                      >
                                          <Upload className="h-4 w-4 mx-auto text-muted-foreground mb-1" />
                                          <p className="text-xs text-muted-foreground">Click to upload</p>
@@ -426,7 +426,7 @@ export default function Hero() {
                                  ) : (
                                      <div 
                                          onClick={() => fileInputRef.current?.click()}
-                                         className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-border bg-white p-3 text-center transition-colors hover:bg-muted/40"
+                                         className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded border border-dashed border-border bg-secondary p-3 text-center transition-colors hover:bg-muted/40"
                                      >
                                          <Upload className="h-4 w-4 mx-auto text-muted-foreground mb-1" />
                                          <p className="text-xs text-muted-foreground">Click to upload</p>
@@ -438,7 +438,7 @@ export default function Hero() {
                                  {/* First Image Preview */}
                                  <div className="flex-1 flex flex-col gap-1">
                                      <Label className="text-xs text-muted-foreground truncate whitespace-nowrap">Image Upload (Optional)</Label>
-                                     <div className="group relative flex min-h-24 max-h-24 items-center justify-center overflow-hidden rounded-[24px] border border-border bg-white p-2">
+                                     <div className="group relative flex min-h-24 max-h-24 items-center justify-center overflow-hidden rounded border border-border bg-secondary p-2">
                                          <img src={formData.uploadedImageUrl} alt="Upload" className="max-w-full max-h-24 w-auto h-auto object-contain" />
                                          <button 
                                              onClick={() => removeImage()}
@@ -455,13 +455,13 @@ export default function Hero() {
                                     {!formData.lastImageUrl ? (
                                         <div 
                                             onClick={() => lastImageInputRef.current?.click()}
-                                            className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-border bg-white p-3 text-center transition-colors hover:bg-muted/40"
+                                            className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded border border-dashed border-border bg-secondary p-3 text-center transition-colors hover:bg-muted/40"
                                         >
                                             <Upload className="h-4 w-4 mx-auto text-muted-foreground mb-1" />
                                             <p className="text-xs text-muted-foreground">Click to upload</p>
                                         </div>
                                     ) : (
-                                        <div className="group relative flex min-h-24 max-h-24 items-center justify-center overflow-hidden rounded-[24px] border border-border bg-white p-2">
+                                        <div className="group relative flex min-h-24 max-h-24 items-center justify-center overflow-hidden rounded border border-border bg-secondary p-2">
                                             <img src={formData.lastImageUrl} alt="End Frame" className="max-w-full max-h-24 w-auto h-auto object-contain" />
                                             <button 
                                                 onClick={() => removeImage(true)}
@@ -553,7 +553,7 @@ export default function Hero() {
                         className={cn(
                             "w-full h-10 text-sm font-semibold transition-all",
                             policyDecision.primaryAction === 'upgrade'
-                                ? "bg-[#CF4500] text-white hover:bg-[#b93d00]"
+                                ? "bg-[#FFFFFF] text-white hover:bg-[#E6E6E6]"
                                 : "bg-primary text-primary-foreground hover:bg-primary/90"
                         )}
                         onClick={() => {
@@ -590,8 +590,8 @@ export default function Hero() {
             </div>
 
             {/* Middle Column: Preview (7 cols) */}
-            <div className="relative flex h-full aspect-square flex-col overflow-hidden rounded-[40px] border border-border/20 bg-[#141413] shadow-card lg:col-span-7 lg:aspect-auto">
-                <div className="relative h-full w-full overflow-hidden rounded-[40px] bg-[#141413]">
+            <div className="relative flex h-full aspect-square flex-col overflow-hidden rounded border border-border/20 bg-[#141413] shadow-sm lg:col-span-7 lg:aspect-auto">
+                <div className="relative h-full w-full overflow-hidden rounded bg-[#141413]">
                     {/* Demo State - Default */}
                     {videoDisplayState === 'demo' && (
                         <div className="relative w-full h-full flex flex-col">
@@ -612,7 +612,7 @@ export default function Hero() {
                                 </video>
                             </div>
                             {/* Demo Title - Bottom */}
-                            <div className="mx-4 mb-4 flex-shrink-0 rounded-[24px] bg-black/50 px-3 py-2 backdrop-blur-sm">
+                            <div className="mx-4 mb-4 flex-shrink-0 rounded bg-black/50 px-3 py-2 backdrop-blur-sm">
                                 <div className="text-white text-sm font-bold text-center">Seedance 1.5 Pro introduces breakthrough narrative understanding and cinematic generation capability. With physics-accurate motion, consistent subjects, and multi-shot storytelling.</div>
                             </div>
                         </div>
@@ -629,15 +629,15 @@ export default function Hero() {
                                 <p className="text-xl font-medium mb-6 text-gray-100">Generating your video...</p>
                                 <div className="w-80 bg-gray-600 rounded-full h-3 mx-auto shadow-inner">
                                     <div
-                                        className="h-3 rounded-full bg-[#F37338] shadow-lg transition-all duration-300"
+                                        className="h-3 rounded-full bg-[#0099FF] shadow-lg transition-all duration-300"
                                         style={{ width: `${progress}%` }}
                                     ></div>
                                 </div>
                                 <p className="text-sm mt-4 text-gray-300 font-medium">{Math.round(progress)}% complete</p>
                                 <div className="mt-6 flex justify-center space-x-2">
                                     <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                                    <div className="w-2 h-2 bg-[#F37338] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-2 h-2 bg-[#F37338]/70 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                    <div className="w-2 h-2 bg-[#0099FF] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                    <div className="w-2 h-2 bg-[#0099FF]/70 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                                 </div>
                             </div>
                         </div>
@@ -668,7 +668,7 @@ export default function Hero() {
                                     disabled={isDownloading}
                                     variant="ghost"
                                     size="sm"
-                                    className="flex items-center gap-2 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex items-center gap-2 text-white/70 hover:text-white hover:bg-secondary/10 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isDownloading ? (
                                         <>
@@ -786,7 +786,7 @@ export default function Hero() {
                                     }
                                 }}
                                 className={cn(
-                                    "group w-[200px] flex-shrink-0 cursor-pointer overflow-hidden rounded-[24px] border border-border/40 bg-white shadow-sm transition-all hover:border-primary/50 lg:w-auto",
+                                    "group w-[200px] flex-shrink-0 cursor-pointer overflow-hidden rounded border border-border/40 bg-secondary shadow-sm transition-all hover:border-primary/50 lg:w-auto",
                                     item.isGenerating && videoDisplayState === 'loading' ? "ring-2 ring-primary border-primary" : 
                                     generatedVideoUrl === item.url && videoDisplayState === 'result' ? "ring-2 ring-primary border-primary" : ""
                                 )}

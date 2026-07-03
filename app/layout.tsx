@@ -6,12 +6,18 @@ import { ToastProvider } from '@/components/ui/toast-provider';
 import { UserProvider } from '@/lib/providers';
 import dynamic from 'next/dynamic';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
-import { Sofia_Sans } from 'next/font/google';
+import { Inter, Source_Code_Pro } from 'next/font/google';
 
-const sofiaSans = Sofia_Sans({
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-poppins',
-  weight: ['400', '500', '700'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+});
+const sourceCodePro = Source_Code_Pro({
+  subsets: ['latin'],
+  variable: '--font-code',
+  weight: ['400', '500', '600'],
   display: 'swap',
 });
 
@@ -43,7 +49,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className={sofiaSans.variable} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${sourceCodePro.variable} dark`} suppressHydrationWarning>
       <head>
 
         <link rel="preconnect" href="https://v1.cnzz.com" crossOrigin="" />
@@ -58,7 +64,7 @@ export default function RootLayout({
             <UserProvider>
               <AuthModalProvider>
                 <Navbar />
-                <main className="min-h-[calc(100vh-80px)] pt-24">
+                <main className="min-h-[calc(100vh-56px)] pt-14">
                   {children}
                 </main>
               </AuthModalProvider>

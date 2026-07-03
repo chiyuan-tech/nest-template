@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import {
@@ -51,16 +51,16 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent 
-          className="max-h-[90vh] w-[95vw] max-w-[95vw] overflow-y-auto rounded-[40px] border border-border bg-card/95 shadow-card backdrop-blur-xl lg:max-w-6xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted/50 [&::-webkit-scrollbar-thumb]:hover:bg-muted [&::-webkit-scrollbar-track]:bg-transparent"
+          className="max-h-[90vh] w-[95vw] max-w-[95vw] overflow-y-auto rounded border border-border bg-card/95 shadow-sm backdrop-blur-xl lg:max-w-6xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted/50 [&::-webkit-scrollbar-thumb]:hover:bg-muted [&::-webkit-scrollbar-track]:bg-transparent"
         >
           <DialogHeader className="pb-4 border-b border-border">
             <DialogTitle className="text-2xl font-semibold text-card-foreground">Video Details</DialogTitle>
           </DialogHeader>
 
           <div className="pt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 左侧：媒体播放器 */}
+            {/* 宸︿晶锛氬獟浣撴挱鏀惧櫒 */}
             <div className="flex flex-col justify-center space-y-3">
-              <div className="aspect-video overflow-hidden rounded-[32px] bg-[#141413]">
+              <div className="aspect-video overflow-hidden rounded bg-[#141413]">
                 {isVideoFile(videoDetail.generate_image) ? (
                   <video
                     src={videoDetail.generate_image}
@@ -87,9 +87,9 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
                 )}
               </div>
               
-              {/* 下载和分享按钮 */}
+              {/* 涓嬭浇鍜屽垎浜寜閽?*/}
               <div className="flex flex-wrap gap-2">
-                {/* 下载按钮 */}
+                {/* 涓嬭浇鎸夐挳 */}
                 <Button
                   onClick={handleDownload}
                   className="flex-1 flex items-center justify-center gap-2 min-w-[120px]"
@@ -107,7 +107,7 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
                     </>
                   )}
                 </Button>
-                {/* 删除按钮 */}
+                {/* 鍒犻櫎鎸夐挳 */}
                 <Button
                   variant="destructive"
                   onClick={() => setIsDeleteConfirmOpen(true)}
@@ -117,7 +117,7 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
                   Delete
                 </Button>
 
-                {/* 分享按钮组 */}
+                {/* 鍒嗕韩鎸夐挳缁?*/}
                 <div className="flex gap-2 w-full sm:w-auto">
                   {/* Twitter */}
                   <Button
@@ -161,17 +161,17 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
               </div>
             </div>
 
-            {/* 右侧：详细信息 */}
+            {/* 鍙充晶锛氳缁嗕俊鎭?*/}
             <div className="space-y-3 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted/50 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted">
               {/* Created At */}
-              <div className="rounded-[24px] bg-white p-3">
+              <div className="rounded bg-secondary p-3">
                 <h3 className="text-xs font-semibold text-muted-foreground mb-1.5">Created At</h3>
                 <p className="text-card-foreground text-sm">{formatTimestamp(videoDetail.created_at)}</p>
               </div>
 
               {/* Resolution & Generation Time */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-[24px] bg-white p-3">
+                <div className="rounded bg-secondary p-3">
                   <h3 className="text-xs font-semibold text-muted-foreground mb-1.5">Resolution</h3>
                   <p className="text-card-foreground font-medium text-sm">
                     {videoDetail.size_image ? 
@@ -182,7 +182,7 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
                       : 'N/A'}
                   </p>
                 </div>
-                <div className="rounded-[24px] bg-white p-3">
+                <div className="rounded bg-secondary p-3">
                   <h3 className="text-xs font-semibold text-muted-foreground mb-1.5">Generation Time</h3>
                   <p className="text-card-foreground text-sm">{videoDetail.generation_time || 0} seconds</p>
                 </div>
@@ -190,7 +190,7 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
 
               {/* Prompt */}
               {videoDetail.prompt && (
-                <div className="rounded-[24px] bg-white p-3">
+                <div className="rounded bg-secondary p-3">
                   <h3 className="text-xs font-semibold text-muted-foreground mb-1.5">Prompt</h3>
                   <div className="max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb]:rounded-full">
                     <p className="text-card-foreground text-sm whitespace-pre-wrap">{videoDetail.prompt}</p>
@@ -200,9 +200,9 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
 
               {/* Origin Image/Video */}
               {videoDetail.origin_image && (
-                <div className="rounded-[24px] bg-white p-3">
+                <div className="rounded bg-secondary p-3">
                   <h3 className="text-xs font-semibold text-muted-foreground mb-1.5">Original Media</h3>
-                  <div className="mt-2 overflow-hidden rounded-[24px] bg-[#141413]">
+                  <div className="mt-2 overflow-hidden rounded bg-[#141413]">
                     {videoDetail.origin_image.match(/\.(mp4|webm|mov)$/i) ? (
                       <video
                         src={videoDetail.origin_image}
@@ -230,7 +230,7 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
 
               {/* Additional Media Files */}
               {videoDetail.other_image && parseMediaUrls(videoDetail.other_image).length > 0 && (
-                <div className="rounded-[24px] bg-white p-3">
+                <div className="rounded bg-secondary p-3">
                   <h3 className="text-xs font-semibold text-muted-foreground mb-1.5">Additional Media</h3>
                   <div className="space-y-2 mt-2 max-h-[300px] overflow-y-auto">
                     {parseMediaUrls(videoDetail.other_image).map((mediaUrl, index) => {

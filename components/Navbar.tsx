@@ -5,11 +5,12 @@ import { siteConfig } from '@/website-config';
 
 export function Navbar() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-5">
-      <div className="mx-auto flex min-h-16 max-w-7xl items-center rounded-full border border-white/70 bg-white/90 px-5 shadow-nav backdrop-blur supports-[backdrop-filter]:bg-white/80 sm:px-8">
+    <header className="fixed inset-x-0 top-0 z-50 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="mx-auto flex h-14 max-w-7xl items-center px-5">
         {/* Logo */}
-        <Link href="/" className="mr-6 flex items-center space-x-2 flex-shrink-0">
-          <span className="font-poppins text-xl font-bold tracking-[-0.02em] text-foreground">
+        <Link href="/" className="mr-6 flex flex-shrink-0 items-center gap-2">
+          <span className="h-7 w-7 rounded-full bg-primary text-center text-sm font-semibold leading-7 text-primary-foreground">F</span>
+          <span className="font-poppins text-[15px] font-medium tracking-[-0.15px] text-foreground">
             {siteConfig.name}
           </span>
         </Link>

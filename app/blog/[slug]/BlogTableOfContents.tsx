@@ -132,7 +132,7 @@ export default function BlogTableOfContents({ headings, isMobile = false }: Blog
 
   return (
     <div className={cn(isMobile ? '' : 'sticky top-24 h-fit')}>
-      <div className="rounded-[32px] border border-border bg-card p-5 lg:p-6">
+      <div className="rounded border border-border bg-card p-3">
         <div className="flex items-center gap-2 mb-4 pb-3 border-b border-foreground/8">
           <p className="text-xs tracking-[0.2em] text-muted-foreground uppercase">
             <span className="text-foreground/30">//</span> Contents

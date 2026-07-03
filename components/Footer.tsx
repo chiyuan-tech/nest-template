@@ -9,20 +9,11 @@ interface FooterProps {
 
 export function Footer({ friendlyLinks = [] }: FooterProps) {
   return (
-    <footer className="bg-[#141413] px-6 py-16 text-white sm:px-10 lg:px-16 lg:pb-28">
+    <footer className="bg-background px-6 py-16 text-muted-foreground sm:px-8">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-14 max-w-2xl">
-          <p className="mc-eyebrow mb-5 text-white/55">Support</p>
-          <h2 className="text-4xl leading-[1.05] tracking-[-0.02em] text-white md:text-5xl">
-            We're always here when you need us.
-          </h2>
-        </div>
-
         {friendlyLinks.length > 0 && (
-          <div className="mb-10 border-b border-white/20 pb-6">
-            <div className="mb-4 text-sm font-bold uppercase tracking-[0.04em] text-white/55">
-              Partner Sites
-            </div>
+          <div className="mb-10 border-b border-border pb-8">
+            <div className="mb-4 text-[13px] font-medium">Partner sites</div>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
               {friendlyLinks.map((link) => (
                 <a
@@ -30,7 +21,7 @@ export function Footer({ friendlyLinks = [] }: FooterProps) {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-white/65 transition-colors duration-200 hover:text-white hover:underline"
+                  className="text-[13px] hover:text-foreground hover:underline"
                 >
                   {link.name}
                 </a>
@@ -39,77 +30,45 @@ export function Footer({ friendlyLinks = [] }: FooterProps) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-10 border-b border-white/20 pb-12 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
-            <Link href="/" className="mb-4 flex items-center">
-              <span className="font-poppins text-2xl font-bold tracking-[-0.02em] text-white">
-                {siteConfig.name}
-              </span>
+            <Link href="/" className="mb-4 inline-flex items-center gap-2 text-foreground">
+              <span className="h-8 w-8 rounded-full bg-primary text-center text-sm font-semibold leading-8 text-primary-foreground">F</span>
+              <span className="text-[15px] font-medium">{siteConfig.name}</span>
             </Link>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/65">
-              Create cinematic AI videos with a calm, editorial workspace and reliable generation tools.
+            <p className="max-w-sm text-[13px] leading-5">
+              A dark-canvas website template with pricing, auth, SEO defaults, and Framer-inspired marketing surfaces.
             </p>
             <a
               href={`mailto:${contactConfig.supportEmail}`}
-              className="mt-6 inline-flex items-center rounded-full border border-white/35 px-4 py-2 text-sm text-white transition-colors duration-200 hover:bg-white hover:text-[#141413]"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-foreground hover:bg-accent"
             >
-              <Mail className="mr-2 h-4 w-4" />
+              <Mail className="h-4 w-4" />
               {contactConfig.supportEmail}
             </a>
           </div>
 
           <div>
-            <div className="mb-4 text-sm font-bold uppercase tracking-[0.04em] text-white/55">
-              Navigation
-            </div>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
-                  Pricing
-                </Link>
-              </li>
+            <div className="mb-3 text-[13px] font-medium text-foreground">Navigation</div>
+            <ul className="space-y-2">
+              <li><Link href="/" className="text-[13px] hover:text-foreground">Home</Link></li>
+              <li><Link href="/blog" className="text-[13px] hover:text-foreground">Blog</Link></li>
+              <li><Link href="/pricing" className="text-[13px] hover:text-foreground">Pricing</Link></li>
             </ul>
           </div>
 
           <div>
-            <div className="mb-4 text-sm font-bold uppercase tracking-[0.04em] text-white/55">
-              Legal
-            </div>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/terms" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/refund" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
-                  Refund Policy
-                </Link>
-              </li>
+            <div className="mb-3 text-[13px] font-medium text-foreground">Legal</div>
+            <ul className="space-y-2">
+              <li><Link href="/terms" className="text-[13px] hover:text-foreground">Terms</Link></li>
+              <li><Link href="/privacy" className="text-[13px] hover:text-foreground">Privacy</Link></li>
+              <li><Link href="/refund" className="text-[13px] hover:text-foreground">Refund</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-4 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2025 {siteConfig.name}. All rights reserved.</p>
-          <div className="rounded-full border border-white/30 px-4 py-2 text-white/70">
-            United States - English
-          </div>
+        <div className="mt-12 border-t border-border pt-6 text-[12px]">
+          © 2025 {siteConfig.name}. All rights reserved.
         </div>
       </div>
     </footer>

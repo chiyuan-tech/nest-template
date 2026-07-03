@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Footer } from '@/components/Footer';
 import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
-// 生成页面元数据（用于 Open Graph 标签）
+// 生成页面元数据（用于 Open Graph 标签�?
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const opusDetail = await serverCmsApi.getOpusDetail(id);
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   // 使用原始图片作为缩略图，如果不是图片则使用默认分享图
   const getThumbnailUrl = () => {
-    // 检查 origin_image 是否是图片格式
+    // 检�?origin_image 是否是图片格�?
     if (opusDetail.origin_image && opusDetail.origin_image.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
       return opusDetail.origin_image;
     }
@@ -71,14 +71,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       ],
     },
     twitter: {
-      card: 'player',  // 视频播放器卡片
+      card: 'player',  // 视频播放器卡�?
       site: siteConfig.name,
       title: `Amazing Video Created with ${siteConfig.name}`,
       description: description,
-      images: [thumbnailUrl],  // 缩略图（origin_image）
+      images: [thumbnailUrl],  // 缩略图（origin_image�?
       players: {
         playerUrl: opusDetail.generate_image,  // 视频 URL
-        streamUrl: opusDetail.generate_image,  // 视频流 URL
+        streamUrl: opusDetail.generate_image,  // 视频�?URL
         width: 1280,
         height: 720,
       },
@@ -92,7 +92,7 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   const opusDetail = await serverCmsApi.getOpusDetail(id);
   // console.log(opusDetail);
-  // 如果视频不存在或状态不正确，显示 404
+  // 如果视频不存在或状态不正确，显�?404
   if (!opusDetail || opusDetail.status !== 1) {
     notFound();
   }
@@ -123,9 +123,9 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
           </div>
 
           {/* Video and CTA */}
-          <div className="rounded-[40px] border border-border bg-card p-6 shadow-card">
+          <div className="rounded border border-border bg-card p-6 shadow-sm">
             <div className="flex flex-col justify-center space-y-4 max-w-2xl mx-auto">
-              <div className="aspect-video overflow-hidden rounded-[40px] bg-[#141413]">
+              <div className="aspect-video overflow-hidden rounded bg-[#141413]">
                 <video
                   src={opusDetail.generate_image}
                   controls
@@ -147,7 +147,7 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
           </div>
 
           {/* Bottom CTA */}
-          <div className="mt-12 rounded-[40px] border border-border bg-card p-8 text-center">
+          <div className="mt-12 rounded border border-border bg-card p-8 text-center">
             <h2 className="text-2xl font-bold text-card-foreground mb-3">
               Want to Create Your Own AI Videos?
             </h2>

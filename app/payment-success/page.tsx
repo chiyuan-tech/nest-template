@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -19,20 +19,20 @@ export default function PaymentSuccessPage() {
   const [orderToken, setOrderToken] = useState<string>('');
 
   useEffect(() => {
-    // 从 URL 参数中获取 token
+    // 浠?URL 鍙傛暟涓幏鍙?token
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
       setOrderToken(token);
     }
 
-    // 从本地存储中获取支付信息
+    // 浠庢湰鍦板瓨鍌ㄤ腑鑾峰彇鏀粯淇℃伅
     const storedPaymentInfo = localStorage.getItem('paymentInfo');
     if (storedPaymentInfo) {
       try {
         const parsedInfo = JSON.parse(storedPaymentInfo);
         setPaymentInfo(parsedInfo);
-        // 清除本地存储的支付信息
+        // 娓呴櫎鏈湴瀛樺偍鐨勬敮浠樹俊鎭?
         localStorage.removeItem('paymentInfo');
       } catch (error) {
         console.error('Error parsing payment info:', error);
@@ -57,7 +57,7 @@ export default function PaymentSuccessPage() {
         </div>
 
         {/* Payment Details Card */}
-        <div className="mb-8 rounded-[40px] border border-border bg-card p-8 shadow-card">
+        <div className="mb-8 rounded border border-border bg-card p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Payment Details</h2>
           
           <div className="grid md:grid-cols-2 gap-6">
@@ -65,7 +65,7 @@ export default function PaymentSuccessPage() {
             <div className="space-y-4">
               {paymentInfo && (
                 <>
-                  <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
+                  <div className="flex items-center gap-3 rounded bg-secondary p-4">
                     <CreditCard className="w-5 h-5 text-primary" />
                     <div>
                       <div className="text-sm text-muted-foreground">Plan</div>
@@ -73,7 +73,7 @@ export default function PaymentSuccessPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
+                  <div className="flex items-center gap-3 rounded bg-secondary p-4">
                     <CreditCard className="w-5 h-5 text-primary" />
                     <div>
                       <div className="text-sm text-muted-foreground">Amount Paid</div>
@@ -81,7 +81,7 @@ export default function PaymentSuccessPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
+                  <div className="flex items-center gap-3 rounded bg-secondary p-4">
                     <Gift className="w-5 h-5 text-primary" />
                     <div>
                       <div className="text-sm text-muted-foreground">Credits Received</div>
@@ -95,7 +95,7 @@ export default function PaymentSuccessPage() {
             {/* Right Column - Order Info */}
             <div className="space-y-4">
               {orderToken && (
-                <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
+                <div className="flex items-center gap-3 rounded bg-secondary p-4">
                   <CreditCard className="w-5 h-5 text-primary" />
                   <div>
                     <div className="text-sm text-muted-foreground">Order ID</div>
@@ -104,7 +104,7 @@ export default function PaymentSuccessPage() {
                 </div>
               )}
               
-              <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
+              <div className="flex items-center gap-3 rounded bg-secondary p-4">
                 <Mail className="w-5 h-5 text-primary" />
                 <div>
                   <div className="text-sm text-muted-foreground">Support Email</div>
@@ -113,7 +113,7 @@ export default function PaymentSuccessPage() {
               </div>
               
               {paymentInfo && (
-                <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
+                <div className="flex items-center gap-3 rounded bg-secondary p-4">
                   <CreditCard className="w-5 h-5 text-muted-foreground" />
                   <div>
                     <div className="text-sm text-muted-foreground">Purchase Date</div>
