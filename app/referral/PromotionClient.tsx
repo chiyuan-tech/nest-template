@@ -418,7 +418,7 @@ export default function PromotionClient() {
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card 
-          className="cursor-pointer hover:border-blue-500/50 hover:shadow-lg transition-all duration-300"
+          className="cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-lg"
           onClick={() => setCurrentView('users')}
         >
           <CardContent className="p-6">
@@ -426,9 +426,9 @@ export default function PromotionClient() {
               <div>
                 <p className="text-sm text-muted-foreground">Invited Users</p>
                 <p className="text-2xl font-bold text-foreground">{isLoggedIn ? (statistics?.promotion_user_count ?? 0) : PLACEHOLDER}</p>
-                <p className="text-xs text-blue-500 font-medium mt-1">Click to view users</p>
+                <p className="mt-1 text-xs font-medium text-primary">Click to view users</p>
               </div>
-              <Users className="h-8 w-8 text-blue-500" />
+              <Users className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -542,7 +542,7 @@ export default function PromotionClient() {
               <div className="mt-6">
                 {loading && isLoggedIn ? (
                   <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
                     <p className="mt-2 text-muted-foreground">Loading...</p>
                   </div>
                 ) : displayScoreLogs.length === 0 ? (
@@ -596,7 +596,7 @@ export default function PromotionClient() {
               <div className="mt-6">
                 {loading && isLoggedIn ? (
                   <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
                     <p className="mt-2 text-muted-foreground">Loading...</p>
                   </div>
                 ) : displayUsers.length === 0 ? (

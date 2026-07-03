@@ -73,8 +73,8 @@ module.exports = {
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "1.25rem",
+        sm: "0.375rem",
       },
       keyframes: {
         "accordion-down": {
@@ -91,17 +91,17 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       boxShadow: {
-        DEFAULT: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-        sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-        md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-        lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-        xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-        '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+        DEFAULT: '0 24px 48px rgb(0 0 0 / 0.08)',
+        sm: '0 4px 24px rgb(0 0 0 / 0.04)',
+        md: '0 24px 48px rgb(0 0 0 / 0.08)',
+        lg: '0 24px 48px rgb(0 0 0 / 0.08)',
+        xl: '0 32px 64px rgb(0 0 0 / 0.10)',
+        '2xl': '0 70px 110px rgb(0 0 0 / 0.18)',
         inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
         none: 'none',
-        'custom': '0 4px 12px rgba(0, 0, 0, 0.08)',
-        'nav': '0 2px 8px rgba(0, 0, 0, 0.06)',
-        'card': '0 4px 16px rgba(0, 0, 0, 0.1)',
+        'custom': '0 24px 48px rgba(0, 0, 0, 0.08)',
+        'nav': '0 4px 24px rgba(0, 0, 0, 0.04)',
+        'card': '0 24px 48px rgba(0, 0, 0, 0.08)',
       }
     },
   },

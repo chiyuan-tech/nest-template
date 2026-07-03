@@ -57,7 +57,7 @@ export default function PaymentSuccessPage() {
         </div>
 
         {/* Payment Details Card */}
-        <div className="bg-card rounded-2xl border border-border backdrop-blur-xl p-8 mb-8">
+        <div className="mb-8 rounded-[40px] border border-border bg-card p-8 shadow-card">
           <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Payment Details</h2>
           
           <div className="grid md:grid-cols-2 gap-6">
@@ -65,7 +65,7 @@ export default function PaymentSuccessPage() {
             <div className="space-y-4">
               {paymentInfo && (
                 <>
-                  <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                  <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
                     <CreditCard className="w-5 h-5 text-primary" />
                     <div>
                       <div className="text-sm text-muted-foreground">Plan</div>
@@ -73,7 +73,7 @@ export default function PaymentSuccessPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                  <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
                     <CreditCard className="w-5 h-5 text-primary" />
                     <div>
                       <div className="text-sm text-muted-foreground">Amount Paid</div>
@@ -81,7 +81,7 @@ export default function PaymentSuccessPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                  <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
                     <Gift className="w-5 h-5 text-primary" />
                     <div>
                       <div className="text-sm text-muted-foreground">Credits Received</div>
@@ -95,7 +95,7 @@ export default function PaymentSuccessPage() {
             {/* Right Column - Order Info */}
             <div className="space-y-4">
               {orderToken && (
-                <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
                   <CreditCard className="w-5 h-5 text-primary" />
                   <div>
                     <div className="text-sm text-muted-foreground">Order ID</div>
@@ -104,7 +104,7 @@ export default function PaymentSuccessPage() {
                 </div>
               )}
               
-              <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+              <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
                 <Mail className="w-5 h-5 text-primary" />
                 <div>
                   <div className="text-sm text-muted-foreground">Support Email</div>
@@ -113,7 +113,7 @@ export default function PaymentSuccessPage() {
               </div>
               
               {paymentInfo && (
-                <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3 rounded-[24px] bg-white p-4">
                   <CreditCard className="w-5 h-5 text-muted-foreground" />
                   <div>
                     <div className="text-sm text-muted-foreground">Purchase Date</div>

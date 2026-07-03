@@ -123,9 +123,9 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
           </div>
 
           {/* Video and CTA */}
-          <div className="bg-card rounded-2xl border border-border shadow-xl p-6">
+          <div className="rounded-[40px] border border-border bg-card p-6 shadow-card">
             <div className="flex flex-col justify-center space-y-4 max-w-2xl mx-auto">
-              <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden">
+              <div className="aspect-video overflow-hidden rounded-[40px] bg-[#141413]">
                 <video
                   src={opusDetail.generate_image}
                   controls
@@ -139,7 +139,7 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
 
               {/* CTA Button */}
               <Link href="/infinitetalk" className="w-full">
-                <Button className="w-full text-lg py-6 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
+                <Button className="w-full py-6 text-lg">
                   Create Your Own Video
                 </Button>
               </Link>
@@ -147,7 +147,7 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
           </div>
 
           {/* Bottom CTA */}
-          <div className="mt-12 text-center bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-8">
+          <div className="mt-12 rounded-[40px] border border-border bg-card p-8 text-center">
             <h2 className="text-2xl font-bold text-card-foreground mb-3">
               Want to Create Your Own AI Videos?
             </h2>

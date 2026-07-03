@@ -174,10 +174,6 @@ export default function PricingPage() {
       />
       
       <main className="flex-grow relative">
-        {/* Fixed background gradient */}
-        <div className="fixed inset-0 w-screen h-screen bg-gradient-to-br from-background via-primary/10 via-primary/20 via-primary/15 to-slate-950 -z-10" />
-        <div className="fixed inset-0 w-screen h-screen bg-gradient-to-tl from-transparent via-primary/5 to-transparent -z-10" />
-        
         <PricingSection />
         <PricingFAQ />
       </main>

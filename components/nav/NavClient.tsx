@@ -36,7 +36,7 @@ const LoadingSpinner = () => (
 const NavAuthIsland = dynamic(() => import('./nav-auth-island'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-full border">
+    <div className="flex items-center gap-2 rounded-full border bg-white px-3 py-2">
       <LoadingSpinner />
       <span className="text-sm text-muted-foreground">Loading</span>
     </div>
@@ -78,7 +78,7 @@ export function NavClient() {
                 return (
                   <NavigationMenuItem key={`dropdown-${index}`}>
                     <NavigationMenuTrigger 
-                      className={cn(isActive && "text-primary")}
+                      className={cn("rounded-full bg-transparent hover:bg-muted/50", isActive && "text-primary")}
                     >
                       {link.label}
                     </NavigationMenuTrigger>
@@ -92,8 +92,8 @@ export function NavClient() {
                                 <Link
                                   href={item.href}
                                   className={cn(
-                                    "flex items-center gap-3 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors",
-                                    "hover:text-primary focus:text-primary",
+                                    "flex items-center gap-3 select-none rounded-[20px] p-3 leading-none no-underline outline-none transition-colors",
+                                    "hover:bg-muted/60 hover:text-primary focus:text-primary",
                                     pathname === item.href 
                                       ? "text-primary" 
                                       : "text-foreground"
@@ -119,6 +119,7 @@ export function NavClient() {
                       href={link.href}
                       className={cn(
                         navigationMenuTriggerStyle(),
+                        "rounded-full bg-transparent px-5 font-medium hover:bg-muted/50",
                         pathname === link.href 
                           ? "text-primary" 
                           : "text-foreground/80"
@@ -154,7 +155,7 @@ export function NavClient() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+          <SheetContent side="right" className="w-[300px] bg-background sm:w-[400px]">
             <SheetHeader>
               <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
@@ -174,7 +175,7 @@ export function NavClient() {
                             href={item.href}
                             onClick={() => setOpen(false)}
                             className={cn(
-                              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-primary",
+                              "flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/60 hover:text-primary",
                               pathname === item.href
                                 ? "text-primary"
                                 : "text-foreground/60"
@@ -195,7 +196,7 @@ export function NavClient() {
                     href={link.href}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-primary",
+                      "block rounded-full px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/60 hover:text-primary",
                       pathname === link.href
                         ? "text-primary"
                         : "text-foreground/60"

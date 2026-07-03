@@ -6,6 +6,14 @@ import { ToastProvider } from '@/components/ui/toast-provider';
 import { UserProvider } from '@/lib/providers';
 import dynamic from 'next/dynamic';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
+import { Sofia_Sans } from 'next/font/google';
+
+const sofiaSans = Sofia_Sans({
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  weight: ['400', '500', '700'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   icons: {
@@ -35,7 +43,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className={sofiaSans.variable} suppressHydrationWarning>
       <head>
 
         <link rel="preconnect" href="https://v1.cnzz.com" crossOrigin="" />
@@ -43,14 +51,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://c.cnzz.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://c.cnzz.com" />
       </head>
-      <body className="bg-background text-foreground">
+      <body className="bg-background text-foreground antialiased">
      
         <ClerkProviderWithLocale>
           <ToastProvider>
             <UserProvider>
               <AuthModalProvider>
                 <Navbar />
-                <main className="min-h-[calc(100vh-80px)]">
+                <main className="min-h-[calc(100vh-80px)] pt-24">
                   {children}
                 </main>
               </AuthModalProvider>

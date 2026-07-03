@@ -318,7 +318,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex flex-col">
         <main className="flex-grow py-12 px-6">
           <div className="container mx-auto max-w-lg">
-            <div className="bg-card rounded-2xl p-8 text-center shadow-custom border border-border">
+            <div className="rounded-[40px] border border-border bg-card p-8 text-center shadow-custom">
               <h1 className="text-2xl font-bold mb-4 text-card-foreground">Profile</h1>
               <p className="mb-6 text-muted-foreground">Please sign in to view your profile</p>
               <Link href="/sign-in">
@@ -394,7 +394,7 @@ export default function ProfilePage() {
       <main className="flex-grow pt-20">
         {/* 顶部用户信息卡片 */}
         <div className="container mx-auto mt-8 mb-8">
-          <div className="bg-card rounded-2xl px-10 py-8 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-xl">
+          <div className="flex flex-col items-center gap-8 rounded-[40px] bg-card px-10 py-8 shadow-card md:flex-row md:items-start">
             {/* 头像 */}
             <div className="flex-shrink-0">
               <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-border">
@@ -420,21 +420,21 @@ export default function ProfilePage() {
               </div>
               <div className="flex flex-wrap gap-4 mt-2">
                 {/* 会员等级/积分/生成数/API调用数 */}
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-inter">
+                <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-muted-foreground">
                   <span>Membership Level</span>
-                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-bold ml-2">
+                  <span className="ml-2 rounded-full bg-muted px-2 py-0.5 font-bold text-primary">
                     {userLevelName}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm">
+                <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-muted-foreground">
                   <span>Points Remaining</span>
                   <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.remaining_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm">
+                <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-muted-foreground">
                   <span>Points Used</span>
                   <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.use_limit || 0}</span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm">
+                <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-muted-foreground">
                   <span>Total Points</span>
                   <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.total_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
                 </div>
@@ -559,7 +559,7 @@ export default function ProfilePage() {
                         return (
                           <div 
                             key={item.id} 
-                            className={`bg-card rounded-xl overflow-hidden relative flex flex-col shadow-lg border border-border transition-all duration-200 ${!isFailed && !isGenerating ? 'cursor-pointer hover:shadow-xl hover:border-primary/50' : ''}`}
+                            className={`relative flex flex-col overflow-hidden rounded-[32px] border border-border bg-card shadow-card transition-all duration-200 ${!isFailed && !isGenerating ? 'cursor-pointer hover:border-primary/50 hover:shadow-xl' : ''}`}
                             onClick={() => {
                               if (!isFailed && !isGenerating) {
                                 handleOpenDetailDialog(item);
@@ -602,7 +602,7 @@ export default function ProfilePage() {
                                   </div>
                                 </div>
                               ) : isGenerating ? (
-                                <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/20 flex flex-col items-center justify-center border-2 border-dashed border-primary/50">
+                                  <div className="flex h-full w-full flex-col items-center justify-center border-2 border-dashed border-primary/50 bg-muted/40">
                                   <div className="text-center p-4">
                                     <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
                                       <ReloadIcon className="h-6 w-6 text-primary animate-spin" />

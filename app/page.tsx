@@ -11,7 +11,7 @@ const Hero = dynamic(() => import('../components/home/Hero'), {
   loading: () => <div className="h-96 animate-pulse bg-muted/10 rounded-lg" />,
 });
 
-const PricingSectionWithHeader = dynamic(() => import('../components/PricingSectionWithHeader'), {
+const PricingSection = dynamic(() => import('../components/PricingSection'), {
   loading: () => <div className="h-96 animate-pulse bg-muted/10 rounded-lg" />,
 });
 
@@ -76,16 +76,18 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      {/* Google One Tap Auth - only shown when user is not signed in */}
-      <GoogleOneTapAuth
-        cancelOnTapOutside={true}
-        signInForceRedirectUrl="/"
-        signUpForceRedirectUrl="/"
-      />
-      
+      {process.env.NODE_ENV === 'production' && (
+        <GoogleOneTapAuth
+          cancelOnTapOutside={true}
+          fedCmSupport={false}
+          signInForceRedirectUrl="/"
+          signUpForceRedirectUrl="/"
+        />
+      )}
+
       <main className="flex-grow relative">
         <Hero />
-        <PricingSectionWithHeader />
+        <PricingSection />
       </main>
       
       {/* Server Component: Footer */}

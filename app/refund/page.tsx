@@ -7,8 +7,8 @@ export default function RefundPolicyPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-grow py-12 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <article className="prose prose-xl lg:prose-2xl max-w-none dark:prose-invert bg-card p-8 md:p-12 rounded-2xl shadow-custom">
-            <h1 className="text-center font-poppins font-bold text-primary text-3xl md:text-4xl mb-4">Refund Policy</h1>
+          <article className="prose prose-xl lg:prose-2xl max-w-none rounded-[40px] bg-card p-8 shadow-custom md:p-12">
+            <h1 className="mb-4 text-center font-poppins text-3xl font-medium text-foreground md:text-4xl">Refund Policy</h1>
             <p className="text-center text-base text-muted-foreground mb-10">Effective Date: October 14, 2025</p>
 
             <p className="lead text-lg md:text-xl mb-8 text-foreground">
@@ -16,7 +16,7 @@ export default function RefundPolicyPage() {
             </p>
 
             <section className="mt-10">
-              <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground mb-3">1. Eligibility for Refunds</h2>
+              <h2 className="mb-3 font-poppins text-2xl font-medium text-foreground md:text-3xl">1. Eligibility for Refunds</h2>
               <div className="text-base md:text-lg text-muted-foreground space-y-4">
                 <ul className="list-disc list-inside space-y-2">
                   <li>You may request a refund within 7 days of purchase for any unused or partially unused service.</li>
@@ -27,7 +27,7 @@ export default function RefundPolicyPage() {
             </section>
 
             <section className="mt-10">
-              <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground mb-3">2. How to Request a Refund</h2>
+              <h2 className="mb-3 font-poppins text-2xl font-medium text-foreground md:text-3xl">2. How to Request a Refund</h2>
               <div className="text-base md:text-lg text-muted-foreground space-y-4">
                 <p>Send your refund request to our customer support email.</p>
                 <p>We recommend using "Refund Request" as your email subject line.</p>
@@ -45,7 +45,7 @@ export default function RefundPolicyPage() {
             </section>
 
             <section className="mt-10">
-              <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground mb-3">3. Non-Refundable Situations</h2>
+              <h2 className="mb-3 font-poppins text-2xl font-medium text-foreground md:text-3xl">3. Non-Refundable Situations</h2>
               <div className="text-base md:text-lg text-muted-foreground space-y-4">
                 <p>Refunds will not be granted in the following cases:</p>
                 <ul className="list-disc list-inside space-y-2">
@@ -59,7 +59,7 @@ export default function RefundPolicyPage() {
             </section>
 
             <section className="mt-10">
-              <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground mb-3">4. Our Right to Refuse Refunds</h2>
+              <h2 className="mb-3 font-poppins text-2xl font-medium text-foreground md:text-3xl">4. Our Right to Refuse Refunds</h2>
               <div className="text-base md:text-lg text-muted-foreground space-y-4">
                 <p>We reserve the right to deny or partially deny refund requests if:</p>
                 <ul className="list-disc list-inside space-y-2">
@@ -72,14 +72,14 @@ export default function RefundPolicyPage() {
             </section>
 
             <section className="mt-10">
-              <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground mb-3">5. Policy Updates</h2>
+              <h2 className="mb-3 font-poppins text-2xl font-medium text-foreground md:text-3xl">5. Policy Updates</h2>
               <div className="text-base md:text-lg text-muted-foreground space-y-4">
                 <p>This refund policy may be updated from time to time. If major changes occur, we'll post a clear notice on our website. Once published, the updated policy will take effect immediately.</p>
               </div>
             </section>
 
             <section className="mt-10">
-              <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground mb-3">6. Contact Us</h2>
+              <h2 className="mb-3 font-poppins text-2xl font-medium text-foreground md:text-3xl">6. Contact Us</h2>
               <div className="text-base md:text-lg text-muted-foreground space-y-4">
                 <p>If you have any questions about this refund policy or wish to submit a request, please contact us at:</p>
                 <div className="text-foreground font-medium">Customer Support Email:</div>

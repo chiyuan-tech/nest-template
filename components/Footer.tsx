@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Mail } from 'lucide-react';
 import { FriendLink } from '../lib/server-api';
 import { siteConfig, contactConfig } from '@/website-config';
 
@@ -8,22 +9,28 @@ interface FooterProps {
 
 export function Footer({ friendlyLinks = [] }: FooterProps) {
   return (
-    <footer className="bg-card border-t border-muted py-12">
-      <div className="max-w-7xl mx-auto">
-        {/* Partner Sites - Only show if there are links */}
-        {friendlyLinks && friendlyLinks.length > 0 && (
-          <div className="mb-10 pb-6 border-b border-muted">
-            <div className="font-semibold text-base text-foreground mb-4">
-              PartnerSites
+    <footer className="bg-[#141413] px-6 py-16 text-white sm:px-10 lg:px-16 lg:pb-28">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-14 max-w-2xl">
+          <p className="mc-eyebrow mb-5 text-white/55">Support</p>
+          <h2 className="text-4xl leading-[1.05] tracking-[-0.02em] text-white md:text-5xl">
+            We're always here when you need us.
+          </h2>
+        </div>
+
+        {friendlyLinks.length > 0 && (
+          <div className="mb-10 border-b border-white/20 pb-6">
+            <div className="mb-4 text-sm font-bold uppercase tracking-[0.04em] text-white/55">
+              Partner Sites
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
               {friendlyLinks.map((link) => (
                 <a
                   key={link.id}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-xs hover:underline decoration-primary decoration-1 underline-offset-2"
+                  className="text-xs text-white/65 transition-colors duration-200 hover:text-white hover:underline"
                 >
                   {link.name}
                 </a>
@@ -32,90 +39,79 @@ export function Footer({ friendlyLinks = [] }: FooterProps) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Logo & Copyright */}
-          <div className="md:col-span-1">
-            <Link href="/" className="flex items-center space-x-2 mb-4">
-              <span className="font-poppins text-xl font-bold text-primary">
+        <div className="grid grid-cols-1 gap-10 border-b border-white/20 pb-12 md:grid-cols-4">
+          <div className="md:col-span-2">
+            <Link href="/" className="mb-4 flex items-center">
+              <span className="font-poppins text-2xl font-bold tracking-[-0.02em] text-white">
                 {siteConfig.name}
               </span>
             </Link>
-            <p className="mt-4 text-sm text-muted-foreground">
-              © 2025 {siteConfig.name}. All rights reserved.
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/65">
+              Create cinematic AI videos with a calm, editorial workspace and reliable generation tools.
             </p>
-            <div className="mt-4">
-              <a 
-                href={`mailto:${contactConfig.supportEmail}`}
-                className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors duration-200"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                {contactConfig.supportEmail}
-              </a>
-            </div>
+            <a
+              href={`mailto:${contactConfig.supportEmail}`}
+              className="mt-6 inline-flex items-center rounded-full border border-white/35 px-4 py-2 text-sm text-white transition-colors duration-200 hover:bg-white hover:text-[#141413]"
+            >
+              <Mail className="mr-2 h-4 w-4" />
+              {contactConfig.supportEmail}
+            </a>
           </div>
-          
-          {/* Quick Links */}
-          <div className="md:col-span-1">
-            <div className="font-semibold text-lg mb-4 text-foreground">
+
+          <div>
+            <div className="mb-4 text-sm font-bold uppercase tracking-[0.04em] text-white/55">
               Navigation
             </div>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               <li>
-                <Link 
-                  href="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                >
+                <Link href="/" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
                   Home
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/blog"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                >
+                <Link href="/blog" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
                   Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/pricing" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
+                  Pricing
                 </Link>
               </li>
             </ul>
           </div>
-          
-          {/* Legal */}
-          <div className="md:col-span-1">
-            <div className="font-semibold text-lg mb-4 text-foreground">
+
+          <div>
+            <div className="mb-4 text-sm font-bold uppercase tracking-[0.04em] text-white/55">
               Legal
             </div>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               <li>
-                <Link 
-                  href="/terms"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                >
+                <Link href="/terms" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/privacy"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                >
+                <Link href="/privacy" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/refund"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                >
+                <Link href="/refund" className="text-sm text-white/70 transition-colors duration-200 hover:text-white">
                   Refund Policy
                 </Link>
               </li>
             </ul>
           </div>
         </div>
+
+        <div className="mt-8 flex flex-col gap-4 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2025 {siteConfig.name}. All rights reserved.</p>
+          <div className="rounded-full border border-white/30 px-4 py-2 text-white/70">
+            United States - English
+          </div>
+        </div>
       </div>
     </footer>
   );
 }
-

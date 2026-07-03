@@ -41,20 +41,21 @@ export default function PricingFAQ() {
   };
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-slate-900/30 to-slate-950/50">
+    <section className="bg-background px-4 py-20">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           {/* Left side - Title */}
           <div className="lg:sticky lg:top-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <p className="mc-eyebrow mb-5">Questions</p>
+            <h2 className="mb-6 text-4xl font-medium text-foreground md:text-5xl">
               Pricing FAQ
             </h2>
-            <p className="text-xl text-slate-300 mb-8">
+            <p className="mb-8 text-xl text-muted-foreground">
               Get answers to common questions about {siteConfig.name} pricing, subscriptions, and payment options.
             </p>
             <div className="hidden lg:block">
-              <div className="bg-gradient-to-r from-primary/20 to-transparent h-1 w-24 mb-4"></div>
-              <p className="text-slate-400">
+              <div className="mb-4 h-px w-24 bg-[#F37338]"></div>
+              <p className="text-muted-foreground">
                 Still have questions? Contact our support team for personalized assistance.
               </p>
             </div>
@@ -65,20 +66,20 @@ export default function PricingFAQ() {
             {faqItems.map((item, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-r from-slate-800/60 to-slate-900/60 rounded-xl border border-slate-700/50 backdrop-blur-sm"
+                className="rounded-[32px] border border-border bg-card"
               >
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-slate-700/30 transition-all duration-200 rounded-xl"
+                  className="flex w-full items-center justify-between rounded-[32px] px-6 py-5 text-left transition-all duration-200 hover:bg-muted/40"
                 >
-                  <h3 className="text-lg font-semibold text-white pr-4">
+                  <h3 className="pr-4 text-lg font-semibold text-foreground">
                     {item.question}
                   </h3>
                   <div className="flex-shrink-0">
                     {openIndex === index ? (
                       <ChevronUp className="w-5 h-5 text-primary" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-slate-400" />
+                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
                     )}
                   </div>
                 </button>
@@ -90,8 +91,8 @@ export default function PricingFAQ() {
                   )}
                 >
                   <div className="px-6 pb-5">
-                    <div className="h-px bg-gradient-to-r from-slate-600/50 to-transparent mb-4"></div>
-                    <p className="text-slate-300 leading-relaxed">
+                    <div className="mb-4 h-px bg-border"></div>
+                    <p className="leading-relaxed text-muted-foreground">
                       {item.answer}
                     </p>
                   </div>
@@ -100,11 +101,11 @@ export default function PricingFAQ() {
             ))}
 
             {/* Contact support card */}
-            <div className="mt-8 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border border-primary/20">
-              <h3 className="text-lg font-semibold text-white mb-2">
+            <div className="mt-8 rounded-[32px] border border-border bg-card p-6">
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
                 Need more help?
               </h3>
-              <p className="text-slate-300 mb-4">
+              <p className="mb-4 text-muted-foreground">
                 Our support team is ready to assist you with any questions about pricing or features.
               </p>
               <a

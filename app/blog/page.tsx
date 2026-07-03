@@ -113,10 +113,8 @@ export default async function Blog() {
       {/* Hero Section - match home section style */}
       <section className="px-6 sm:px-10 lg:px-16 py-24 sm:py-32">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-xs tracking-[0.2em] text-muted-foreground uppercase mb-5">
-            <span className="text-foreground/30">//</span> Blog
-          </p>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground mb-6 leading-tight">
+          <p className="mc-eyebrow mb-5 justify-center">Blog</p>
+          <h1 className="mb-6 text-4xl leading-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
             Ltx 2.3 Blog
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -132,7 +130,7 @@ export default async function Blog() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             {blogPosts.map((post) => (
               <Link href={`/blog/${generateSlug(post.title, post.url)}`} key={post.id}>
-                <article className="group rounded-2xl overflow-hidden border border-foreground/8 bg-background hover:bg-foreground/5 transition-all duration-300 hover:border-foreground/20">
+                <article className="group overflow-hidden rounded-[40px] border border-border bg-card transition-all duration-300 hover:border-foreground/20">
                   {/* Thumbnail Image - 16:9 */}
                   {post.thumb ? (
                     <div className="relative w-full aspect-video overflow-hidden bg-muted/30">
@@ -146,7 +144,7 @@ export default async function Blog() {
                     </div>
                   ) : (
                     <div className="relative w-full aspect-video bg-muted/30 flex items-center justify-center">
-                      <div className="w-16 h-16 bg-foreground/10 rounded-lg flex items-center justify-center">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-foreground/10">
                         <svg
                           className="w-8 h-8 text-foreground/30"
                           fill="none"

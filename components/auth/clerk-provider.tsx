@@ -2,43 +2,59 @@
 
 import { ClerkProvider } from '@clerk/nextjs';
 
+const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+function decodeBase64(value: string) {
+  if (typeof atob === 'function') {
+    return atob(value);
+  }
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(value, 'base64').toString();
+  }
+  return '';
+}
+
+const frontendApi = publishableKey ? decodeBase64(publishableKey.split('_')[2] || '').replace(/\$$/, '') : '';
+const clerkJSUrl = frontendApi
+  ? `https://${frontendApi}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`
+  : undefined;
+
 export default function ClerkProviderWithLocale({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider 
-      // 移除本地化以减少包大小
-      // localization={enUS}
+    <ClerkProvider
+      publishableKey={publishableKey}
+      clerkJSUrl={clerkJSUrl}
       appearance={{
         layout: {
-          socialButtonsVariant: "iconButton",
-          socialButtonsPlacement: "top",
+          socialButtonsVariant: 'iconButton',
+          socialButtonsPlacement: 'top',
           showOptionalFields: false,
-          shimmer: false // 禁用 shimmer 效果以减少 JS
+          shimmer: false,
         },
         variables: {
-          colorPrimary: "#000000",
-          colorBackground: "#ffffff",
-          colorText: "#000000",
-          colorTextSecondary: "#666666",
-          borderRadius: "0.5rem",
-          fontFamily: "system-ui, -apple-system, sans-serif"
+          colorPrimary: '#141413',
+          colorBackground: '#ffffff',
+          colorText: '#141413',
+          colorTextSecondary: '#696969',
+          borderRadius: '1.25rem',
+          fontFamily: 'var(--font-poppins), Sofia Sans, Arial, sans-serif',
         },
         elements: {
-          formButtonPrimary: "bg-black hover:bg-gray-800 text-sm normal-case",
-          card: "shadow-none",
-          footer: "hidden",
-          formFieldInput: "rounded-md border-gray-300 focus:border-black focus:ring-black",
-          formFieldLabel: "text-gray-700",
-          main: "min-w-[320px] font-sans",
-          identityPreview: "shadow-sm border-gray-200"
-        }
+          formButtonPrimary: 'bg-black hover:bg-gray-800 text-sm normal-case',
+          card: 'shadow-none',
+          footer: 'hidden',
+          formFieldInput: 'rounded-full border-gray-300 focus:border-black focus:ring-black',
+          formFieldLabel: 'text-gray-700',
+          main: 'min-w-[320px] font-sans',
+          identityPreview: 'shadow-sm border-gray-200',
+        },
       }}
-      // 性能优化选项
     >
       {children}
     </ClerkProvider>
   );
-} 
+}

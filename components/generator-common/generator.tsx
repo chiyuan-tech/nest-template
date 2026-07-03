@@ -369,7 +369,7 @@ export default function Hero() {
     <div className="w-full">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Content: 3-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-muted/30 rounded-xl border border-border/50 p-4 lg:p-6">
+        <div className="grid grid-cols-1 gap-6 rounded-[40px] border border-border/50 bg-card p-4 shadow-card lg:grid-cols-12 lg:p-6">
             
             {/* Left Column: Controls (4 cols) */}
             <div className="lg:col-span-3 flex flex-col gap-3 overflow-y-auto pr-1 xmk-scrollbar">
@@ -387,7 +387,7 @@ export default function Hero() {
                                 >
                                     <Textarea 
                                         placeholder="Please enter a prompt..."
-                                        className="min-h-[140px] resize-none text-sm bg-black border-border/50 cursor-pointer"
+                                        className="min-h-[140px] resize-none border-border/50 bg-white text-sm cursor-pointer"
                                         value=""
                                         readOnly
                                     />
@@ -396,7 +396,7 @@ export default function Hero() {
                                 <>
                                     <Textarea 
                                         placeholder="Please enter a prompt..."
-                                        className="min-h-[140px] resize-none text-sm bg-black border-border/50"
+                                        className="min-h-[140px] resize-none border-border/50 bg-white text-sm"
                                         value={formData.prompt}
                                         onChange={(e) => setFormData(prev => ({ ...prev, prompt: e.target.value }))}
                                         maxLength={2000}
@@ -418,7 +418,7 @@ export default function Hero() {
                                  {!isSignedIn ? (
                                      <div 
                                          onClick={() => openAuthModal('signin')}
-                                         className="border border-dashed border-border rounded-lg p-3 text-center hover:bg-black/60 transition-colors cursor-pointer bg-black/80 min-h-24 flex items-center justify-center flex-col"
+                                         className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-border bg-white p-3 text-center transition-colors hover:bg-muted/40"
                                      >
                                          <Upload className="h-4 w-4 mx-auto text-muted-foreground mb-1" />
                                          <p className="text-xs text-muted-foreground">Click to upload</p>
@@ -426,7 +426,7 @@ export default function Hero() {
                                  ) : (
                                      <div 
                                          onClick={() => fileInputRef.current?.click()}
-                                         className="border border-dashed border-border rounded-lg p-3 text-center hover:bg-black/60 transition-colors cursor-pointer bg-black/80 min-h-24 flex items-center justify-center flex-col"
+                                         className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-border bg-white p-3 text-center transition-colors hover:bg-muted/40"
                                      >
                                          <Upload className="h-4 w-4 mx-auto text-muted-foreground mb-1" />
                                          <p className="text-xs text-muted-foreground">Click to upload</p>
@@ -438,7 +438,7 @@ export default function Hero() {
                                  {/* First Image Preview */}
                                  <div className="flex-1 flex flex-col gap-1">
                                      <Label className="text-xs text-muted-foreground truncate whitespace-nowrap">Image Upload (Optional)</Label>
-                                     <div className="relative rounded-lg overflow-hidden min-h-24 max-h-24 group border border-border bg-black/80 flex items-center justify-center p-2">
+                                     <div className="group relative flex min-h-24 max-h-24 items-center justify-center overflow-hidden rounded-[24px] border border-border bg-white p-2">
                                          <img src={formData.uploadedImageUrl} alt="Upload" className="max-w-full max-h-24 w-auto h-auto object-contain" />
                                          <button 
                                              onClick={() => removeImage()}
@@ -455,13 +455,13 @@ export default function Hero() {
                                     {!formData.lastImageUrl ? (
                                         <div 
                                             onClick={() => lastImageInputRef.current?.click()}
-                                            className="border border-dashed border-border rounded-lg p-3 text-center hover:bg-black/60 transition-colors cursor-pointer bg-black/80 min-h-24 flex items-center justify-center flex-col"
+                                            className="flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-border bg-white p-3 text-center transition-colors hover:bg-muted/40"
                                         >
                                             <Upload className="h-4 w-4 mx-auto text-muted-foreground mb-1" />
                                             <p className="text-xs text-muted-foreground">Click to upload</p>
                                         </div>
                                     ) : (
-                                        <div className="relative rounded-lg overflow-hidden min-h-24 max-h-24 group border border-border bg-black/80 flex items-center justify-center p-2">
+                                        <div className="group relative flex min-h-24 max-h-24 items-center justify-center overflow-hidden rounded-[24px] border border-border bg-white p-2">
                                             <img src={formData.lastImageUrl} alt="End Frame" className="max-w-full max-h-24 w-auto h-auto object-contain" />
                                             <button 
                                                 onClick={() => removeImage(true)}
@@ -553,8 +553,8 @@ export default function Hero() {
                         className={cn(
                             "w-full h-10 text-sm font-semibold transition-all",
                             policyDecision.primaryAction === 'upgrade'
-                                ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-500"
-                                : "bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90"
+                                ? "bg-[#CF4500] text-white hover:bg-[#b93d00]"
+                                : "bg-primary text-primary-foreground hover:bg-primary/90"
                         )}
                         onClick={() => {
                             if (policyDecision.primaryAction === 'signin') {
@@ -590,8 +590,8 @@ export default function Hero() {
             </div>
 
             {/* Middle Column: Preview (7 cols) */}
-            <div className="lg:col-span-7 bg-black rounded-xl overflow-hidden relative border border-border/20 shadow-xl flex flex-col h-full aspect-square lg:aspect-auto">
-                <div className="relative w-full h-full bg-black rounded-xl overflow-hidden">
+            <div className="relative flex h-full aspect-square flex-col overflow-hidden rounded-[40px] border border-border/20 bg-[#141413] shadow-card lg:col-span-7 lg:aspect-auto">
+                <div className="relative h-full w-full overflow-hidden rounded-[40px] bg-[#141413]">
                     {/* Demo State - Default */}
                     {videoDisplayState === 'demo' && (
                         <div className="relative w-full h-full flex flex-col">
@@ -612,7 +612,7 @@ export default function Hero() {
                                 </video>
                             </div>
                             {/* Demo Title - Bottom */}
-                            <div className="bg-black/50 backdrop-blur-sm rounded-lg px-3 py-2 mx-4 mb-4 flex-shrink-0">
+                            <div className="mx-4 mb-4 flex-shrink-0 rounded-[24px] bg-black/50 px-3 py-2 backdrop-blur-sm">
                                 <div className="text-white text-sm font-bold text-center">Seedance 1.5 Pro introduces breakthrough narrative understanding and cinematic generation capability. With physics-accurate motion, consistent subjects, and multi-shot storytelling.</div>
                             </div>
                         </div>
@@ -623,21 +623,21 @@ export default function Hero() {
                         <div className="w-full h-full flex items-center justify-center">
                             <div className="text-center text-gray-200">
                                 <div className="relative mb-6">
-                                    <div className="w-20 h-20 border-4 border-purple-200 rounded-full mx-auto"></div>
+                                    <div className="mx-auto h-20 w-20 rounded-full border-4 border-white/25"></div>
                                     <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin absolute top-0 left-1/2 transform -translate-x-1/2"></div>
                                 </div>
                                 <p className="text-xl font-medium mb-6 text-gray-100">Generating your video...</p>
                                 <div className="w-80 bg-gray-600 rounded-full h-3 mx-auto shadow-inner">
                                     <div
-                                        className="bg-gradient-to-r from-blue-500 to-primary h-3 rounded-full transition-all duration-300 shadow-lg"
+                                        className="h-3 rounded-full bg-[#F37338] shadow-lg transition-all duration-300"
                                         style={{ width: `${progress}%` }}
                                     ></div>
                                 </div>
                                 <p className="text-sm mt-4 text-gray-300 font-medium">{Math.round(progress)}% complete</p>
                                 <div className="mt-6 flex justify-center space-x-2">
                                     <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-2 h-2 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                    <div className="w-2 h-2 bg-[#F37338] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                    <div className="w-2 h-2 bg-[#F37338]/70 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                                 </div>
                             </div>
                         </div>
@@ -661,7 +661,7 @@ export default function Hero() {
                             </div>
 
                             {/* Download and Share Buttons */}
-                            <div className="flex gap-2 justify-center items-center p-4 bg-gradient-to-t from-gray-900/90 to-gray-900/50 backdrop-blur-sm flex-shrink-0">
+                            <div className="flex flex-shrink-0 items-center justify-center gap-2 bg-black/65 p-4 backdrop-blur-sm">
                                 {/* Download Button */}
                                 <Button
                                     onClick={handleDownload}
@@ -786,14 +786,14 @@ export default function Hero() {
                                     }
                                 }}
                                 className={cn(
-                                    "group cursor-pointer rounded-lg border border-border/40 overflow-hidden hover:border-primary/50 transition-all bg-card shadow-sm flex-shrink-0 w-[200px] lg:w-auto",
+                                    "group w-[200px] flex-shrink-0 cursor-pointer overflow-hidden rounded-[24px] border border-border/40 bg-white shadow-sm transition-all hover:border-primary/50 lg:w-auto",
                                     item.isGenerating && videoDisplayState === 'loading' ? "ring-2 ring-primary border-primary" : 
                                     generatedVideoUrl === item.url && videoDisplayState === 'result' ? "ring-2 ring-primary border-primary" : ""
                                 )}
                             >
                                 <div className="aspect-video relative bg-black/5">
                                     {item.isGenerating ? (
-                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800">
+                                        <div className="flex h-full w-full items-center justify-center bg-[#141413]">
                                             <div className="text-center">
                                                 <div className="relative mb-3">
                                                     <div className="w-12 h-12 border-4 border-primary/30 rounded-full mx-auto"></div>

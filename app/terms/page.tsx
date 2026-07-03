@@ -1,7 +1,6 @@
 'use client';
 
 import { Footer } from '../../components/Footer';
-import { useState } from 'react';
 import { siteConfig } from '@/website-config';
 
 export default function TermsOfServicePage() {
@@ -50,14 +49,14 @@ export default function TermsOfServicePage() {
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-grow py-12 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <article className="prose prose-xl lg:prose-2xl max-w-none dark:prose-invert bg-card p-8 md:p-12 rounded-2xl shadow-custom">
-            <h1 className="text-center font-poppins font-bold text-primary text-3xl md:text-4xl mb-4">{termsContent.title}</h1>
+          <article className="prose prose-xl lg:prose-2xl max-w-none rounded-[40px] bg-card p-8 shadow-custom md:p-12">
+            <h1 className="mb-4 text-center font-poppins text-3xl font-medium text-foreground md:text-4xl">{termsContent.title}</h1>
             <p className="text-center text-base text-muted-foreground mb-10">{termsContent.effectiveDate}</p>
             <p className="lead text-lg md:text-xl mb-8 text-foreground">{termsContent.introduction}</p>
 
             {termsContent.sections.map((section, index) => (
               <section key={index} className="mt-10">
-                <h2 className="font-baloo font-semibold text-2xl md:text-3xl text-foreground mb-3">{`${index + 1}. ${section.title}`}</h2>
+                <h2 className="mb-3 font-poppins text-2xl font-medium text-foreground md:text-3xl">{`${index + 1}. ${section.title}`}</h2>
                 <div className="text-base md:text-lg text-muted-foreground space-y-4">
                   {section.content.split('\n').map((paragraph, pIndex) => (
                     paragraph.trim() && <p key={pIndex}>{paragraph}</p>
