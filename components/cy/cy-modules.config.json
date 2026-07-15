@@ -621,5 +621,127 @@
       ["Commercial Use", "✅", "✅", "✅", "⚠️ Paid plans only"],
       ["Best For", "Text + complex layouts + all-round", "Text-heavy editing", "High-speed batch / portraits", "Pure artistic style"]
     ]
+  },
+  "PricingCase1": {
+    "decorIndex": "05",
+    "kicker": "Plans",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "Choose Your Seedance Credit Pack",
+    "subtitle": "Get credits to create high-quality videos from text or images in seconds with Seedance. All plans include ultra HD quality, lightning-fast generation, multi-shot storytelling, and one-time payment.",
+    "badgeText": "Seedance Pricing",
+    "plans": [
+      {
+        "key": "base",
+        "popular": false,
+        "title": "Base",
+        "price": "$9.9",
+        "credits": 99,
+        "ctaLabel": "Get 99 Credits",
+        "priceId": "price_1TC8afRxsPFYyM2qiGl3iDew",
+        "ctaHref": "#",
+        "features": [
+          "99 Credits",
+          "Up to 49 videos generated",
+          "Text-to-Video & Image-to-Video",
+          "480p, 720p, 1080p generation",
+          "5s & 10s video duration",
+          "Standard generation speed"
+        ]
+      },
+      {
+        "key": "pro",
+        "popular": true,
+        "title": "Pro",
+        "price": "$29.9",
+        "credits": 370,
+        "ctaLabel": "Get 370 Credits",
+        "priceId": "price_1TC8atRxsPFYyM2qtXbZv8f2",
+        "ctaHref": "#",
+        "features": [
+          "370 Credits",
+          "Up to 185 videos generated",
+          "Lightning-fast generation",
+          "Multi-shot storytelling",
+          "Advanced camera movements",
+          "Priority processing"
+        ]
+      },
+      {
+        "key": "ultimate",
+        "popular": false,
+        "title": "Ultimate",
+        "price": "$49.9",
+        "credits": 700,
+        "ctaLabel": "Get 700 Credits",
+        "priceId": "price_1TC8b6RxsPFYyM2q3dBXscK0",
+        "ctaHref": "#",
+        "features": [
+          "700 Credits",
+          "Up to 350 videos generated",
+          "Extended video duration",
+          "Advanced AI characters",
+          "Cinematic camera controls",
+          "Priority processing"
+        ]
+      },
+      {
+        "key": "creator",
+        "popular": false,
+        "title": "Creator",
+        "price": "$99.9",
+        "credits": 1665,
+        "ctaLabel": "Get 1665 Credits",
+        "priceId": "price_1TC8bIRxsPFYyM2qoXy26Ahk",
+        "ctaHref": "#",
+        "features": [
+          "1665 Credits",
+          "Up to 832 videos generated",
+          "Fastest generation speed",
+          "Commercial license",
+          "Highest priority processing",
+          "All style presets & custom styles"
+        ]
+      }
+    ],
+    "bottomTagline": "Choose one-time credits • Flexible billing options",
+    "bottomChecks": ["Choose one-time", "Credits never expire", "Secure payments"],
+    "supportMailDomain": "seedance20.com"
+  },
+  "PricingCase2": {
+    "decorIndex": "05",
+    "kicker": "Seedance 2.0",
+    "titleLayout": "headerVertical",
+    "sectionTitle": "Pricing FAQ",
+    "subtitle": "Everything you need to know about Seedance pricing, credits, payment, and how our AI video generators Seedance 2.0, 1.5 Pro, and 1.0 Pro work.",
+    "leftSupportBlurb": "Still have questions? Contact our support team for personalized assistance.",
+    "primaryCta": { "label": "Try Seedance 2.0", "href": "#" },
+    "defaultOpenFaqIndex": 0,
+    "faqItems": [
+      {
+        "question": "Is Seedance billed as a subscription or pay-as-you-go?",
+        "answer": "We sell credit bundles through Stripe checkout. Credits power generations for Seedance 2.0 (long-form cinematic), Seedance 1.5 Pro (photoreal), and Seedance 1.0 Pro (stylized). All models share the same unified credit system."
+      },
+      {
+        "question": "Do Seedance 2.0 credits expire?",
+        "answer": "No. Seedance 2.0 credits never expire. You can purchase one-time credit packs and use them at your own pace without worrying about monthly subscriptions or usage deadlines."
+      },
+      {
+        "question": "How are credits consumed?",
+        "answer": "Usage scales with resolution and duration. Short 5s 480p clips consume the fewest credits; 10s 1080p clips use more. Seedance 2.0 long-form videos consume credits based on length and quality. Both text-to-video and image-to-video draw from the same credit balance."
+      },
+      {
+        "question": "What payment methods do you accept?",
+        "answer": "Payments are processed by Stripe. You can use major credit and debit cards supported by Stripe in your region."
+      },
+      {
+        "question": "How does Seedance 2.0 video generation work?",
+        "answer": "Enter a detailed prompt describing your story, characters, setting, and visual style. Seedance 2.0 understands complex narrative instructions and generates long-form cinematic videos with synchronized audio, persistent character identity, and director-level camera control from a single prompt."
+      }
+    ],
+    "helpCard": {
+      "title": "Need more help?",
+      "body": "Our support team is ready to assist you with any questions about Seedance pricing or AI-powered video generation features.",
+      "mailto": "mailto:support@seedance20.com"
+    }
   }
 }

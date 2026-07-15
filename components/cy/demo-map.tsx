@@ -8,6 +8,7 @@ import { FontPairingDemo } from "@/components/cy/fonts/FontPairingDemo";
 import { ImageHeroDemo } from "@/components/cy/HeroSection/image/ImageHeroDemo";
 import { HowToStepsDemo } from "@/components/cy/HowToSteps/HowToStepsDemo";
 import { ComparisonDemo } from "@/components/cy/Comparison/ComparisonDemo";
+import { PricingDemo } from "@/components/cy/Pricing/PricingDemo";
 import type { CyCategorySlug } from "@/components/cy/registry";
 import type { ComponentType } from "react";
 
@@ -24,6 +25,7 @@ const demoMap: Record<string, DemoRenderer> = {
   "users-say/testimonial-grid": TestimonialGridDemo,
   "how-to-steps/three-steps": HowToStepsDemo,
   "comparison/model-table": ComparisonDemo,
+  "pricing/plans": PricingDemo,
 };
 
 export function getCyDemoRenderer(category: CyCategorySlug, demo: string) {

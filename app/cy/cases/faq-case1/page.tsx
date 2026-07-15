@@ -4,6 +4,6 @@ import cyModulesConfig from "@/components/cy/cy-modules.config.json";
 import type { FaqCase1Data } from "@/components/cy/FAQ/types";
 
 export default function Page() {
-  const data = cyModulesConfig.faq_case1 as FaqCase1Data;
+  const data = cyModulesConfig.FaqCase1 as FaqCase1Data;
   return <FaqCase1 data={data} />;
 }

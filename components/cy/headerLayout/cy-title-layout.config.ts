@@ -48,7 +48,10 @@ export const defaultCyTitleLayoutByModuleKey = {
   KeyFeatureCase1: "headerVertical",
   KeyFeatureCase2: "headerVertical",
   HowToStepsCase1: "headerVertical",
+  HowToStepsCase2: "headerVertical",
   ComparisonTableCase1: "headerVertical",
+  PricingCase1: "headerVertical",
+  PricingCase2: "headerVertical",
 } as const satisfies Record<string, CyTitleLayoutId>;
 
 export type CyTitleLayoutModuleKey = keyof typeof defaultCyTitleLayoutByModuleKey;

@@ -1,0 +1,71 @@
+{
+    "theme": {
+        "--primary": "oklch(0.5567042428687489 0.23345790001164438 339.99267786413805)",
+        "--ring": "oklch(0.5567042428687489 0.23345790001164438 339.99267786413805)",
+        "--sidebar-primary": "oklch(0.5567042428687489 0.23345790001164438 339.99267786413805)",
+        "--sidebar-ring": "oklch(0.5567042428687489 0.23345790001164438 339.99267786413805)",
+        "--primary-foreground": "oklch(0.9846253159451991 0.001706075627243846 247.83938351399394)",
+        "--sidebar-primary-foreground": "oklch(0.9846253159451991 0.001706075627243846 247.83938351399394)"
+    },
+    "VideoHeroCase1": {
+  "title": "Create Stunning Videos with LTX 2.3",
+  "badgeText": "Wan 3.0 · AI video",
+  "subtitle": "Next-Gen AI Video Generation: Text to Video, Image to Video, and More. Transform your ideas into cinematic visuals in seconds.",
+  "ctaButtons": [
+    {
+      "text": "Start Creating Free",
+      "href": "#cta"
+    },
+    {
+      "text": "Read LTX 2.3 Review",
+      "href": "#review"
+    }
+  ],
+  "socialProof": "Trusted by 1,000,000+ creators worldwide",
+  "heroPoster": "/video/hero/hf_20260401.png",
+  "heroVideo": "/video/hero/hf_20260401.mp4",
+  "__cyComponentPath": "@/components/cy/HeroSection/video/videoHero_case1.tsx"
+},
+"KeyFeatureCase1": {
+  "kicker": "Features",
+  "decorIndex": "01",
+  "titleLayout": "homeSplitHeader",
+  "sectionTitle": "Why GPT Image 2 Is Different From Every AI Image Tool You've Tried",
+  "subtitle": "Whether you are a designer, marketer, or solo creator, GPT Image 2 delivers a practical feature set that is powerful and easy to use.",
+  "items": [
+    {
+      "title": "Perfect Text Inside Images",
+      "text": "Every other AI image model treats text as an afterthought. Signs come out garbled. Posters look like ransom notes. GPT Image 2 was rebuilt from scratch to render readable, properly placed text on the first try - headlines, buttons, labels, and even mixed-language layouts.",
+      "bestFor": "Best for: Event posters, product banners, social graphics, UI wireframes, promotional materials.",
+      "image": "https://cysource.gptimage.tools/home/assets/action_1.jpg?v=1"
+    },
+    {
+      "title": "Reasoning Before Generating",
+      "text": "GPT Image 2 does not just match your words to pixels. It reasons through your request: understanding spatial relationships, planning the composition, and verifying accuracy before the first pixel renders. Ask it to generate a poster for a current event and it will look up the details in real time.",
+      "bestFor": "Best for: Storytelling, product visualization, scene construction, character design.",
+      "video": "/video/hero/hf_20260401.mp4",
+      "videoPoster": "/video/hero/hf_20260401.png"
+    },
+    {
+      "title": "Multilingual Visual Content",
+      "text": "Working across global markets? GPT Image 2 natively supports Japanese, Korean, Chinese, Hindi, Bengali, and all Latin-script languages - rendered correctly inside images, not translated after the fact. Build one visual campaign that works everywhere.",
+      "bestFor": "Best for: Graphic novel artists, UX storyboarders, brand campaign creators.",
+      "image": "https://cysource.gptimage.tools/home/hero/feature-3.webp"
+    },
+    {
+      "title": "Production-Ready Resolution",
+      "text": "Generate high-resolution visuals for posters, thumbnails, UI mockups, and product concepts. Paid plans may include higher-resolution export or upscaling options depending on availability. No watermarks. Outputs are royalty-free and cleared for commercial use under OpenAI's content policy.",
+      "bestFor": "Best for: Teams testing multiple creative directions quickly.",
+      "image": "https://cysource.gptimage.tools/home/hero/gpt-image-2-16_9-low-1k.png"
+    },
+    {
+      "title": "Image-to-Image Editing",
+      "text": "Upload any reference photo and describe what you want to change. GPT Image 2 edits with surgical precision - swap backgrounds, change colors, localize designs, or remove objects while preserving everything else exactly as-is.",
+      "bestFor": "Best for: Concept prototyping, fast ideation, and creative exploration loops.",
+      "image": "https://cysource.gptimage.tools/home/hero/feature-5.webp"
+    }
+  ],
+  "__cyComponentPath": "@/components/cy/KeyFeature/keyfeatureCase_1.tsx"
+}
+
+}

@@ -4,6 +4,7 @@ import { KeyFeatureCase1 } from "@/components/cy/KeyFeature/keyfeatureCase_1";
 import { HowToStepsCase1 } from "@/components/cy/HowToSteps/how_to_steps_case1";
 import { ComparisonTableCase1 } from "@/components/cy/Comparison/comparison_table_case1";
 import { TestimonialGridCase3 } from "@/components/cy/UsersSay/testimonial_grid_case3";
+import { PricingCase1 } from "@/components/cy/Pricing/pricing_case1";
 import cyTemplate from "@/cy_templeate.json";
 
 function cyBlockData(block: Record<string, unknown> | undefined) {
@@ -24,6 +25,7 @@ export default function Page() {
       <HowToStepsCase1 data={cyBlockData(cyTemplate["HowToStepsCase1"] as Record<string, unknown>) as never} />
       <ComparisonTableCase1 data={cyBlockData(cyTemplate["ComparisonTableCase1"] as Record<string, unknown>) as never} />
       <TestimonialGridCase3 data={cyBlockData(cyTemplate["TestimonialGridCase3"] as Record<string, unknown>) as never} />
+      <PricingCase1 data={cyBlockData(cyTemplate["PricingCase1"] as Record<string, unknown>) as never} />
     </>
   );
 }
