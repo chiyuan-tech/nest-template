@@ -1,6 +1,5 @@
 'use client';
 
-import { Footer } from '../../components/Footer';
 import { useState } from 'react';
 import { siteConfig } from '@/website-config';
 
@@ -64,7 +63,6 @@ export default function TermsOfServicePage() {
           </article>
         </div>
       </main>
-      <Footer />
     </div>
   );
 } 

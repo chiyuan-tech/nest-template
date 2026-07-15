@@ -1,7 +1,6 @@
 'use client';
 
 import { useUser, useAuth } from '@clerk/nextjs';
-import { Footer } from '../../components/Footer';
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
@@ -308,7 +307,6 @@ export default function ProfilePage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -329,7 +327,6 @@ export default function ProfilePage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -716,7 +713,6 @@ export default function ProfilePage() {
           onDeleteSuccess={refreshHistory}
         />
       </main>
-      <Footer friendlyLinks={friendlyLinks} />
     </div>
   );
 } 

@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { serverCmsApi } from '@/lib/server-api';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Footer } from '@/components/Footer';
 import { siteConfig, siteUrl, websiteConfig } from '@/website-config';
 
 // 生成页面元数据（用于 Open Graph 标签）
@@ -164,7 +163,6 @@ export default async function ShareVideoPage({ params }: { params: Promise<{ id:
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

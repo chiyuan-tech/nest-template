@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import Script from 'next/script';
-import { Footer } from '../../components/Footer';
 import PricingSection from '@/components/PricingSection';
 import PricingFAQ from './PricingFAQ';
 import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
@@ -182,8 +181,6 @@ export default function PricingPage() {
         <PricingFAQ />
       </main>
       
-      {/* Footer without friendly links */}
-      <Footer />
     </div>
   );
 }

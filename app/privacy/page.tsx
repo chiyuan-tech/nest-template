@@ -1,6 +1,5 @@
 'use client';
 
-import { Footer } from '../../components/Footer';
 import { siteConfig } from '@/website-config';
 
 export default function PrivacyPolicyPage() {
@@ -67,7 +66,6 @@ export default function PrivacyPolicyPage() {
           </article>
         </div>
       </main>
-      <Footer />
     </div>
   );
 } 

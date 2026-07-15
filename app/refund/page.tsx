@@ -1,5 +1,4 @@
 'use client';
-import { Footer } from '@/components/Footer';
 import { siteConfig, contactConfig } from '@/website-config';
 
 export default function RefundPolicyPage() {
@@ -89,7 +88,6 @@ export default function RefundPolicyPage() {
           </article>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

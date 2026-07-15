@@ -1,7 +1,6 @@
 import { serverCmsApi, type BlogPost } from '@/lib/server-api';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Footer } from '@/components/Footer';
 import { Metadata } from 'next';
 import styles from './blog-post.module.css';
 import BlogViewTracker from './BlogViewTracker';
@@ -294,8 +293,6 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

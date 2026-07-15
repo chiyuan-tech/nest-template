@@ -2,20 +2,20 @@
  * Website Configuration
  * Central configuration file for public website settings
  */
-
+const HTTPSNAME = 'ltxai.app'
 export const websiteConfig = {
   // Contact Information
   contact: {
-    supportEmail: 'support@ltxai.app',
+    supportEmail: `support@${HTTPSNAME}`,
   },
 
   // Canonical / site URL - single source for all public URLs (canonical, OG, sitemap, share images)
   canonical: {
-    url:'https://ltxai.app',
+    url:`https://${HTTPSNAME}`,
   },
   // API Configuration
   api: {
-    baseUrl: 'https://svc.ltxai.app',
+    baseUrl: `https://svc.${HTTPSNAME}`,
     appId: 'ltx23',
   },
 
@@ -25,10 +25,10 @@ export const websiteConfig = {
     staticPages: [
       '/',
       '/pricing',
-      '/blog',
-      '/terms',
-      '/privacy',
-      '/refund',
+      // '/blog',
+      // '/terms',
+      // '/privacy',
+      // '/refund',
     ],
   },
 
@@ -177,8 +177,8 @@ export const pricingConfig = websiteConfig.pricing;
 export const siteUrl = websiteConfig.canonical.url;
 
 // Site display name and description (for UI/metadata when needed)
-export const SITE_NAME = 'LTX AI';
-export const SITE_DESCRIPTION = 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.';
+export const SITE_NAME = 'LTX AI'; //关键词名称
+export const SITE_DESCRIPTION = 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.'; //关键词描述
 
 // Backward compatibility: siteConfig for components that use siteConfig.name / siteConfig.description
 export const siteConfig = { name: SITE_NAME, description: SITE_DESCRIPTION };

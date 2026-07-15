@@ -1,7 +1,6 @@
 import { serverCmsApi, BlogPost } from "@/lib/server-api";
 import Link from "next/link";
 import { Metadata } from "next";
-import { Footer } from "@/components/Footer";
 import Image from "next/image";
 import { SITE_NAME, websiteConfig, getPageTdk } from '@/website-config';
 
@@ -239,8 +238,6 @@ export default async function Blog() {
         )}
       </section>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

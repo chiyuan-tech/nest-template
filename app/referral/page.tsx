@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE_NAME, siteUrl, websiteConfig, getPageTdk } from '@/website-config';
 import dynamic from 'next/dynamic';
-import {Footer} from '@/components/Footer';
 
 const PromotionClient = dynamic(() => import('./PromotionClient'), { ssr: true });
 
@@ -54,7 +53,6 @@ export default function PromotionPage() {
   return (
     <>
       <PromotionClient />
-      <Footer />
     </>
   );
 }
