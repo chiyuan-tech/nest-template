@@ -267,94 +267,47 @@
         ],
         "__cyComponentPath": "@/components/cy/UsersSay/testimonial_grid_case3.tsx"
     },
-    "PricingCase1": {
-        "decorIndex": "05",
-        "kicker": "Plans",
-        "titleLayout": "headerVertical",
-        "sectionTitle": "Choose Your Seedance Credit Pack",
-        "subtitle": "Get credits to create high-quality videos from text or images in seconds with Seedance. All plans include ultra HD quality, lightning-fast generation, multi-shot storytelling, and one-time payment.",
-        "badgeText": "Seedance Pricing",
-        "plans": [
+    "FaqCase1": {
+        "sectionTitle": "Frequently Asked Questions About Wan 3.0",
+        "defaultOpenItemIndex": 0,
+        "items": [
             {
-                "key": "base",
-                "popular": false,
-                "priceId": "price_1T9Ep9QeNOvbi7iexShMkWvX",
-                "title": "Base",
-                "price": "$9.9",
-                "credits": 99,
-                "ctaLabel": "Get 99 Credits",
-                "ctaHref": "#",
-                "features": [
-                    "99 Credits",
-                    "Up to 49 videos generated",
-                    "Text-to-Video & Image-to-Video",
-                    "480p, 720p, 1080p generation",
-                    "5s & 10s video duration",
-                    "Standard generation speed"
-                ]
+                "question": "What is Wan 3.0 and how is it different from Wan 2.7?",
+                "answer": "Wan 3.0 is the third major generation of Alibaba's open-source Wan video generation model series. Unlike Wan 2.7, which maxed out at 1080p and 16-second clips, Wan 3.0 supports native 4K resolution, 60fps output, and videos up to 60 seconds long. More significantly, Wan 3.0 introduces a neural physics engine for realistic object behavior, synchronized audio generation, and cross-shot character consistency that holds up through full multi-shot sequences. It's not an incremental patch — the model architecture has been substantially redesigned."
             },
             {
-                "key": "pro",
-                "popular": true,
-                "priceId": "price_1T9EpQQeNOvbi7ieNreeDNvb",
-                "title": "Pro",
-                "price": "$29.9",
-                "credits": 370,
-                "ctaLabel": "Get 370 Credits",
-                "ctaHref": "#",
-                "features": [
-                    "370 Credits",
-                    "Up to 185 videos generated",
-                    "Lightning-fast generation",
-                    "Multi-shot storytelling",
-                    "Advanced camera movements",
-                    "Priority processing"
-                ]
+                "question": "Is Wan 3.0 free to use?",
+                "answer": "Yes — Wan 3.0 has a free plan that includes 5 generations per month at up to 1080p resolution. Free-plan videos include a watermark and are for personal, non-commercial use only. For unlimited 4K generation, no watermark, and commercial use rights, a Pro plan is available. The underlying model weights are also free to download and self-host under an open-source license. If you want to test output quality before subscribing, the free plan is the right starting point."
             },
             {
-                "key": "ultimate",
-                "popular": false,
-                "priceId": "price_1T9Ep3QeNOvbi7ieb9YwE1WZ",
-                "title": "Ultimate",
-                "price": "$49.9",
-                "credits": 700,
-                "ctaLabel": "Get 700 Credits",
-                "ctaHref": "#",
-                "features": [
-                    "700 Credits",
-                    "Up to 350 videos generated",
-                    "Extended video duration",
-                    "Advanced AI characters",
-                    "Cinematic camera controls",
-                    "Priority processing"
-                ]
+                "question": "Can I use Wan 3.0-generated videos for commercial projects?",
+                "answer": "Yes. All paid Wan 3.0 plans include full commercial use rights. Videos generated on the Free plan include a watermark and are licensed for personal, non-commercial use only. If you're producing content for clients, running ads, monetizing a YouTube channel, or any other revenue-generating use case, a Pro or API plan is required. The open-source model weights also permit commercial use with attribution — check the LICENSE file in the GitHub repository for specifics."
             },
             {
-                "key": "creator",
-                "popular": false,
-                "priceId": "price_1T9Eq3QeNOvbi7ied2IVXKmY",
-                "title": "Creator",
-                "price": "$99.9",
-                "credits": 1665,
-                "ctaLabel": "Get 1665 Credits",
-                "ctaHref": "#",
-                "features": [
-                    "1665 Credits",
-                    "Up to 832 videos generated",
-                    "Fastest generation speed",
-                    "Commercial license",
-                    "Highest priority processing",
-                    "All style presets & custom styles"
-                ]
+                "question": "Does Wan 3.0 support image-to-video generation?",
+                "answer": "Yes. Wan 3.0 accepts a reference image as input alongside (or instead of) a text prompt. You can provide a product photo, a character illustration, a landscape shot, or any other visual reference, and the model generates video that maintains the visual identity of that image while adding natural motion, lighting changes, and camera movement. This is especially useful for e-commerce product videos and brand-consistent content where you need the generated footage to match existing visual assets."
+            },
+            {
+                "question": "Is Wan 3.0 open-source? Where can I download the model?",
+                "answer": "Yes — the core Wan 3.0 model weights are publicly available on Hugging Face and GitHub under a license that permits commercial use with attribution. You can download them, run them on your own GPU hardware, fine-tune them on custom datasets, and integrate them into your own products. The cloud platform at wan30.co is a managed, hosted version of the same model, optimized for speed and ease of use without any infrastructure overhead."
+            },
+            {
+                "question": "Does Wan 3.0 generate audio along with the video?",
+                "answer": "Yes. Wan 3.0 includes a native audio generation capability conditioned on the visual content of the video — not a separate model applied after the fact. When you enable audio generation, the model produces sound that matches the visual scene: ambient environment noise, object impact sounds, movement audio, and atmospheric texture. You can also generate the video without audio if you prefer to add your own soundtrack in post-production. Audio generation is available on Pro and API plans."
+            },
+            {
+                "question": "How do I write effective prompts for Wan 3.0?",
+                "answer": "Wan 3.0 responds well to prompts that describe four things: the subject, the action, the environment, and the camera. A prompt like \"a barista pouring latte art in a sunlit coffee shop, close-up, slow motion, shallow depth of field\" will produce a more precise result than \"coffee shop video.\" Lighting conditions (golden hour, overcast, neon), camera movement (dolly in, handheld, aerial), and surface detail (wet pavement, rough concrete, polished marble) all influence the output. For image-to-video prompts, focus on describing the motion rather than the appearance, since the appearance is anchored by your reference image."
+            },
+            {
+                "question": "What are the system requirements to run Wan 3.0 locally?",
+                "answer": "To run Wan 3.0 on your own hardware, you need a CUDA-compatible NVIDIA GPU with a minimum of 24GB VRAM for 1080p generation. For 4K output, 40GB+ VRAM is recommended (NVIDIA A100 or H100). The model supports both single-GPU and multi-GPU setups. A Docker image is available for simplified deployment. Full system requirements, setup instructions, and a configuration guide are in the Wan 3.0 GitHub repository. If local hardware isn't available, the managed cloud platform runs the same model without any setup required."
+            },
+            {
+                "question": "Why do AI-generated video characters look different between shots? Does Wan 3.0 fix this?",
+                "answer": "Character drift — where a person's face, clothing, or surroundings change slightly (or dramatically) between generated shots — is one of the most common problems in AI video. It happens because most models treat each video generation as a fresh inference with no persistent memory of the character's visual identity. Wan 3.0 addresses this with a structural identity preservation mechanism that tracks key visual attributes (facial structure, clothing, hair, environment) across cuts. In sequences up to 60 seconds, Wan 3.0 maintains character and scene consistency through wide shots, medium shots, and close-ups without drift."
             }
         ],
-        "bottomTagline": "Choose one-time credits • Flexible billing options",
-        "bottomChecks": [
-            "Choose one-time",
-            "Credits never expire",
-            "Secure payments"
-        ],
-        "supportMailDomain": "seedance20.com",
-        "__cyComponentPath": "@/components/cy/Pricing/pricing_case1.tsx"
+        "__cyComponentPath": "@/components/cy/FAQ/faq_case1.tsx"
     }
 }
