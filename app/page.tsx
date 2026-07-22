@@ -26,7 +26,19 @@ export default function Page() {
       <HowToStepsCase1 data={cyBlockData(cyTemplate["HowToStepsCase1"] as Record<string, unknown>) as never} />
       <ComparisonTableCase1 data={cyBlockData(cyTemplate["ComparisonTableCase1"] as Record<string, unknown>) as never} />
       <TestimonialGridCase3 data={cyBlockData(cyTemplate["TestimonialGridCase3"] as Record<string, unknown>) as never} />
-      <PricingSection />
+      <section id="pricing" className="bg-background px-4 py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
+              Choose Your Perfect Plan
+            </h2>
+            <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+              All plans include HD download and fast AI generation.
+            </p>
+          </div>
+          <PricingSection hideSection hideHeader />
+        </div>
+      </section>
       <FaqCase1 data={cyBlockData(cyTemplate["FaqCase1"] as Record<string, unknown>) as never} />
     </>
   );

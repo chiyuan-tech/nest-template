@@ -163,6 +163,24 @@ function isSharedPricingInjectionPoint(templateKey) {
   return CY_FAQ_CASE_KEY.test(templateKey);
 }
 
+function buildSharedPricingBlockLines() {
+  return [
+    `      <section id="pricing" className="bg-background px-4 py-24">`,
+    `        <div className="mx-auto max-w-7xl">`,
+    `          <div className="mb-12 text-center">`,
+    `            <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">`,
+    `              Choose Your Perfect Plan`,
+    `            </h2>`,
+    `            <p className="mx-auto max-w-2xl text-xl text-muted-foreground">`,
+    `              All plans include HD download and fast AI generation.`,
+    `            </p>`,
+    `          </div>`,
+    `          <PricingSection hideSection hideHeader />`,
+    `        </div>`,
+    `      </section>`,
+  ];
+}
+
 function buildPageStackLines(blocks) {
   const stackLines = [];
   let sharedPricingInserted = false;
@@ -171,7 +189,7 @@ function buildPageStackLines(blocks) {
     if (CY_PRICING_CASE_KEY.test(b.templateKey)) continue;
 
     if (!sharedPricingInserted && isSharedPricingInjectionPoint(b.templateKey)) {
-      stackLines.push("      <PricingSection />");
+      stackLines.push(...buildSharedPricingBlockLines());
       sharedPricingInserted = true;
     }
 
