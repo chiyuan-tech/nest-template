@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { NavClient } from './nav/NavClient';
 import { siteConfig } from '@/website-config';
 
@@ -9,6 +10,7 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center px-4">
         {/* Logo */}
         <Link href="/" className="mr-6 flex items-center space-x-2 flex-shrink-0">
+          <Image src="/logo.webp" alt="" width={32} height={32} className="h-8 w-8 rounded-md object-contain" priority />
           <span className="font-poppins text-xl font-bold text-primary">
             {siteConfig.name}
           </span>

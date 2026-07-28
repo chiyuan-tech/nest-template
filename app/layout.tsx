@@ -8,7 +8,9 @@ import { UserProvider } from '@/lib/providers';
 import dynamic from 'next/dynamic';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
 import { ScrollRevealInit } from '@/components/animations/ScrollRevealInit';
+import { siteUrl } from '@/website-config';
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   icons: {
     icon: [
       { url: '/logo.webp', type: 'image/webp' },
@@ -16,6 +18,13 @@ export const metadata: Metadata = {
     ],
     apple: '/logo.webp',
     shortcut: '/logo.webp',
+  },
+  openGraph: {
+    images: ['/share-img.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/share-img.png'],
   },
 };
 

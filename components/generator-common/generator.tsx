@@ -81,11 +81,8 @@ export default function Hero() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastImageInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const demoVideoRef = useRef<HTMLVideoElement>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const currentGeneratingIdRef = useRef<string | null>(null);
-
-  const DEFAULT_VIDEO_URL = 'https://cfsource.seedancepro.com/source/video/tops.mp4';
 
   const aspectRatios = [
     { label: '16:9', value: '16:9' },
@@ -597,19 +594,9 @@ export default function Hero() {
                         <div className="relative w-full h-full flex flex-col">
                             {/* Video Container */}
                             <div className="relative flex-1 min-h-0">
-                                <video
-                                    ref={demoVideoRef}
-                                    className="w-full h-full object-cover"
-                                    loop
-                                    muted
-                                    controls
-                                    playsInline
-                                    preload="metadata"
-                                    poster='https://cysource.xmk.com/static/xmk15.png'
-                                >
-                                    <source src='https://cysource.xmk.com/static/xmk15.mp4' type="video/mp4" />
-                                    Your browser does not support the video tag.
-                                </video>
+                                <div className="flex h-full items-center justify-center bg-muted/20 px-8 text-center text-sm text-muted-foreground">
+                                    Cloned local preview media is bound here during the landing-page implementation stage.
+                                </div>
                             </div>
                             {/* Demo Title - Bottom */}
                             <div className="bg-black/50 backdrop-blur-sm rounded-lg px-3 py-2 mx-4 mb-4 flex-shrink-0">

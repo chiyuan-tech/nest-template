@@ -48,18 +48,10 @@ type NavLink =
   | { href: string; label: string; type?: never; items?: never }
   | { type: 'dropdown'; label: string; items: Array<{ href: string; label: string; icon: React.ElementType }>; href?: never };
 
-const navLinks: NavLink[] = [           
-  { href: '/', label: 'Home' }, 
-  {
-    type: 'dropdown',
-    label: 'Products',
-    items: [
-      { href: '/products/video-generator', label: 'Video Generator', icon: VideoIcon },
-      { href: '/products/audio-generator', label: 'Audio Generator', icon: MicIcon },
-      { href: '/products/image-generator', label: 'Image Generator', icon: ImageIcon },
-    ],
-  }
-
+const navLinks: NavLink[] = [
+  { href: '/', label: 'Home' },
+  { href: '#how-to-use', label: 'How to Use' },
+  { href: '/pricing', label: 'Pricing' },
 ];
 
 export function NavClient() {

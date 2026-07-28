@@ -50,38 +50,8 @@
 }
 
 @font-face {
-  font-family: "CyGravellademo";
-  src: url("/font/gravellademoregular-0vkb9.otf") format("opentype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "CyBabynelista";
-  src: url("/font/babynelista-yy7x3.otf") format("opentype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "CyMardigras";
-  src: url("/font/mardigras-7oyal.otf") format("opentype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "CyOatewcute";
-  src: url("/font/oatewcute-bldz3.otf") format("opentype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "CyYowink";
-  src: url("/font/yowink-vgxwz.ttf") format("truetype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Cybronsuldemo";
-  src: url("/font/bronsuldemo-dr3wk.ttf") format("truetype");
+  font-family: "TemplateInstrument";
+  src: url("/font/instrument-serif-400.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -90,14 +60,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: "TemplateInstrument", Georgia, serif;
   --font-mono: var(--font-mono);
-  --font-cy-gravellademo: "CyGravellademo", system-ui, sans-serif;
-  --font-cy-babynelista: "CyBabynelista", system-ui, sans-serif;
-  --font-cy-mardigras: "CyMardigras", system-ui, sans-serif;
-  --font-cy-oatewcute: "CyOatewcute", system-ui, sans-serif;
-  --font-cy-yowink: "CyYowink", system-ui, sans-serif;
-  --font-cy-bronsuldemo:"Cybronsuldemo", system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -248,7 +212,7 @@
   
   /* 自定义字体样式 - Optimized to use Poppins as primary */
   .font-poppins {
-    font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+    font-family: "TemplateInstrument", Georgia, serif;
   }
   
   /* Fallback for other font classes - use Poppins or system fonts */
@@ -256,7 +220,7 @@
   .font-nunito,
   .font-baloo,
   .font-playfair {
-    font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+    font-family: "TemplateInstrument", Georgia, serif;
   }
   
   /* UI风格 */

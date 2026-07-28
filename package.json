@@ -6,11 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "cy": "node scripts/cy-generate.mjs",
-    "cy:check": "node scripts/cy-generate.mjs",
-    "cy:custom": "node scripts/cy-generate.mjs",
-    "cy:check:custom": "node scripts/cy-generate.mjs"
+    "lint": "next lint"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.17.0",

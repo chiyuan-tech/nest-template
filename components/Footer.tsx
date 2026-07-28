@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { FriendLink } from '../lib/server-api';
 import { siteConfig, contactConfig } from '@/website-config';
 
@@ -36,6 +37,7 @@ export function Footer({ friendlyLinks = [] }: FooterProps) {
           {/* Logo & Copyright */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-4">
+              <Image src="/logo.webp" alt="" width={32} height={32} className="h-8 w-8 rounded-md object-contain" />
               <span className="font-poppins text-xl font-bold text-primary">
                 {siteConfig.name}
               </span>
@@ -70,14 +72,8 @@ export function Footer({ friendlyLinks = [] }: FooterProps) {
                   Home
                 </Link>
               </li>
-              <li>
-                <Link 
-                  href="/blog"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                >
-                  Blog
-                </Link>
-              </li>
+              <li><Link href="#how-to-use" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm">How to Use</Link></li>
+              <li><Link href="/pricing" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm">Pricing</Link></li>
             </ul>
           </div>
           

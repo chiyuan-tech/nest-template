@@ -1,57 +1,22 @@
-# llms.txt for https://www.infinitetalk.net
-# This file provides guidance to LLM crawlers on allowed content
-# Updated: Added InfiniteTalk Multi page support
+# llms.txt
 
-# -------------------------------------
-# ✅ Website Information
-Website: https://www.infinitetalk.net
-Name: InfiniteTalk AI
-Description: InfiniteTalk AI is an advanced audio-driven video generation platform that creates infinite-length talking videos from any video or image. Features accurate lip synchronization, natural full-body motion, and consistent identity preservation powered by sparse-frame video dubbing technology.
+Website information is generated from the project's immutable keyword and homepage SEO copy map.
 
-# -------------------------------------
-# ✅ Core Content Sections (based on actual page structure)
-Allow: /#hero
-Allow: /#getting-started
-Allow: /#key-features
-Allow: /#quick-inference-tips
-Allow: /#use-cases
-Allow: /#comparisons
-Allow: /#tech-highlights
-Allow: /#faqs
-Allow: /blog
-Allow: /blog/*
-Allow: /infinitetalk-multi
+## Public content
 
-# -------------------------------------
-# ✅ Important Legal Pages
+Allow: /
+Allow: /pricing
 Allow: /terms
 Allow: /privacy
 
-# -------------------------------------
-# ❌ Disallowed API or Internal Paths (implicitly via robots.txt)
+## Crawler guidance
+
+- The homepage is the primary product explanation, feature, workflow, FAQ, and conversion resource.
+- Generated metadata, structured data, captions, and media descriptions must match the visible homepage copy.
+- The final brand assets are `/logo.webp`, `/favicon.ico`, and `/share-img.png`.
+
 Disallow: /api/
 Disallow: /admin/
 Disallow: /sign-in
 Disallow: /sign-up
 Disallow: /profile
-
-# -------------------------------------
-# 📌 Sitemap for better discovery
-Sitemap: https://www.infinitetalk.net/sitemap.xml
-
-# -------------------------------------
-# 🎯 Key Features to Highlight (from actual content)
-# - Sparse-frame video dubbing technology
-# - Audio-driven full-body animation
-# - Infinite-length video generation
-# - Identity and scene preservation
-# - Support for both video-to-video and image-to-video
-# - 480p/720p output resolutions
-# - Lip synchronization accuracy
-# - Natural motion generation
-# - Global dubbing/localization use cases
-# - Creator workflows and studio pipelines
-# - Multi-character lip-sync technology (InfiniteTalk Multi)
-# - Two-speaker support for conversations and duets
-# - Podcast and interview video generation
-# - Educational content creation
