@@ -1,0 +1,15 @@
+"use client";
+import { TestimonialGridCase1 } from "@/components/cy/UsersSay/testimonial_grid_case1";
+import { TestimonialGridCase2 } from "@/components/cy/UsersSay/testimonial_grid_case2";
+import { TestimonialGridCase3 } from "@/components/cy/UsersSay/testimonial_grid_case3";
+import type { TestimonialGridCase1Data, TestimonialGridCase2Data, TestimonialGridCase3Data } from "@/components/cy/UsersSay/types";
+import cyModulesConfig from "@/components/cy/cy-modules.config.json";
+import { CyModuleDemo, type CyDemoDefinition } from "@/components/cy/studio/CyModuleDemo";
+import { defaultCyTitleLayoutByModuleKey } from "@/components/cy/headerLayout/cy-title-layout.config";
+import { testimonialGridDemoDataFieldDocSections, testimonialGridDemoFieldDocsLayoutPath, testimonialGridDemoFieldDocsTypesPath, type TestimonialGridDemoPreviewKey } from "@/components/cy/UsersSay/TestimonialGridDemo.data";
+const definitions: readonly CyDemoDefinition<TestimonialGridDemoPreviewKey>[] = [
+  { key: "TestimonialGridCase1", title: "TestimonialGridCase1", sourceFilePath: "@/components/cy/UsersSay/testimonial_grid_case1.tsx", usageCode: "import { TestimonialGridCase1 } from '@/components/cy/UsersSay/testimonial_grid_case1';", docs: testimonialGridDemoDataFieldDocSections.TestimonialGridCase1, defaultTitleLayout: defaultCyTitleLayoutByModuleKey.TestimonialGridCase1, render: ({ refreshVersion, titleLayout }) => <TestimonialGridCase1 key={`TestimonialGridCase1-${refreshVersion}-${titleLayout}`} data={{ ...(cyModulesConfig.TestimonialGridCase1 as TestimonialGridCase1Data), titleLayout }} /> },
+  { key: "TestimonialGridCase2", title: "TestimonialGridCase2", sourceFilePath: "@/components/cy/UsersSay/testimonial_grid_case2.tsx", usageCode: "import { TestimonialGridCase2 } from '@/components/cy/UsersSay/testimonial_grid_case2';", docs: testimonialGridDemoDataFieldDocSections.TestimonialGridCase2, defaultTitleLayout: defaultCyTitleLayoutByModuleKey.TestimonialGridCase2, render: ({ refreshVersion, titleLayout }) => <TestimonialGridCase2 key={`TestimonialGridCase2-${refreshVersion}-${titleLayout}`} data={{ ...(cyModulesConfig.TestimonialGridCase2 as TestimonialGridCase2Data), titleLayout }} /> },
+  { key: "TestimonialGridCase3", title: "TestimonialGridCase3", sourceFilePath: "@/components/cy/UsersSay/testimonial_grid_case3.tsx", usageCode: "import { TestimonialGridCase3 } from '@/components/cy/UsersSay/testimonial_grid_case3';", docs: testimonialGridDemoDataFieldDocSections.TestimonialGridCase3, defaultTitleLayout: defaultCyTitleLayoutByModuleKey.TestimonialGridCase3, render: ({ refreshVersion, titleLayout }) => <TestimonialGridCase3 key={`TestimonialGridCase3-${refreshVersion}-${titleLayout}`} data={{ ...(cyModulesConfig.TestimonialGridCase3 as TestimonialGridCase3Data), titleLayout }} /> }
+];
+export function TestimonialGridDemo() { return <CyModuleDemo definitions={definitions} typesPathLabel={testimonialGridDemoFieldDocsTypesPath} layoutPathLabel={testimonialGridDemoFieldDocsLayoutPath} />; }

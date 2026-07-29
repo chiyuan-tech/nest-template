@@ -90,6 +90,21 @@ const nextConfig: NextConfig = {
         hostname: 'cf.framepola.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cfsource.seedancepro.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cysource.gptimage.tools',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cysource.seedancepro.com',
+        pathname: '/**',
+      },
     ],
   },
   // Headers 优化缓存

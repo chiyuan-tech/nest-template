@@ -1,0 +1,20 @@
+{
+  "modules": {
+    "VideoHeroCase1": { "componentPath": "@/components/cy/HeroSection/video/videoHero_case1", "category": "hero" },
+    "VideoHeroCase2": { "componentPath": "@/components/cy/HeroSection/video/videoHero_case2", "category": "hero" },
+    "VideoHeroCase3": { "componentPath": "@/components/cy/HeroSection/video/videoHero_case3", "category": "hero" },
+    "ImageHeroCase1": { "componentPath": "@/components/cy/HeroSection/image/imageHero_case1", "category": "hero" },
+    "ImageHeroCase2": { "componentPath": "@/components/cy/HeroSection/image/imageHero_case2", "category": "hero" },
+    "KeyFeatureCase1": { "componentPath": "@/components/cy/KeyFeature/keyfeatureCase_1", "category": "features" },
+    "KeyFeatureCase2": { "componentPath": "@/components/cy/KeyFeature/keyfeatureCase_2", "category": "features" },
+    "UseCasesGalleryCase1": { "componentPath": "@/components/cy/UseCases/use_cases_gallery_case1", "category": "use-cases" },
+    "FaqCase1": { "componentPath": "@/components/cy/FAQ/faq_case1", "category": "faq" },
+    "TestimonialGridCase1": { "componentPath": "@/components/cy/UsersSay/testimonial_grid_case1", "category": "testimonials" },
+    "TestimonialGridCase2": { "componentPath": "@/components/cy/UsersSay/testimonial_grid_case2", "category": "testimonials" },
+    "TestimonialGridCase3": { "componentPath": "@/components/cy/UsersSay/testimonial_grid_case3", "category": "testimonials" },
+    "HowToStepsCase1": { "componentPath": "@/components/cy/HowToSteps/how_to_steps_case1", "category": "how-to" },
+    "ComparisonTableCase1": { "componentPath": "@/components/cy/Comparison/comparison_table_case1", "category": "comparison" },
+    "PricingCase1": { "componentPath": "@/components/cy/Pricing/pricing_case1", "category": "pricing" },
+    "PricingCase2": { "componentPath": "@/components/cy/Pricing/pricing_case2", "category": "pricing" }
+  }
+}
