@@ -8,23 +8,27 @@ import { UserProvider } from '@/lib/providers';
 import dynamic from 'next/dynamic';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
 import { ScrollRevealInit } from '@/components/animations/ScrollRevealInit';
-import { siteUrl } from '@/website-config';
+import { getPageTdk, siteConfig, siteUrl, websiteConfig } from '@/website-config';
+const tdk = getPageTdk('/');
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  title: tdk.title,
+  description: tdk.description,
+  keywords: tdk.keywords,
+  alternates: { canonical: websiteConfig.canonical.url },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
   icons: {
     icon: [
-      { url: '/logo.webp', type: 'image/webp' },
       { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
     ],
-    apple: '/logo.webp',
-    shortcut: '/logo.webp',
+    apple: '/favicon.ico',
+    shortcut: '/favicon.ico',
   },
   openGraph: {
-    images: ['/share-img.png'],
+    title: tdk.title, description: tdk.description, url: websiteConfig.canonical.url, siteName: siteConfig.name, locale: 'en_US', type: 'website', images: [{ url: '/share-img.png', width: 1200, height: 630, alt: `${siteConfig.name} share image` }],
   },
   twitter: {
-    card: 'summary_large_image',
-    images: ['/share-img.png'],
+    card: 'summary_large_image', title: tdk.title, description: tdk.description, images: ['/share-img.png'],
   },
 };
 

@@ -36,8 +36,8 @@ export function Footer({ friendlyLinks = [] }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo & Copyright */}
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center space-x-2 mb-4">
-              <Image src="/logo.webp" alt="" width={32} height={32} className="h-8 w-8 rounded-md object-contain" />
+            <Link href="/" aria-label={`${siteConfig.name} home`} className="flex items-center space-x-2 mb-4">
+              <Image src="/logo.webp" alt={`${siteConfig.name} logo`} width={32} height={32} className="h-8 w-8 rounded-md object-contain" />
               <span className="font-poppins text-xl font-bold text-primary">
                 {siteConfig.name}
               </span>

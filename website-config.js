@@ -1,8 +1,10 @@
+import { generatedSiteIdentity } from './site-identity.generated';
+
 /**
  * Website Configuration
  * Central configuration file for public website settings
  */
-const HTTPSNAME = 'ltxai.app'
+const HTTPSNAME = generatedSiteIdentity.domain;
 export const websiteConfig = {
   // Contact Information
   contact: {
@@ -35,9 +37,9 @@ export const websiteConfig = {
   // Page TDK (Title ≤60, Description ≤160, Keywords total <100) – import in app via getPageTdk(path)
   pageTdk: {
     '/': {
-      title: 'AI Video Generation Platform',
-      description: 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.',
-      keywords: ['AI video generation', 'talking video', 'video dubbing', 'lip sync'],
+      title: generatedSiteIdentity.pageTdk.title,
+      description: generatedSiteIdentity.pageTdk.description,
+      keywords: generatedSiteIdentity.pageTdk.keywords,
     },
     '/payment-failed': {
       title: 'Payment Failed',
@@ -181,7 +183,7 @@ export const SITE_NAME = 'LTX AI'; //关键词名称
 export const SITE_DESCRIPTION = 'Ltx 2.3 AI Video Generator creates sharp AI videos with cleaner audio, native portrait mode, stronger motion, and fast production-ready workflows.'; //关键词描述
 
 // Backward compatibility: siteConfig for components that use siteConfig.name / siteConfig.description
-export const siteConfig = { name: SITE_NAME, description: SITE_DESCRIPTION };
+export const siteConfig = { name: generatedSiteIdentity.name, description: generatedSiteIdentity.description };
 
 // Page TDK – use in app: import { getPageTdk } from '@/website-config'; const tdk = getPageTdk('/');
 export const pageTdk = websiteConfig.pageTdk;
