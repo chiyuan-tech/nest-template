@@ -1,6 +1,7 @@
 import './globals.css'
 import Script from 'next/script';
 import type { Metadata } from 'next';
+import type { CSSProperties } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { ToastProvider } from '@/components/ui/toast-provider';
@@ -9,6 +10,7 @@ import dynamic from 'next/dynamic';
 import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
 import { ScrollRevealInit } from '@/components/animations/ScrollRevealInit';
 import { getPageTdk, siteConfig, siteUrl, websiteConfig } from '@/website-config';
+import { templateFontPair } from './template-font-pair.generated';
 const tdk = getPageTdk('/');
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -47,7 +49,11 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning style={{
+      '--font-template-body': templateFontPair.body,
+      '--font-template-display': templateFontPair.display,
+      '--font-template-mono': templateFontPair.mono,
+    } as CSSProperties}>
       <head>
 
         <link rel="preconnect" href="https://v1.cnzz.com" crossOrigin="" />
