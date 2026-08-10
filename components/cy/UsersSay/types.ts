@@ -31,6 +31,8 @@ export interface TestimonialGridCase2Item {
   role: string;
   location: string;
   avatar: string;
+  avatarKind?: "human-portrait";
+  avatarAlt?: string;
 }
 
 export interface TestimonialGridCase2Data {

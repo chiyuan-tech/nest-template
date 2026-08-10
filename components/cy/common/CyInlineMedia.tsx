@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type ImageProps = { variant: "image"; src: string; alt: string; className?: string; imgClassName?: string; loading?: "eager" | "lazy" };
@@ -21,18 +21,30 @@ function Image({ src, alt, className, imgClassName, loading = "lazy" }: ImagePro
 }
 
 function Video({ src, poster, className, videoClassName, videoDecoration }: VideoProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLVideoElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const isVisibleRef = useRef(false);
   useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry?.isIntersecting && entry.intersectionRatio >= 0.35) void video.play().catch(() => {});
-      else video.pause();
-    }, { threshold: [0, 0.35, 0.7] });
-    observer.observe(video);
-    return () => { observer.disconnect(); video.pause(); };
+    const root = rootRef.current;
+    if (!root) return;
+    const loadObserver = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) setShouldLoad(true);
+    }, { rootMargin: "280px 0px", threshold: 0 });
+    const playObserver = new IntersectionObserver(([entry]) => {
+      const visible = Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.25);
+      isVisibleRef.current = visible;
+      if (visible) void ref.current?.play().catch(() => {});
+      else ref.current?.pause();
+    }, { threshold: [0, 0.25, 0.7] });
+    loadObserver.observe(root);
+    playObserver.observe(root);
+    return () => { loadObserver.disconnect(); playObserver.disconnect(); ref.current?.pause(); };
   }, []);
-  return <div className={cn("relative h-full w-full min-h-0", className)}><video ref={ref} className={cn("relative z-0 h-full w-full object-cover", videoClassName)} src={src} poster={poster} muted playsInline loop preload="metadata" aria-label="Video preview" />{videoDecoration ? <div className="pointer-events-none absolute inset-0 z-[1]">{videoDecoration}</div> : null}</div>;
+  useEffect(() => {
+    if (shouldLoad && isVisibleRef.current) void ref.current?.play().catch(() => {});
+  }, [shouldLoad]);
+  return <div ref={rootRef} className={cn("relative h-full w-full min-h-0", className)} data-media-kind="video" data-video-src={src}><video ref={ref} className={cn("relative z-0 h-full w-full object-cover", videoClassName)} src={shouldLoad ? src : undefined} poster={poster} muted playsInline loop preload="none" aria-label="Video preview" onCanPlay={() => { if (isVisibleRef.current) void ref.current?.play().catch(() => {}); }} />{videoDecoration ? <div className="pointer-events-none absolute inset-0 z-[1]">{videoDecoration}</div> : null}</div>;
 }
 
 function Audio({ src, title, className }: AudioProps) {

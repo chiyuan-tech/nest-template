@@ -3,6 +3,7 @@ import type { CyTitleLayoutId } from "@/components/cy/headerLayout/cy-title-layo
 export interface HowToStepItem {
   name: string;
   image: string;
+  mediaIntent?: "product-input-ui" | "product-configuration-ui" | "product-result-review-ui";
   text: string;
 }
 

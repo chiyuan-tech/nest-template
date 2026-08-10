@@ -67,13 +67,73 @@ const FIRST_PAINT_PRELOAD_COUNT = 6;
 interface Item {
   id: string;
   img: string;
+  video?: string;
+  poster?: string;
+  alt?: string;
   url: string;
   height: number;
+  mediaWidth?: number;
+  mediaHeight?: number;
   title?: string;
   subtitle?: string;
   desc?: string;
   tags?: string[];
 }
+
+const LazyMasonryVideo: React.FC<{ item: Item; className?: string }> = ({ item, className = '' }) => {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const isVisibleRef = useRef(false);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !item.video || !item.poster) return;
+    const loadObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setShouldLoad(true);
+      },
+      { rootMargin: '280px 0px', threshold: 0 }
+    );
+    const playObserver = new IntersectionObserver(
+      ([entry]) => {
+        const visible = entry.isIntersecting && entry.intersectionRatio >= 0.2;
+        isVisibleRef.current = visible;
+        if (visible) void videoRef.current?.play().catch(() => undefined);
+        else videoRef.current?.pause();
+      },
+      { threshold: [0, 0.2, 0.7] }
+    );
+    loadObserver.observe(root);
+    playObserver.observe(root);
+    return () => { loadObserver.disconnect(); playObserver.disconnect(); };
+  }, [item.poster, item.video]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !shouldLoad || !isVisibleRef.current) return;
+    void video.play().catch(() => undefined);
+  }, [shouldLoad]);
+
+  return (
+    <div ref={rootRef} className={`relative h-full w-full bg-black ${className}`} data-media-kind="video" data-video-src={item.video} data-video-presentation="contain">
+      <video
+        ref={videoRef}
+        className="h-full w-full object-contain"
+        src={shouldLoad ? item.video : undefined}
+        poster={item.poster}
+        aria-label={item.alt || item.title || 'AI video example'}
+        muted
+        loop
+        playsInline
+        preload="none"
+        onCanPlay={() => {
+          if (isVisibleRef.current) void videoRef.current?.play().catch(() => undefined);
+        }}
+      />
+    </div>
+  );
+};
 
 interface GridItem extends Item {
   x: number;
@@ -179,7 +239,7 @@ const Masonry: React.FC<MasonryProps> = ({
   useEffect(() => {
     if (!hasEnteredViewport) return;
     let cancelled = false;
-    const urls = items.map(i => i.img);
+    const urls = items.map(i => i.poster || i.img);
     if (urls.length === 0) {
       setImagesReady(true);
       return;
@@ -217,7 +277,10 @@ const Masonry: React.FC<MasonryProps> = ({
     const gridItems = items.map(child => {
       const col = colHeights.indexOf(Math.min(...colHeights));
       const x = col * (columnWidth + gap);
-      const height = child.height / 2;
+      const hasIntrinsicRatio = Number(child.mediaWidth) > 0 && Number(child.mediaHeight) > 0;
+      const height = hasIntrinsicRatio
+        ? columnWidth * (Number(child.mediaHeight) / Number(child.mediaWidth))
+        : child.height / 2;
       const y = colHeights[col];
 
       colHeights[col] += height + gap;
@@ -387,9 +450,19 @@ const Masonry: React.FC<MasonryProps> = ({
             }}
           >
             <div
-              className="relative w-full h-full bg-cover bg-center rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] uppercase text-[10px] leading-[10px] transition-transform duration-300 hover:brightness-110"
-              style={{ backgroundImage: `url(${item.img})` }}
+              className="relative h-full w-full overflow-hidden rounded-[10px] bg-black shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] uppercase text-[10px] leading-[10px] transition-transform duration-300 hover:brightness-110"
+              data-media-source={item.video ? item.video : item.img}
             >
+              {item.video && item.poster ? <LazyMasonryVideo item={item} /> : null}
+              {!item.video ? (
+                <NextImage
+                  src={item.img}
+                  alt={item.alt || item.title || 'AI visual example'}
+                  fill
+                  sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 25vw"
+                  className="object-contain"
+                />
+              ) : null}
               <div className="pointer-events-none absolute inset-x-0 bottom-0 rounded-b-[10px] bg-gradient-to-t from-black/65 to-transparent p-3">
                 <p className="truncate text-[11px] font-semibold tracking-wide text-white">
                   {item.title || `Visual #${item.id}`}
@@ -428,7 +501,21 @@ const Masonry: React.FC<MasonryProps> = ({
 
               <div ref={modalImageRef} className="relative flex min-h-[280px] items-center justify-center bg-slate-950 md:min-h-[520px]">
                 <div className="relative h-[90%] w-[92%] rounded-4xl overflow-hidden">
-                  <NextImage src={activeItem.img} alt={activeItem.title || 'Preview'} fill sizes="(max-width: 768px) 90vw, 55vw" className="object-contain " />
+                  {activeItem.video && activeItem.poster ? (
+                    <video
+                      src={activeItem.video}
+                      poster={activeItem.poster}
+                      aria-label={activeItem.alt || activeItem.title || 'AI video example'}
+                      className="h-full w-full object-contain"
+                      controls
+                      autoPlay
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                  ) : (
+                    <NextImage src={activeItem.img} alt={activeItem.alt || activeItem.title || 'Preview'} fill sizes="(max-width: 768px) 90vw, 55vw" className="object-contain" />
+                  )}
                 </div>
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/60 via-transparent to-sky-500/20" />
               </div>
@@ -437,7 +524,7 @@ const Masonry: React.FC<MasonryProps> = ({
                 ref={modalContentRef}
                 className="flex max-h-[90vh] flex-col overflow-y-auto p-6 [scrollbar-width:thin] [scrollbar-color:rgba(56,189,248,0.65)_rgba(15,23,42,0.35)] md:p-8 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-sky-400/70 [&::-webkit-scrollbar-thumb:hover]:bg-sky-300/90 [&::-webkit-scrollbar-track]:bg-slate-800/40 [&::-webkit-scrollbar]:w-2"
               >
-                <p className="text-xs uppercase tracking-[0.2em] text-sky-300/80">Masonry Visual Showcase</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-sky-300/80">{activeItem.video ? 'AI Video Showcase' : 'Masonry Visual Showcase'}</p>
                 <h3 className="mt-3 text-2xl font-bold text-white md:text-3xl">
                   {activeItem.title || `Creative Sample ${activeItem.id}`}
                 </h3>
@@ -460,7 +547,7 @@ const Masonry: React.FC<MasonryProps> = ({
                   </div>
                   <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                     <p className="text-slate-400">Render Style</p>
-                    <p className="mt-1 text-base font-semibold text-white">Premium Detail</p>
+                    <p className="mt-1 text-base font-semibold text-white">{activeItem.video ? 'Motion clip' : 'Still image'}</p>
                   </div>
                 </div>
 

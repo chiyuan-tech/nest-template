@@ -41,13 +41,13 @@ export function HowToStepsCase1({ data }: HowToStepsCase1Props) {
           >
             <CardHeader>
               <CardTitle className="text-xl font-bold tracking-tight text-white">{step.name}</CardTitle>
-              <div className="mt-4 h-[300px] overflow-hidden rounded-xl bg-secondary/60">
+              <div className="mt-4 aspect-video overflow-hidden rounded-xl bg-black">
                 <Image
                   src={step.image}
                   alt={step.name}
                   width={960}
                   height={1800}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>

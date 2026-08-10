@@ -68,8 +68,9 @@ export function KeyFeatureCase1({ data }: KeyFeatureCase1Props) {
                       <CyInlineMedia
                         variant="video"
                         src={feature.video}
-                        poster={feature.videoPoster}
-                        className="absolute inset-0 h-full w-full"
+                      poster={feature.videoPoster}
+                      className="absolute inset-0 h-full w-full"
+                      videoClassName="object-contain"
                       />
                     ) : (
                       <CyInlineMedia
@@ -78,6 +79,7 @@ export function KeyFeatureCase1({ data }: KeyFeatureCase1Props) {
                         alt={feature.title}
                         loading={index < 2 ? "eager" : "lazy"}
                         className="absolute inset-0 h-full w-full"
+                        imgClassName="object-contain"
                       />
                     )}
                   </div>

@@ -72,6 +72,7 @@
     ]
   },
   "ImageHeroCase1": {
+    "headingLevel": "h1",
     "title": "GPT Image 2.0 Free GPT Image 2 Generator",
     "subtitle": "Create photorealistic images, posters, UI mockups, and multilingual visuals in seconds. GPT Image 2 helps you move from idea to production-ready assets without design bottlenecks.",
     "ctaButtons": [
@@ -95,6 +96,7 @@
     "liveBriefTail": "posters · film stills · manga · bilingual labels · product sets"
   },
   "ImageHeroCase2": {
+    "headingLevel": "h1",
     "title": "Seedream 4.5 Multi-Modal AI Image Generator & Editing",
     "badgeText": "ByteDance's Latest AI Model",
     "subtitle": "Create photorealistic images, posters, UI mockups, and multilingual visuals in seconds. GPT Image 2 helps you move from idea to production-ready assets without design bottlenecks.",

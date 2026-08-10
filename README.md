@@ -6,7 +6,7 @@ This template builds CY-composed SaaS homepages. The generated workflow uses com
 
 - Keep and render `Navbar`, `Footer`, and `PricingSection`.
 - `Home` and `How to Use` use homepage anchors; `Pricing` uses `/pricing`.
-- Use captured competitor font files when available, with the bundled Instrument Serif fallback.
+- Use the generated modern sans-serif typography stack. Instrument Serif and generic serif fallbacks are not part of the default page typography.
 - Use only user-uploaded `/logo.webp`, `/favicon.ico`, and `/share-img.png` as final brand assets.
 - CY component modules, their `/cy` demo routes, registry skill, generator script, configuration and documentation are supported in this template. Use `npm run cy:generate` to scaffold registered CY modules.
 

@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Keep an active dev server from racing with `next build` over the same output directory.
+  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
   // 性能优化
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', '@clerk/nextjs'],

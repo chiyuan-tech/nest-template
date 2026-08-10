@@ -9,6 +9,7 @@ import Image from 'next/image';
 
 export function ImageHeroCase2({ data }: { data: ImageHeroData }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const Heading = data.headingLevel === 'h2' ? 'h2' : 'h1';
 
   const slideCount = data.logoImages?.length ?? 0;
 
@@ -66,9 +67,9 @@ export function ImageHeroCase2({ data }: { data: ImageHeroData }) {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+          <Heading className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 78%, white) 52%, color-mix(in oklab, var(--primary) 72%, black) 100%)' }}>{data.title}</span>
-          </h1>
+          </Heading>
 
           {/* Subtitle */}
           <p className="text-xl md:text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">

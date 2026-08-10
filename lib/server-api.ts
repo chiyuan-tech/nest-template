@@ -89,6 +89,7 @@ export const serverCmsApi = {
       const response = await fetch(`${SERVER_API_CONFIG.VIDOR_AI_BASE}/api/cms/friendLinkList`, {
         method: 'GET',
         headers: getServerHeaders(),
+        signal: AbortSignal.timeout(8000),
         // 使用缓存，允许静态生成
         next: { revalidate: 60 }, // 1小时重新验证
       });
@@ -116,6 +117,7 @@ export const serverCmsApi = {
         {
           method: 'GET',
           headers: getServerHeaders(),
+          signal: AbortSignal.timeout(8000),
           // 使用缓存，允许静态生成 sitemap（1小时重新验证）
           next: { revalidate: 3600 },
         }
@@ -163,6 +165,7 @@ export const serverCmsApi = {
         {
           method: 'GET',
           headers: getServerHeaders(),
+          signal: AbortSignal.timeout(8000),
           // 禁用缓存，每次都获取最新数据
           cache: 'no-store',
         }
@@ -193,6 +196,7 @@ export const serverCmsApi = {
         {
           method: 'GET',
           headers: getServerHeaders(),
+          signal: AbortSignal.timeout(8000),
           // 短期缓存，5分钟重新验证
           next: { revalidate: 300 },
         }

@@ -15,6 +15,7 @@ export interface ImageHeroProps {
 export function ImageHeroCase1({ data }: ImageHeroProps) {
   const ctaButtons = (data.ctaButtons ?? []).slice(0, 2);
   const chips = data.featureChips ?? [];
+  const Heading = data.headingLevel === 'h2' ? 'h2' : 'h1';
 
   return (
     <section
@@ -24,7 +25,7 @@ export function ImageHeroCase1({ data }: ImageHeroProps) {
       <div className="flex flex-col items-center text-center md:items-start md:text-left">
         <div className="mb-10 flex flex-col items-center gap-4 md:items-start">
           <div className="max-w-5xl">
-            <h1 className="text-4xl font-extrabold tracking-tight text-white md:text-6xl">
+            <Heading className="text-4xl font-extrabold tracking-tight text-white md:text-6xl">
               <span
                 className="bg-clip-text text-transparent"
                 style={{
@@ -34,7 +35,7 @@ export function ImageHeroCase1({ data }: ImageHeroProps) {
               >
                 {data.title}
               </span>
-            </h1>
+            </Heading>
           </div>
         </div>
 

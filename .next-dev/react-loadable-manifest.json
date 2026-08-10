@@ -1,0 +1,50 @@
+{
+  "components\\auth\\auth-button.tsx -> ../nav/user-profile-menu": {
+    "id": "components\\auth\\auth-button.tsx -> ../nav/user-profile-menu",
+    "files": []
+  },
+  "components\\home\\Hero.tsx -> @/components/generator-common/generator": {
+    "id": "components\\home\\Hero.tsx -> @/components/generator-common/generator",
+    "files": [
+      "static/chunks/_app-pages-browser_components_generator-common_generator_tsx.js"
+    ]
+  },
+  "components\\nav\\NavClient.tsx -> ./nav-auth-island": {
+    "id": "components\\nav\\NavClient.tsx -> ./nav-auth-island",
+    "files": [
+      "static/chunks/_app-pages-browser_components_nav_nav-auth-island_tsx.js"
+    ]
+  },
+  "components\\nav\\nav-auth-island.tsx -> ./user-profile-menu": {
+    "id": "components\\nav\\nav-auth-island.tsx -> ./user-profile-menu",
+    "files": []
+  },
+  "components\\nav\\user-profile-menu.tsx -> ./user-profile-menu": {
+    "id": "components\\nav\\user-profile-menu.tsx -> ./user-profile-menu",
+    "files": []
+  },
+  "node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\ClerkProvider.js -> ./keyless-creator-reader.js": {
+    "id": "node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\ClerkProvider.js -> ./keyless-creator-reader.js",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_clerk_nextjs_dist_esm_app-router_client_keyless-creator-reader_js.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\components\\react-dev-overlay\\utils\\use-websocket.js -> @vercel/turbopack-ecmascript-runtime/browser/dev/hmr-client/hmr-client.ts": {
+    "id": "node_modules\\next\\dist\\client\\components\\react-dev-overlay\\utils\\use-websocket.js -> @vercel/turbopack-ecmascript-runtime/browser/dev/hmr-client/hmr-client.ts",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_next_dist_client_dev_noop-turbopack-hmr_js.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": "node_modules\\next\\dist\\client\\index.js -> ../pages/_app",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_next_dist_pages__app_js.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": "node_modules\\next\\dist\\client\\index.js -> ../pages/_error",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_next_dist_pages__error_js.js"
+    ]
+  }
+}
