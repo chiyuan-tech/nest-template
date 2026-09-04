@@ -1,50 +1,8 @@
 'use client';
 
 import { useUser, useClerk } from '@clerk/nextjs';
-import type { UserResource } from '@clerk/types';
+import dynamic from 'next/dynamic';
 import { Button } from '../../components/ui/button';
-import { ComponentType, useEffect, useState } from 'react';
-
-type UserMenuComponent = ComponentType<{ user: UserResource }>;
-
-let CachedUserMenu: UserMenuComponent | null = null;
-let prewarmPromise: Promise<UserMenuComponent | null> | null = null;
-
-function loadUserMenu(): Promise<UserMenuComponent | null> {
-  if (CachedUserMenu) {
-    return Promise.resolve(CachedUserMenu);
-  }
-  if (prewarmPromise) {
-    return prewarmPromise;
-  }
-
-  prewarmPromise = import('../nav/user-profile-menu')
-    .then((m) => {
-      CachedUserMenu = m.default;
-      return CachedUserMenu;
-    })
-    .catch((error) => {
-      console.warn('[AuthButton] Failed to load user-profile-menu:', error);
-      prewarmPromise = null;
-      return null;
-    });
-
-  return prewarmPromise;
-}
-
-function schedulePrewarm() {
-  if (CachedUserMenu || prewarmPromise) return;
-
-  const run = () => {
-    void loadUserMenu();
-  };
-
-  if (typeof requestIdleCallback !== 'undefined') {
-    requestIdleCallback(run, { timeout: 1200 });
-  } else {
-    setTimeout(run, 1200);
-  }
-}
 
 function AuthSkeleton() {
   return (
@@ -54,49 +12,25 @@ function AuthSkeleton() {
   );
 }
 
+const UserProfileMenu = dynamic(() => import('../nav/user-profile-menu'), {
+  ssr: false,
+  loading: () => <AuthSkeleton />,
+});
+
 export default function AuthButton() {
   const { isSignedIn, user, isLoaded } = useUser();
   const { openSignIn } = useClerk();
-  const [UserMenu, setUserMenu] = useState<UserMenuComponent | null>(
-    () => CachedUserMenu
-  );
-  const [menuLoadFailed, setMenuLoadFailed] = useState(false);
-
-  useEffect(() => {
-    schedulePrewarm();
-  }, []);
-
-  useEffect(() => {
-    if (!isSignedIn || UserMenu) return;
-
-    let cancelled = false;
-    void loadUserMenu().then((mod) => {
-      if (cancelled) return;
-      if (mod) {
-        setUserMenu(() => mod);
-        setMenuLoadFailed(false);
-      } else {
-        setMenuLoadFailed(true);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isSignedIn, UserMenu]);
 
   if (!isLoaded) {
     return <AuthSkeleton />;
   }
 
-  if (isSignedIn && user) {
-    if (UserMenu) {
-      return <UserMenu user={user} />;
-    }
-    if (menuLoadFailed) {
+  // Signed-in: never fall through to the Login button (user may lag one frame).
+  if (isSignedIn) {
+    if (!user) {
       return <AuthSkeleton />;
     }
-    return <AuthSkeleton />;
+    return <UserProfileMenu user={user} />;
   }
 
   const handleLoginClick = () => {
