@@ -14,9 +14,12 @@ function decodeBase64(value: string) {
   return '';
 }
 
+/** Pin to clerk-js 5.x matching @clerk/nextjs 6.17 / clerk-react 5.x — never use @latest. */
+const CLERK_JS_VERSION = '5.62.0';
+
 const frontendApi = publishableKey ? decodeBase64(publishableKey.split('_')[2] || '').replace(/\$$/, '') : '';
 const clerkJSUrl = frontendApi
-  ? `https://${frontendApi}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`
+  ? `https://${frontendApi}/npm/@clerk/clerk-js@${CLERK_JS_VERSION}/dist/clerk.browser.js`
   : undefined;
 
 export default function ClerkProviderWithLocale({
@@ -28,6 +31,7 @@ export default function ClerkProviderWithLocale({
     <ClerkProvider
       publishableKey={publishableKey}
       clerkJSUrl={clerkJSUrl}
+      clerkJSVersion={CLERK_JS_VERSION}
       appearance={{
         layout: {
           socialButtonsVariant: 'iconButton',

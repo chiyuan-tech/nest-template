@@ -2,6 +2,7 @@
 
 import { useUser } from '@clerk/nextjs';
 import { lazy, Suspense, useEffect, useState } from 'react';
+import AuthErrorBoundary from './auth-error-boundary';
 
 const GoogleOneTap = lazy(() =>
   import('@clerk/nextjs').then((mod) => ({ default: mod.GoogleOneTap }))
@@ -85,8 +86,10 @@ export default function GoogleOneTapAuth({
   }
 
   return (
-    <Suspense fallback={null}>
-      <GoogleOneTap {...googleOneTapProps} />
-    </Suspense>
+    <AuthErrorBoundary name="GoogleOneTapAuth">
+      <Suspense fallback={null}>
+        <GoogleOneTap {...googleOneTapProps} />
+      </Suspense>
+    </AuthErrorBoundary>
   );
 }
