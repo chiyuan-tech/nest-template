@@ -60,7 +60,7 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
           <div className="pt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 宸︿晶锛氬獟浣撴挱鏀惧櫒 */}
             <div className="flex flex-col justify-center space-y-3">
-              <div className="aspect-video overflow-hidden rounded bg-[#141413]">
+              <div className="aspect-video overflow-hidden rounded bg-[#141413] relative">
                 {isVideoFile(videoDetail.generate_image) ? (
                   <video
                     src={videoDetail.generate_image}
