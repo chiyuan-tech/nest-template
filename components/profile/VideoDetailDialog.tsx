@@ -37,10 +37,23 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
 
   if (!videoDetail) return null;
 
+  const getMediaInfoFromUrl = (url: string): { kind: 'video' | 'image' | 'media'; extension: string } => {
+    const cleanUrl = url.split('?')[0].split('#')[0].toLowerCase();
+    const extMatch = cleanUrl.match(/\.([a-z0-9]+)$/);
+    const ext = extMatch?.[1];
+    const videoExtSet = new Set(['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv', 'wmv', 'm4v']);
+    const imageExtSet = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
+
+    if (ext && videoExtSet.has(ext)) return { kind: 'video', extension: ext };
+    if (ext && imageExtSet.has(ext)) return { kind: 'image', extension: ext };
+    return { kind: 'media', extension: ext || 'bin' };
+  };
+
   const handleDownload = () => {
+    const mediaInfo = getMediaInfoFromUrl(videoDetail.generate_image);
     downloadMediaWithCors(
       videoDetail.generate_image,
-      `video-${videoDetail.id}.mp4`,
+      `${mediaInfo.kind}-${videoDetail.id}.${mediaInfo.extension}`,
       setIsDownloading,
       videoDetail.id,
       toast.showToast
@@ -92,7 +105,7 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
                 {/* 涓嬭浇鎸夐挳 */}
                 <Button
                   onClick={handleDownload}
-                  className="flex-1 flex items-center justify-center gap-2 min-w-[120px]"
+                  className="cursor-pointer flex-1 flex items-center justify-center gap-2 min-w-[120px]"
                   disabled={isDownloading === videoDetail.id}
                 >
                   {isDownloading === videoDetail.id ? (
