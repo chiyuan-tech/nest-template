@@ -37,17 +37,27 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
 
   if (!videoDetail) return null;
 
-  const getMediaInfoFromUrl = (url: string): { kind: 'video' | 'image' | 'media'; extension: string } => {
+  const getMediaInfoFromUrl = (url: string): { kind: 'video' | 'image' | 'audio' | 'media'; extension: string } => {
     const cleanUrl = url.split('?')[0].split('#')[0].toLowerCase();
     const extMatch = cleanUrl.match(/\.([a-z0-9]+)$/);
     const ext = extMatch?.[1];
     const videoExtSet = new Set(['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv', 'wmv', 'm4v']);
     const imageExtSet = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
+    const audioExtSet = new Set(['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma']);
 
     if (ext && videoExtSet.has(ext)) return { kind: 'video', extension: ext };
     if (ext && imageExtSet.has(ext)) return { kind: 'image', extension: ext };
+    if (ext && audioExtSet.has(ext)) return { kind: 'audio', extension: ext };
     return { kind: 'media', extension: ext || 'bin' };
   };
+
+  const dialogTitle = (() => {
+    const mediaInfo = getMediaInfoFromUrl(videoDetail.generate_image);
+    if (mediaInfo.kind === 'image') return 'Image Details';
+    if (mediaInfo.kind === 'audio') return 'Audio Details';
+    if (mediaInfo.kind === 'video') return 'Video Details';
+    return 'Media Details';
+  })();
 
   const handleDownload = () => {
     const mediaInfo = getMediaInfoFromUrl(videoDetail.generate_image);
@@ -67,7 +77,7 @@ export function VideoDetailDialog({ open, onOpenChange, videoDetail, onDeleteSuc
           className="max-h-[90vh] w-[95vw] max-w-[95vw] overflow-y-auto rounded border border-border bg-card/95 shadow-sm backdrop-blur-xl lg:max-w-6xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted/50 [&::-webkit-scrollbar-thumb]:hover:bg-muted [&::-webkit-scrollbar-track]:bg-transparent"
         >
           <DialogHeader className="pb-4 border-b border-border">
-            <DialogTitle className="text-2xl font-semibold text-card-foreground">Video Details</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold text-card-foreground">{dialogTitle}</DialogTitle>
           </DialogHeader>
 
           <div className="pt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
