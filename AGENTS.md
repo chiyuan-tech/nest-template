@@ -17,11 +17,9 @@ Skill stack when building or editing pages / layouts / sections / UI (load befor
 | Brand tokens | `desgin.md` | Always for visual work |
 | Frontend engineering & taste | `.codex/skills/design-taste-frontend-v1/SKILL.md` | Always for visible frontend markup or styles |
 | Page style / layout craft | `.codex/skills/gpt-taste/SKILL.md` | **Must** for page-level style development (hero, sections, spacing, grids, AIDA structure) |
-| GSAP in React | `.codex/skills/gsap-react/SKILL.md` | **As needed**—only when adding or editing GSAP / `useGSAP` / ScrollTrigger motion |
 
 - Do not skip `design-taste-frontend-v1` or `gpt-taste` for “small” UI/page style changes if markup or styles are touched.
 - `desgin.md` wins on brand direction (colors, CTAs, Framer dark marketing look). `design-taste-frontend-v1` and `gpt-taste` constrain engineering and page craft; when they conflict with `desgin.md`, follow `desgin.md`.
-- Prefer CSS / existing motion patterns first; load `gsap-react` when the task needs GSAP (or when `gpt-taste` selects GSAP paradigms that you actually implement).
 
 ## Verification
 
