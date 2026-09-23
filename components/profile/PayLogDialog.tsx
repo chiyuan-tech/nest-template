@@ -166,7 +166,7 @@ export function PayLogDialog({ open, onOpenChange, onOpenInvoiceDialog }: PayLog
                           <tr key={item.id} className={dialogTable.row}>
                             <td className={`${dialogTable.cell} text-muted-foreground min-w-[120px]`}>{formatTimestamp(item.created_at)}</td>
                             <td className={`${dialogTable.cell} min-w-[80px]`}>
-                              {formatPaymentAmount(item.amount)}
+                              ${formatPaymentAmount(item.amount)}
                             </td>
                             <td className={`${dialogTable.cell} text-card-foreground hidden sm:table-cell min-w-[90px]`}>{item.currency}</td>
                             <td className={`${dialogTable.cell} text-card-foreground hidden sm:table-cell min-w-[110px]`}>{item.pay_type}</td>
