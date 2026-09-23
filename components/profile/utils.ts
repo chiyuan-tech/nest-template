@@ -92,6 +92,18 @@ export const formatPrice = (price: number): string => {
   return `$${price.toFixed(2)}`;
 };
 
+// Payment log amounts are returned by the API in the currency's minor unit
+// (for USD, cents). Keep this conversion aligned with InvoiceDialog.
+export const formatPaymentAmount = (amount: number): string => {
+  const normalizedAmount = Number(amount);
+  const majorUnitAmount = Number.isFinite(normalizedAmount) ? normalizedAmount / 100 : 0;
+
+  return `$${majorUnitAmount.toLocaleString('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
 
 
 // 下载媒体文件（带CORS处理）

@@ -19,7 +19,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Link from 'next/link';
-import { ReloadIcon, EyeOpenIcon } from '@radix-ui/react-icons';
+import { ExclamationTriangleIcon, ReloadIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { api } from '@/lib/api';
 import { 
   PayLogDialog, 
@@ -595,7 +595,7 @@ export default function ProfilePage() {
                                 <div className="w-full h-full bg-gradient-to-br from-red-500/10 to-red-600/20 flex flex-col items-center justify-center border-2 border-dashed border-red-300/50">
                                   <div className="text-center p-4">
                                     <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                                      <span className="text-red-400 text-2xl">鈿狅笍</span>
+                                      <ExclamationTriangleIcon className="h-6 w-6 text-red-400" aria-hidden="true" />
                                     </div>
                                     <p className="text-red-400 font-semibold text-sm mb-1">Generation Failed</p>
                                     <p className="text-red-300/70 text-xs">Please try again</p>
