@@ -14,6 +14,7 @@ interface GoogleOneTapAuthProps {
   fedCmSupport?: boolean;
   signInForceRedirectUrl?: string;
   signUpForceRedirectUrl?: string;
+  onError?: (error: Error) => void;
 }
 
 export default function GoogleOneTapAuth({
@@ -22,6 +23,7 @@ export default function GoogleOneTapAuth({
   fedCmSupport = false,
   signInForceRedirectUrl,
   signUpForceRedirectUrl,
+  onError,
 }: GoogleOneTapAuthProps) {
   const { isSignedIn } = useUser();
   const [isMounted, setIsMounted] = useState(false);
@@ -86,7 +88,7 @@ export default function GoogleOneTapAuth({
   }
 
   return (
-    <AuthErrorBoundary name="GoogleOneTapAuth">
+    <AuthErrorBoundary name="GoogleOneTapAuth" onError={onError}>
       <Suspense fallback={null}>
         <GoogleOneTap {...googleOneTapProps} />
       </Suspense>

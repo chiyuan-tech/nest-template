@@ -1,11 +1,10 @@
 'use client';
 
-import { AuthenticateWithRedirectCallback } from '@clerk/nextjs';
-import { useSearchParams } from 'next/navigation';
+import { useAppAuth } from '@/components/auth/auth-provider';
+import { AuthUnavailable } from '@/components/auth/auth-unavailable';
 
 export default function SSOCallbackPage() {
-  const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect_url') || '/';
+  const { status } = useAppAuth();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -21,11 +20,12 @@ export default function SSOCallbackPage() {
 
         {/* Loading text with fade animation */}
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-white">Completing sign in...</h2>
-          <p className="text-sm text-gray-400">Please wait while we redirect you</p>
+          {status === 'unavailable' ? <AuthUnavailable /> : <>
+            <h2 className="text-xl font-semibold text-white">Completing sign in...</h2>
+            <p className="text-sm text-gray-400">Please wait while we redirect you</p>
+          </>}
         </div>
 
-        <AuthenticateWithRedirectCallback signInForceRedirectUrl={redirectUrl} signUpForceRedirectUrl={redirectUrl} />
         {/* Required for sign-up flows - Clerk's bot sign-up protection is enabled by default */}
         <div id="clerk-captcha" />
 

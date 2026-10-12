@@ -1,5 +1,6 @@
 // API 基础配置 - 从 website-config 导入
 import { apiConfig } from '@/website-config';
+import { requireAuthorizedToken, revokeRequestAuthorization } from '@/lib/auth/request-guard';
 
 const API_CONFIG = {
   VIDOR_AI_BASE: apiConfig.baseUrl,
@@ -14,10 +15,7 @@ const getHeaders = (includeAuth = true) => {
   };
 
   if (includeAuth) {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+    headers['Authorization'] = `Bearer ${requireAuthorizedToken()}`;
   }
 
   return headers;
@@ -53,7 +51,7 @@ export const authApi = {
     avatar?: string;
     from_login: string;
     ivcode?: string;
-  }) => {
+  }, signal?: AbortSignal) => {
     const isDevelopment = process.env.NODE_ENV === 'development';
     const endpoint = isDevelopment ? 'loginAuthCyTest' : 'loginAuth';
 
@@ -61,33 +59,32 @@ export const authApi = {
       method: 'POST',
       headers: getHeaders(false), // 登录接口不需要Authorization
       body: JSON.stringify(userData),
+      signal,
     });
 
     const result = await handleApiError(response);
 
-    // 保存token到localStorage
-    if (result.code === 200 && result.data) {
-      localStorage.setItem('access_token', result.data.access_token);
-      localStorage.setItem('refresh_token', result.data.refresh_token);
-      localStorage.setItem('token_expire_at', result.data.expire_at.toString());
-    }
-
+    // The auth runtime commits tokens only after identity/profile validation.
     return result;
+  },
+
+  // Bootstrap is private to the auth runtime: do not authorize application actions yet.
+  getBootstrapProfile: async (token: string, signal: AbortSignal) => {
+    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/info`, {
+      headers: { ...getHeaders(false), Authorization: `Bearer ${token}` },
+      signal,
+    });
+    return handleApiError(response);
   },
 
   // 检查token是否有效
   isTokenValid: (): boolean => {
-    const token = localStorage.getItem('access_token');
-    const expireAt = localStorage.getItem('token_expire_at');
-
-    if (!token || !expireAt) return false;
-
-    const currentTime = Math.floor(Date.now() / 1000);
-    return parseInt(expireAt) > currentTime;
+    try { requireAuthorizedToken(); return true; } catch { return false; }
   },
 
   // 清除token
   clearTokens: () => {
+    revokeRequestAuthorization();
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('token_expire_at');
@@ -97,9 +94,10 @@ export const authApi = {
 // 用户信息相关接口
 export const userApi = {
   // 获取用户信息
-  getUserInfo: async () => {
+  getUserInfo: async (signal?: AbortSignal) => {
     const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/info`, {
       headers: getHeaders(),
+      signal,
     });
 
     return handleApiError(response);
@@ -329,7 +327,7 @@ export const videoApi = {
     console.log(formData);
 
     // 为FormData请求创建特殊的头部（不包含Content-Type，让浏览器自动设置）
-    const token = localStorage.getItem('access_token');
+    const token = requireAuthorizedToken();
     const headers: Record<string, string> = {
       'x-appid': API_CONFIG.APP_ID,
     };
@@ -453,7 +451,7 @@ export const videoApi = {
     }
 
     // 为FormData请求创建特殊的头部（不包含Content-Type，让浏览器自动设置）
-    const token = localStorage.getItem('access_token');
+    const token = requireAuthorizedToken();
     const headers: Record<string, string> = {
       'x-appid': API_CONFIG.APP_ID,
     };
@@ -530,13 +528,8 @@ export const apiWithRetry = async <T>(
   delay: number = 1000
 ): Promise<T> => {
   for (let i = 0; i < maxRetries; i++) {
+    requireAuthorizedToken();
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        // 如果没有token，等待一段时间后重试
-        await new Promise(resolve => setTimeout(resolve, delay));
-        continue;
-      }
 
       return await apiCall();
     } catch (error) {
@@ -563,4 +556,4 @@ export const api = {
   video: videoApi,
 
   withRetry: apiWithRetry,
-}; 
+};

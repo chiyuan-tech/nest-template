@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { useUser } from '@clerk/nextjs';
+import { useAppAuth } from '@/components/auth/auth-provider';
 import { PayLogItem } from './types';
 import { formatTimestamp } from './utils';
 import { useToast } from '@/components/ui/toast-provider';
@@ -25,7 +25,7 @@ interface InvoiceDialogProps {
 }
 
 export function InvoiceDialog({ open, onOpenChange, payLogId, payLogList }: InvoiceDialogProps) {
-  const { user } = useUser();
+  const { user, requireAuth } = useAppAuth();
   const toast = useToast();
   const [invoiceType, setInvoiceType] = useState<'personal' | 'business'>('personal');
   const [companyName, setCompanyName] = useState('');
@@ -34,6 +34,7 @@ export function InvoiceDialog({ open, onOpenChange, payLogId, payLogList }: Invo
   const [showInvoicePreview, setShowInvoicePreview] = useState(false);
 
   const handleCreateInvoice = async () => {
+    if (!requireAuth()) return;
     if (!payLogId) {
       toast.error('Please select a payment record');
       return;

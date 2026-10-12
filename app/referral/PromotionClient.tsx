@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useClerk } from '@clerk/nextjs';
+import { useAppAuth } from '@/components/auth/auth-provider';
 import { useUserInfo } from '@/lib/providers';
 import { api } from '@/lib/api';
 import { useToast } from '@/components/ui/toast-provider';
@@ -76,7 +76,7 @@ const PLACEHOLDER = '***';
 
 export default function PromotionClient() {
   const { userInfo } = useUserInfo();
-  const { openSignIn } = useClerk();
+  const { openSignIn } = useAppAuth();
   const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   const [promotionLink, setPromotionLink] = useState<PromotionLink | null>(null);

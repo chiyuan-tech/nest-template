@@ -1,6 +1,8 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useAppAuth } from '../auth/auth-provider';
+import AuthErrorBoundary from '../auth/auth-error-boundary';
+import { AuthUnavailable } from '../auth/auth-unavailable';
 import AuthButton from '../auth/auth-button';
 import { useUserInfo } from '@/lib/providers';
 import { memo } from 'react';
@@ -28,7 +30,7 @@ const CoinsIcon = ({ className }: { className: string }) => (
 );
 
 function NavAuthIsland({ variant = 'desktop' }: NavAuthIslandProps) {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, reportFailure } = useAppAuth();
   const { userInfo, isLoadingUserInfo } = useUserInfo();
 
   const coinIconClassName = variant === 'desktop' ? 'h-4 w-4' : 'h-3 w-3';
@@ -37,7 +39,7 @@ function NavAuthIsland({ variant = 'desktop' }: NavAuthIslandProps) {
   const prewarm = () => {
     try {
       // 触发菜单模块的解析与缓存
-      import('./user-profile-menu');
+      void import('./user-profile-menu').catch(reportFailure);
     } catch {}
   };
 
@@ -59,4 +61,11 @@ function NavAuthIsland({ variant = 'desktop' }: NavAuthIslandProps) {
 }
 
 // 使用 React.memo 包裹，避免无谓重渲染
-export default memo(NavAuthIsland);
+export default memo(function SafeNavAuthIsland(props: NavAuthIslandProps) {
+  const { status, reportFailure } = useAppAuth();
+  return (
+    <AuthErrorBoundary key={status} name="AccountMenu" onError={reportFailure} fallback={<AuthUnavailable />}>
+      <NavAuthIsland {...props} />
+    </AuthErrorBoundary>
+  );
+});

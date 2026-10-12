@@ -1,4 +1,3 @@
-import { GoogleOneTapAuth } from '../components/auth';
 import { Footer } from '../components/Footer';
 import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
@@ -76,14 +75,6 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      {process.env.NODE_ENV === 'production' && (
-        <GoogleOneTapAuth
-          cancelOnTapOutside={true}
-          fedCmSupport={false}
-          signInForceRedirectUrl="/"
-          signUpForceRedirectUrl="/"
-        />
-      )}
 
       <main className="flex-grow relative">
         <Hero />

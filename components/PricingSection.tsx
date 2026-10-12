@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useAppAuth } from '@/components/auth/auth-provider';
 import { Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
@@ -25,15 +25,11 @@ interface PricingSectionProps {
 
 export default function PricingSection({ hideSection = false }: PricingSectionProps = {}) {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const { user, isSignedIn } = useUser();
-  const { openSignIn } = useClerk();
+  const { user, requireAuth } = useAppAuth();
   const pricingPlans: PricingPlan[] = pricingConfig.oneTimePlans;
 
   const handleUpgradeClick = async (priceId: string, planKey: string) => {
-    if (!isSignedIn) {
-      openSignIn();
-      return;
-    }
+    if (!requireAuth()) return;
 
     const userId = user?.id;
     if (!userId) {

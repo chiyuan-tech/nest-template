@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo } from 'react';
 import { Upload, X, Play, Download, Sparkles, Zap, Cpu, Grid3x3, ChevronDown, Trash2, Copy, History as HistoryIcon, Maximize2 } from 'lucide-react';
-import { useUser } from '@clerk/nextjs';
+import { useAppAuth } from '@/components/auth/auth-provider';
 import { useUserInfo } from '@/lib/providers';
 import { useToast } from '@/components/ui/toast-provider';
 import { api } from '@/lib/api';
@@ -47,7 +47,7 @@ interface HistoryItem {
 }
 
 export default function Hero() {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, requireAuth } = useAppAuth();
   const { userInfo } = useUserInfo();
   const { openAuthModal } = useAuthModal();
   const { openUpgradeModal } = useUpgradeModal();
@@ -198,10 +198,7 @@ export default function Hero() {
   const handleGenerate = async () => {
     if (isGenerating) return;
 
-    if (!isSignedIn) {
-      openAuthModal('signin');
-      return;
-    }
+    if (!requireAuth()) return;
 
     if (!formData.prompt.trim()) {
       showError('Please enter a prompt');

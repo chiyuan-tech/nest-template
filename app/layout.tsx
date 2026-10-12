@@ -2,9 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next';
 import { Navbar } from '@/components/Navbar';
 import { ToastProvider } from '@/components/ui/toast-provider';
-import { UserProvider } from '@/lib/providers';
-import dynamic from 'next/dynamic';
-import { AuthModalProvider } from '@/components/auth/auth-modal-provider';
+import { AuthProvider } from '@/components/auth/auth-provider';
 import { Inter, Source_Code_Pro } from 'next/font/google';
 
 const inter = Inter({
@@ -32,15 +30,6 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
 };
-
-
-// Dynamically import Clerk Provider to reduce initial bundle size
-const ClerkProviderWithLocale = dynamic(() => import('@/components/auth/clerk-provider'), {
-  ssr: true,
-  loading: () => <div className="min-h-screen" />,
-});
-
-
 export default function RootLayout({
   children,
 }: {
@@ -50,19 +39,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${sourceCodePro.variable} dark`} suppressHydrationWarning>
       <body className="bg-background text-foreground antialiased">
-     
-        <ClerkProviderWithLocale>
-          <ToastProvider>
-            <UserProvider>
-              <AuthModalProvider>
-                <Navbar />
-                <main className="min-h-[calc(100vh-56px)] pt-14">
-                  {children}
-                </main>
-              </AuthModalProvider>
-            </UserProvider>
-          </ToastProvider>
-        </ClerkProviderWithLocale>
+        <ToastProvider>
+          <AuthProvider>
+            <Navbar />
+            <main className="min-h-[calc(100vh-56px)] pt-14">
+              {children}
+            </main>
+          </AuthProvider>
+        </ToastProvider>
 
       </body>
     </html>

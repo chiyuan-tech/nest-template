@@ -6,6 +6,8 @@ interface AuthErrorBoundaryProps {
   children: ReactNode;
   /** Optional label for console diagnostics */
   name?: string;
+  onError?: (error: Error) => void;
+  fallback?: ReactNode;
 }
 
 interface AuthErrorBoundaryState {
@@ -29,11 +31,12 @@ export default class AuthErrorBoundary extends Component<
   componentDidCatch(error: Error, info: ErrorInfo) {
     const label = this.props.name ?? 'AuthErrorBoundary';
     console.error(`[${label}] swallowed error:`, error, info.componentStack);
+    this.props.onError?.(error);
   }
 
   render() {
     if (this.state.hasError) {
-      return null;
+      return this.props.fallback ?? null;
     }
     return this.props.children;
   }

@@ -1,6 +1,8 @@
 'use client';
 
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useAppAuth } from './auth-provider';
+import { AuthUnavailable } from './auth-unavailable';
+import AuthErrorBoundary from './auth-error-boundary';
 import dynamic from 'next/dynamic';
 import { Button } from '../../components/ui/button';
 
@@ -17,9 +19,10 @@ const UserProfileMenu = dynamic(() => import('../nav/user-profile-menu'), {
   loading: () => <AuthSkeleton />,
 });
 
-export default function AuthButton() {
-  const { isSignedIn, user, isLoaded } = useUser();
-  const { openSignIn } = useClerk();
+function AuthButtonContent() {
+  const { isSignedIn, user, isLoaded, status, openSignIn } = useAppAuth();
+
+  if (status === 'unavailable') return <AuthUnavailable />;
 
   if (!isLoaded) {
     return <AuthSkeleton />;
@@ -35,11 +38,7 @@ export default function AuthButton() {
 
   const handleLoginClick = () => {
     requestAnimationFrame(() => {
-      openSignIn({
-        oauthFlow: 'popup',
-        fallbackRedirectUrl: '/',
-        signUpFallbackRedirectUrl: '/',
-      });
+      openSignIn();
     });
   };
 
@@ -51,5 +50,14 @@ export default function AuthButton() {
     >
       Login
     </Button>
+  );
+}
+
+export default function AuthButton() {
+  const { status, reportFailure } = useAppAuth();
+  return (
+    <AuthErrorBoundary key={status} name="AuthButton" onError={reportFailure} fallback={<AuthUnavailable />}>
+      <AuthButtonContent />
+    </AuthErrorBoundary>
   );
 }

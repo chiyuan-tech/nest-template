@@ -1,6 +1,7 @@
 ﻿'use client';
 
-import { useUser, useAuth } from '@clerk/nextjs';
+import { useAppAuth } from '@/components/auth/auth-provider';
+import { AuthUnavailable } from '@/components/auth/auth-unavailable';
 import { Footer } from '../../components/Footer';
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
@@ -42,8 +43,7 @@ import {
 } from '@/components/profile/utils';
 
 export default function ProfilePage() {
-  const { user, isLoaded, isSignedIn } = useUser();
-  const { userId } = useAuth();
+  const { user, isLoaded, isSignedIn, userId, status, requireAuth } = useAppAuth();
 
   // API 鏁版嵁鐘舵€?(鐢ㄦ埛淇℃伅)
   const [userApiInfo, setUserApiInfo] = useState<UserApiInfo | null>(null);
@@ -313,19 +313,19 @@ export default function ProfilePage() {
     );
   }
 
-  if (!isSignedIn) {
+  if (!isSignedIn || !user) {
     return (
       <div className="min-h-screen flex flex-col">
         <main className="flex-grow py-12 px-6">
           <div className="container mx-auto max-w-lg">
             <div className="rounded border border-border bg-card p-8 text-center shadow-custom">
               <h1 className="text-2xl font-bold mb-4 text-card-foreground">Profile</h1>
-              <p className="mb-6 text-muted-foreground">Please sign in to view your profile</p>
-              <Link href="/sign-in">
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              {status === 'unavailable' ? <AuthUnavailable /> : <>
+                <p className="mb-6 text-muted-foreground">Please sign in to view your profile</p>
+                <Button onClick={requireAuth} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   Sign In
                 </Button>
-              </Link>
+              </>}
             </div>
           </div>
         </main>
