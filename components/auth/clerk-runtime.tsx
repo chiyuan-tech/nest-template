@@ -1,7 +1,7 @@
 'use client';
 
 import { AuthenticateWithRedirectCallback, useAuth, useClerk, useUser } from '@clerk/nextjs';
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { Suspense, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { AUTH_TIMEOUT_MS, AuthSessionStore, withAuthTimeout, type AuthOperation } from '@/lib/auth/session-store';
@@ -145,5 +145,7 @@ function AuthBridge({ store, attempt }: AuthRuntimeProps) {
 
 // This tree is a sibling of the public page. Clerk can only replace this subtree.
 export default function ClerkRuntime(props: AuthRuntimeProps) {
-  return <ClerkProviderWithLocale><AuthBridge {...props} /></ClerkProviderWithLocale>;
+  // Route hooks may suspend on first render. Let the SDK provider commit before
+  // its async navigation callbacks can update the router's transition state.
+  return <ClerkProviderWithLocale><Suspense fallback={null}><AuthBridge {...props} /></Suspense></ClerkProviderWithLocale>;
 }

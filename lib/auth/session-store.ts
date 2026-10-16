@@ -2,6 +2,10 @@ import type { AuthSnapshot, AuthUser, BackendTokens, UserInfo } from './types';
 import { AUTH_LOADING_MESSAGE, AUTH_UNAVAILABLE_MESSAGE, grantRequestAuthorization, revokeRequestAuthorization } from './request-guard';
 
 export const AUTH_TIMEOUT_MS = 15000;
+// Loading a third-party SDK includes connection setup and download time.
+// Keep backend operations on the shorter deadline.
+export const AUTH_LOAD_TIMEOUT_MS = 30000;
+export class AuthLoadError extends Error {}
 export type AuthAction = 'openSignIn' | 'openSignUp' | 'closeAuth' | 'signOut' | 'refreshUserInfo';
 type Commands = Record<AuthAction, () => unknown | Promise<unknown>>;
 export type AuthOperation = { revision: number; signal: AbortSignal; user: AuthUser };
@@ -34,6 +38,9 @@ export class AuthSessionStore {
   private commands: Commands | null = null;
   private deadline: ReturnType<typeof setTimeout> | undefined;
   private expiry: ReturnType<typeof setTimeout> | undefined;
+  private loadFailure = false;
+
+  canRetryLoad = () => this.snapshot.status === 'unavailable' && this.loadFailure;
 
   getSnapshot = () => this.snapshot;
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
@@ -56,20 +63,24 @@ export class AuthSessionStore {
   }
   start = () => {
     this.invalidate();
+    this.loadFailure = false;
     this.attempt++;
     this.commands = null;
     this.publish({ status: 'loading', user: null, userInfo: null });
     const attempt = this.attempt;
-    this.deadline = setTimeout(() => this.fail(new Error('Clerk loading timed out'), attempt), AUTH_TIMEOUT_MS);
+    this.deadline = setTimeout(() => this.fail(new AuthLoadError('Clerk loading timed out'), attempt), AUTH_LOAD_TIMEOUT_MS);
     return attempt;
   };
   isAttempt = (attempt: number) => attempt === this.attempt && this.snapshot.status !== 'unavailable';
-  fail = (_error: unknown, attempt = this.attempt) => {
+  fail = (error: unknown, attempt = this.attempt) => {
     if (!this.isAttempt(attempt)) return;
     this.invalidate();
     this.commands = null;
+    this.loadFailure = error instanceof AuthLoadError;
     this.publish({ status: 'unavailable', user: null, userInfo: null });
-    console.error('[auth] Authentication module unavailable');
+    // This is a handled outage: the public page remains usable and paid actions
+    // stay blocked. Keep its cause visible without raising Next's error overlay.
+    console.warn('[auth] Authentication module unavailable:', error instanceof Error ? error.message : 'Unknown authentication failure');
   };
   stop = (attempt: number) => {
     if (attempt !== this.attempt) return;

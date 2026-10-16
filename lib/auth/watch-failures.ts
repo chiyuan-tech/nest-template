@@ -1,4 +1,15 @@
-import { AUTH_TIMEOUT_MS } from './session-store';
+import { AUTH_LOAD_TIMEOUT_MS, AuthLoadError } from './session-store';
+
+// Webpack's local clerk-runtime chunk is not a Clerk SDK resource. Matching every
+// URL containing "clerk" also arms false deadlines during development/HMR.
+function isClerkScript(src: string) {
+  return !/\/_next\//i.test(src) && /\/npm\/@clerk\/|\/clerk(?:\.browser|-ui)?(?:[.-][\w-]+)*\.js(?:[?#]|$)/i.test(src);
+}
+
+function scriptLabel(src: string) {
+  try { const url = new URL(src, window.location?.href); return `${url.host}${url.pathname}`; }
+  catch { return 'Clerk SDK'; }
+}
 
 // Error boundaries cannot catch resource events or unhandled asynchronous SDK failures.
 export function watchAuthFailures(options: {
@@ -7,18 +18,26 @@ export function watchAuthFailures(options: {
 }) {
   const browserWindow = window;
   const pending = new Map<HTMLScriptElement, ReturnType<typeof setTimeout>>();
+  const completed = new WeakMap<HTMLScriptElement, string>();
+  const sdkReady = (script: HTMLScriptElement) =>
+    /\/clerk\.browser(?:[.-][\w-]+)*\.js(?:[?#]|$)/i.test(script.src) &&
+    (browserWindow as Window & { Clerk?: { loaded?: boolean } }).Clerk?.loaded === true;
   const finishScript = (script: HTMLScriptElement) => {
     clearTimeout(pending.get(script));
     pending.delete(script);
+    completed.set(script, script.src);
   };
   const watchScript = (script: HTMLScriptElement) => {
-    if (!/clerk/i.test(script.src) || pending.has(script)) return;
+    if (!isClerkScript(script.src) || pending.has(script) || completed.get(script) === script.src) return;
+    if (sdkReady(script)) { finishScript(script); return; }
     const attempt = options.getAttempt();
     pending.set(script, setTimeout(() => {
       finishScript(script);
+      // SDK readiness is authoritative even if a cached script's load event was missed.
+      if (sdkReady(script)) return;
       script.setAttribute('data-app-auth-failed', 'true');
-      options.fail(new Error('Authentication script timed out'), attempt);
-    }, AUTH_TIMEOUT_MS));
+      options.fail(new AuthLoadError(`Authentication script timed out: ${scriptLabel(script.src)}`), attempt);
+    }, AUTH_LOAD_TIMEOUT_MS));
   };
   const observer = new MutationObserver(records => {
     records.forEach(record => {
@@ -35,10 +54,13 @@ export function watchAuthFailures(options: {
     const target = event.target;
     if (target instanceof HTMLScriptElement) {
       finishScript(target);
-      if (/clerk/i.test(target.src)) target.setAttribute('data-app-auth-failed', 'true');
+      if (isClerkScript(target.src)) target.setAttribute('data-app-auth-failed', 'true');
     }
     const source = target instanceof HTMLScriptElement ? target.src : event instanceof ErrorEvent ? `${event.filename} ${event.message}` : '';
-    if (/clerk/i.test(source)) options.fail(new Error('Authentication script failed'), options.getAttempt());
+    if (target instanceof HTMLScriptElement ? isClerkScript(source) : /clerk/i.test(source)) {
+      const Failure = target instanceof HTMLScriptElement ? AuthLoadError : Error;
+      options.fail(new Failure(`Authentication script failed: ${target instanceof HTMLScriptElement ? scriptLabel(source) : 'Clerk runtime'}`), options.getAttempt());
+    }
   };
   const onRejection = (event: PromiseRejectionEvent) => {
     const reason = event.reason;

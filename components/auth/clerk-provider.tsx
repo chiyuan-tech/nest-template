@@ -50,7 +50,6 @@ export default function ClerkProviderWithLocale({
         elements: {
           formButtonPrimary: 'bg-black hover:bg-gray-800 text-sm normal-case',
           card: 'shadow-none',
-          footer: 'hidden',
           formFieldInput: 'rounded-full border-gray-300 focus:border-black focus:ring-black',
           formFieldLabel: 'text-gray-700',
           main: 'min-w-[320px] font-sans',

@@ -29,7 +29,8 @@ function loadProject(file) {
   return mod.exports;
 }
 
-const { AuthSessionStore, AUTH_TIMEOUT_MS, withAuthTimeout } = loadProject(path.join(root, 'lib/auth/session-store'));
+const { AuthSessionStore, AUTH_TIMEOUT_MS, AUTH_LOAD_TIMEOUT_MS, AuthLoadError, withAuthTimeout } = loadProject(path.join(root, 'lib/auth/session-store'));
+const { recoverAuthLoad } = loadProject(path.join(root, 'lib/auth/recover-load'));
 const guard = loadProject(path.join(root, 'lib/auth/request-guard'));
 const { api } = loadProject(path.join(root, 'lib/api'));
 const { watchAuthFailures } = loadProject(path.join(root, 'lib/auth/watch-failures'));
@@ -42,6 +43,7 @@ const originalFetch = global.fetch;
 
 beforeEach(t => {
   t.mock.method(console, 'log', () => {});
+  t.mock.method(console, 'warn', () => {});
   t.mock.method(console, 'error', () => {});
   stores = [];
   requests = [];
@@ -132,7 +134,7 @@ test('account switch discards user A and rejects mismatched user profiles', () =
 test('loading and user-sync deadlines fail closed', t => {
   t.mock.timers.enable({ apis: ['setTimeout'] });
   const first = fresh();
-  t.mock.timers.tick(AUTH_TIMEOUT_MS);
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
   assert.equal(first.store.getSnapshot().status, 'unavailable');
   const second = fresh();
   const operation = second.store.beginSync(second.attempt, user('user-a'));
@@ -218,7 +220,7 @@ test('a hung secondary Clerk script fails closed even after the SDK was ready', 
   const env = failureWatcherEnvironment(t, { getAttempt: () => attempt, fail: store.fail });
   const script = env.script('https://auth.example.test/npm/@clerk/clerk-js/dist/clerk.browser.js');
   env.insert(script);
-  t.mock.timers.tick(AUTH_TIMEOUT_MS);
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
   assert.equal(store.getSnapshot().status, 'unavailable');
   assert.equal(script.attributes['data-app-auth-failed'], 'true');
   await assertPaidActionsBlocked();
@@ -236,8 +238,97 @@ test('successful script load and retry cleanup cancel script deadlines', t => {
   env.reset();
   assert.equal(pending.removed, true);
   assert.equal(loaded.removed, false);
-  t.mock.timers.tick(AUTH_TIMEOUT_MS);
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
   assert.equal(failures.length, 0);
+});
+
+test('local Clerk runtime chunks do not arm SDK deadlines during HMR', t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const failures = [];
+  const env = failureWatcherEnvironment(t, { getAttempt: () => 1, fail: error => failures.push(error) });
+  env.insert(env.script('http://localhost:3000/_next/static/chunks/components_auth_clerk-runtime_tsx.js'));
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
+  assert.equal(failures.length, 0);
+});
+
+test('a completed SDK script is not timed again after a repeated DOM observation', t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const failures = [];
+  const env = failureWatcherEnvironment(t, { getAttempt: () => 1, fail: error => failures.push(error) });
+  const script = env.script('https://auth.example.test/clerk.browser.js');
+  // A cached resource may finish before the MutationObserver callback runs.
+  env.emit('load', { target: script });
+  env.insert(script);
+  env.insert(script);
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
+  assert.equal(failures.length, 0);
+});
+
+test('SDK readiness prevents a false timeout when its load event was missed', t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const failures = [];
+  const env = failureWatcherEnvironment(t, { getAttempt: () => 1, fail: error => failures.push(error) });
+  const script = env.script('https://auth.example.test/npm/@clerk/clerk-js@5.62.0/dist/clerk.browser.js');
+  env.insert(script);
+  window.Clerk = { loaded: true };
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
+  assert.equal(failures.length, 0);
+  assert.equal(script.attributes['data-app-auth-failed'], undefined);
+  // A ready core must not hide a genuine secondary UI script failure.
+  env.insert(env.script('https://auth.example.test/clerk-ui.js'));
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
+  assert.equal(failures.length, 1);
+});
+
+test('slow SDK downloads can finish after the former 15-second deadline', t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const { store, attempt } = fresh();
+  const env = failureWatcherEnvironment(t, { getAttempt: () => attempt, fail: store.fail });
+  const script = env.script('https://auth.example.test/clerk.browser.js');
+  env.insert(script);
+  t.mock.timers.tick(20000);
+  assert.equal(store.getSnapshot().status, 'loading');
+  env.emit('load', { target: script });
+  store.signedOut(attempt);
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
+  assert.equal(store.getSnapshot().status, 'signed-out');
+});
+
+test('loading failure automatically retries once and remains fail-closed throughout', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const entry = fresh();
+  let retries = 0;
+  const dispose = recoverAuthLoad(entry.store, () => { retries++; entry.attempt = entry.store.start(); });
+  t.after(dispose);
+  entry.store.fail(new AuthLoadError('script timed out'), entry.attempt);
+  await assertPaidActionsBlocked();
+  t.mock.timers.tick(1000);
+  assert.equal(retries, 1);
+  assert.equal(entry.store.getSnapshot().status, 'loading');
+  await assertPaidActionsBlocked();
+  t.mock.timers.tick(AUTH_LOAD_TIMEOUT_MS);
+  t.mock.timers.tick(1000);
+  assert.equal(retries, 1);
+  assert.equal(entry.store.getSnapshot().status, 'unavailable');
+});
+
+test('load recovery ignores backend failures and cancels on manual retry or disposal', t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const entry = fresh();
+  let retries = 0;
+  const dispose = recoverAuthLoad(entry.store, () => { retries++; });
+  entry.store.fail(new Error('User synchronization failed'), entry.attempt);
+  t.mock.timers.tick(1000);
+  assert.equal(retries, 0);
+  entry.attempt = entry.store.start();
+  entry.store.fail(new AuthLoadError('script failed'), entry.attempt);
+  entry.attempt = entry.store.start();
+  t.mock.timers.tick(1000);
+  assert.equal(retries, 0);
+  entry.store.fail(new AuthLoadError('script failed'), entry.attempt);
+  dispose();
+  t.mock.timers.tick(1000);
+  assert.equal(retries, 0);
 });
 
 test('retry cannot restore a stale session or receive errors from an older attempt', async () => {

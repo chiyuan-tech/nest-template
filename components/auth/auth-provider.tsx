@@ -7,6 +7,7 @@ import { useToast } from '@/components/ui/toast-provider';
 import AuthErrorBoundary from './auth-error-boundary';
 import type { AuthRuntimeProps } from './clerk-runtime';
 import { watchAuthFailures } from '@/lib/auth/watch-failures';
+import { recoverAuthLoad } from '@/lib/auth/recover-load';
 
 const AuthContext = createContext<ReturnType<typeof useAuthValue> | null>(null);
 
@@ -63,8 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const watcher = watchAuthFailures({ getAttempt: () => attemptRef.current, fail: store.fail });
     resetScriptsRef.current = watcher.reset;
+    const stopRecovery = recoverAuthLoad(store, retry);
     retry();
     return () => {
+      stopRecovery();
       watcher.dispose();
       resetScriptsRef.current = () => {};
       store.stop(attemptRef.current);
