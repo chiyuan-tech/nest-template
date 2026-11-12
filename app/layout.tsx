@@ -37,7 +37,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className={`${inter.variable} ${sourceCodePro.variable} dark`} suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${sourceCodePro.variable} dark`} suppressHydrationWarning>
       <body className="bg-background text-foreground antialiased">
         <ToastProvider>
           <AuthProvider>
