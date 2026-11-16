@@ -43,7 +43,12 @@ import {
 } from '@/components/profile/utils';
 
 export default function ProfilePage() {
-  const { user, isLoaded, isSignedIn, userId, status, requireAuth } = useAppAuth();
+  const auth = useAppAuth();
+  return <ProfilePageContent key={auth.userInfo?.uuid} auth={auth} />;
+}
+
+function ProfilePageContent({ auth }: { auth: ReturnType<typeof useAppAuth> }) {
+  const { user, isLoaded, isSignedIn, userId, status, requireAuth } = auth;
 
   // API 鏁版嵁鐘舵€?(鐢ㄦ埛淇℃伅)
   const [userApiInfo, setUserApiInfo] = useState<UserApiInfo | null>(null);

@@ -1,7 +1,7 @@
 'use client';
 
 import { AuthenticateWithRedirectCallback, useAuth, useClerk, useUser } from '@clerk/nextjs';
-import { Suspense, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { AUTH_TIMEOUT_MS, AuthSessionStore, withAuthTimeout, type AuthOperation } from '@/lib/auth/session-store';
@@ -24,8 +24,7 @@ function AuthBridge({ store, attempt }: AuthRuntimeProps) {
   tokenRef.current = getToken;
   const operationRef = useRef<AuthOperation | null>(null);
   const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
-  const [voucherCount, setVoucherCount] = useState(0);
-  const voucherUserRef = useRef<string | null>(null);
+  const [voucherNotice, setVoucherNotice] = useState<{ uuid: string; dismissed: boolean } | null>(null);
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -55,8 +54,7 @@ function AuthBridge({ store, attempt }: AuthRuntimeProps) {
     if (!authLoaded || !userLoaded || !store.isAttempt(attempt)) return;
     if (!isSignedIn || !user) {
       operationRef.current = null;
-      voucherUserRef.current = null;
-      setVoucherCount(0);
+      setVoucherNotice(null);
       store.signedOut(attempt);
       return;
     }
@@ -120,13 +118,16 @@ function AuthBridge({ store, attempt }: AuthRuntimeProps) {
     return () => { clearInterval(interval); unregister(); };
   }, [store, attempt, clerk]);
 
+  const info = snapshot.userInfo;
+  const voucherUuid = snapshot.status === 'signed-in' && info && info.level <= 0 && info.free_times > 0 ? info.uuid : null;
   useEffect(() => {
-    const info = snapshot.userInfo;
-    if (snapshot.status === 'signed-in' && info && info.level <= 0 && info.free_times > 0 && voucherUserRef.current !== info.uuid) {
-      voucherUserRef.current = info.uuid;
-      setVoucherCount(info.free_times);
-    }
-  }, [snapshot]);
+    if (!voucherUuid) return;
+    setVoucherNotice(notice => notice?.uuid === voucherUuid ? notice : { uuid: voucherUuid, dismissed: false });
+  }, [voucherUuid]);
+  const closeVoucher = useCallback(() => {
+    setVoucherNotice(notice => notice && notice === voucherNotice ? { ...notice, dismissed: true } : notice);
+  }, [voucherNotice]);
+  const voucherCount = info && voucherNotice?.uuid === voucherUuid && !voucherNotice.dismissed ? info.free_times : 0;
 
   const requestedRedirect = searchParams.get('redirect_url');
   const redirectUrl = requestedRedirect?.startsWith('/') && !requestedRedirect.startsWith('//') && !requestedRedirect.includes('\\') ? requestedRedirect : '/';
@@ -138,7 +139,7 @@ function AuthBridge({ store, attempt }: AuthRuntimeProps) {
       {pathname === '/' && process.env.NODE_ENV === 'production' && authLoaded && userLoaded && !isSignedIn && (
         <GoogleOneTapAuth cancelOnTapOutside fedCmSupport={false} signInForceRedirectUrl="/" signUpForceRedirectUrl="/" onError={error => store.fail(error, attempt)} />
       )}
-      {voucherCount > 0 && snapshot.status === 'signed-in' && <VoucherToast count={voucherCount} onClose={() => setVoucherCount(0)} />}
+      {voucherCount > 0 && <VoucherToast count={voucherCount} onClose={closeVoucher} />}
     </>
   );
 }
