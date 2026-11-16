@@ -11,7 +11,8 @@ export function useUserInfo() {
   const auth = useAppAuth();
   return {
     userInfo: auth.userInfo,
-    isLoadingUserInfo: auth.status === 'loading' || auth.status === 'syncing',
+    isLoadingUserInfo: !auth.isLoaded || auth.userInfoStatus === 'loading',
+    userInfoStatus: auth.userInfoStatus,
     refreshUserInfo: auth.refreshUserInfo,
     clearUserState: auth.clearUserState,
   };

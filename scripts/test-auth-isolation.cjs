@@ -32,10 +32,10 @@ function loadProject(file) {
 const { AuthSessionStore, AUTH_TIMEOUT_MS, AUTH_LOAD_TIMEOUT_MS, AuthLoadError, withAuthTimeout } = loadProject(path.join(root, 'lib/auth/session-store'));
 const { recoverAuthLoad } = loadProject(path.join(root, 'lib/auth/recover-load'));
 const guard = loadProject(path.join(root, 'lib/auth/request-guard'));
-const { api } = loadProject(path.join(root, 'lib/api'));
+const { api, ApiError } = loadProject(path.join(root, 'lib/api'));
 const { watchAuthFailures } = loadProject(path.join(root, 'lib/auth/watch-failures'));
 const user = id => ({ id, firstName: 'Test', lastName: null, fullName: 'Test', username: null, imageUrl: '', primaryEmailAddress: { emailAddress: `${id}@example.test` } });
-const profile = id => ({ uuid: id, free_limit: 1, remaining_limit: 2, level: 0, free_times: 0 });
+const profile = () => ({ free_limit: 1, remaining_limit: 2, level: 0, free_times: 0 });
 const tokens = id => ({ access_token: `token-${id}`, refresh_token: 'refresh', expire_at: Math.floor(Date.now() / 1000) + 3600 });
 const commands = overrides => ({ openSignIn() {}, openSignUp() {}, closeAuth() {}, async signOut() {}, async refreshUserInfo() {}, ...overrides });
 let stores, requests, storage;
@@ -71,7 +71,7 @@ function fresh() {
 }
 function signIn(store, attempt, id = 'user-a') {
   const operation = store.beginSync(attempt, user(id));
-  assert.equal(store.completeSync(operation, profile(id), tokens(id)), true);
+  assert.equal(store.completeSync(operation, tokens(id)), true);
   return operation;
 }
 async function assertPaidActionsBlocked() {
@@ -94,18 +94,80 @@ test('old persisted tokens cannot enable payment or any generation endpoint', as
   await assertPaidActionsBlocked();
 });
 
-test('only completed live user synchronization enables authenticated requests', async () => {
+test('the backend login token enables authenticated requests before the profile loads', async () => {
   const { store, attempt } = fresh();
   const operation = store.beginSync(attempt, user('clerk-a'));
-  const incompleteProfile = profile('account-a');
-  delete incompleteProfile.uuid;
-  assert.throws(() => store.completeSync(operation, incompleteProfile, tokens('account-a')), /UUID unavailable/);
   await assertPaidActionsBlocked();
-  assert.equal(store.completeSync(operation, profile('account-a'), tokens('account-a')), true);
-  assert.equal(store.getSnapshot().userInfo.uuid, 'account-a');
+  assert.equal(store.completeSync(operation, tokens('account-a')), true);
+  assert.equal(store.getSnapshot().status, 'signed-in');
+  assert.equal(store.getSnapshot().userInfo, null);
+  assert.equal(store.getSnapshot().userInfoStatus, 'loading');
   await api.payment.createPaypalSession('price-test');
-  assert.equal(requests.length, 1);
-  assert.equal(requests[0].options.headers.Authorization, 'Bearer token-account-a');
+  await api.user.getUserInfo(operation.signal);
+  await api.video.seedance15ImageToVideo({
+    prompt: 'test', resolution: '480p', duration: 5, audio: false, camerafixed: false,
+    image_file: new File(['image'], 'reference.png', { type: 'image/png' }),
+  });
+  assert.equal(requests.length, 3);
+  assert.match(requests[1].url, /\/api\/user\/info$/);
+  assert.ok(requests[2].options.body instanceof FormData);
+  assert.equal(requests[2].options.headers['Content-Type'], undefined);
+  for (const request of requests) {
+    assert.equal(request.options.headers.Authorization, 'Bearer token-account-a');
+  }
+});
+
+test('a protected HTTP 401 revokes the current business token without signing out of Clerk', async () => {
+  const { store, attempt } = fresh();
+  signIn(store, attempt);
+  let signOutCalls = 0;
+  store.register(attempt, commands({ signOut: () => { signOutCalls++; } }));
+  global.fetch = async () => new Response('Unauthorized', { status: 401 });
+
+  await assert.rejects(api.website.getConfig(), error => error instanceof ApiError && error.code === 401);
+  assert.equal(guard.requireAuthorizedToken(), 'token-user-a');
+  await assert.rejects(api.payment.createPaypalSession('price-test'), error => error instanceof ApiError && error.code === 401);
+  assert.equal(store.getSnapshot().status, 'unavailable');
+  assert.equal(localStorage.getItem('access_token'), null);
+  assert.equal(signOutCalls, 0);
+  assert.throws(guard.requireAuthorizedToken);
+});
+
+test('a delayed 401 cannot revoke a replacement authorization even when the token string is reused', async () => {
+  const { store, attempt } = fresh();
+  signIn(store, attempt, 'user-a');
+  let respond;
+  global.fetch = () => new Promise(resolve => { respond = resolve; });
+  const pending = api.payment.createPaypalSession('price-test');
+
+  const next = store.beginSync(attempt, user('user-b'));
+  assert.equal(store.completeSync(next, tokens('user-a')), true);
+  respond(new Response(JSON.stringify({ code: 401, message: 'Unauthorized' })));
+  await assert.rejects(pending, error => error instanceof ApiError && error.code === 401);
+  assert.equal(store.getSnapshot().user.id, 'user-b');
+  assert.equal(localStorage.getItem('access_token'), 'token-user-a');
+  assert.equal(guard.requireAuthorizedToken(), 'token-user-a');
+});
+
+test('a transient profile refresh error preserves the current profile and backend token', async () => {
+  const { store, attempt } = fresh();
+  const operation = signIn(store, attempt);
+  const currentProfile = profile();
+  store.updateProfile(operation, currentProfile);
+  assert.equal(store.getSnapshot().userInfoStatus, 'ready');
+  store.setUserInfoStatus(operation, 'loading');
+  global.fetch = async () => ({ ok: false, status: 503, text: async () => 'Service unavailable' });
+  store.register(attempt, commands({ refreshUserInfo: () => api.user.getUserInfo(operation.signal) }));
+
+  await assert.rejects(store.run('refreshUserInfo'), error => error instanceof ApiError && error.code === 503);
+  store.setUserInfoStatus(operation, 'error');
+  assert.equal(store.getSnapshot().status, 'signed-in');
+  assert.equal(store.getSnapshot().userInfoStatus, 'error');
+  assert.equal(store.getSnapshot().userInfo, currentProfile);
+  assert.equal(guard.requireAuthorizedToken(), 'token-user-a');
+  store.setUserInfoStatus(operation, 'loading');
+  store.updateProfile(operation, { ...currentProfile, remaining_limit: 0 });
+  assert.equal(store.getSnapshot().userInfoStatus, 'ready');
 });
 
 test('runtime failure revokes an existing session and rejects a late synchronization result', async () => {
@@ -115,7 +177,7 @@ test('runtime failure revokes an existing session and rejects a late synchroniza
   assert.equal(store.getSnapshot().status, 'unavailable');
   assert.equal(store.getSnapshot().user, null);
   assert.equal(operation.signal.aborted, true);
-  assert.equal(store.completeSync(operation, profile('user-a'), tokens('user-a')), false);
+  assert.equal(store.completeSync(operation, tokens('user-a')), false);
   assert.equal(localStorage.getItem('access_token'), null);
   await assertPaidActionsBlocked();
   await api.website.getConfig();
@@ -123,18 +185,24 @@ test('runtime failure revokes an existing session and rejects a late synchroniza
   assert.equal(requests.length, 2, 'Public requests remain available');
 });
 
-test('account switch discards old responses and refresh stays on the current backend account', () => {
+test('account switch discards stale profiles and current refreshes do not depend on UUID', () => {
   const { store, attempt } = fresh();
   const old = signIn(store, attempt, 'account-a');
   const next = store.beginSync(attempt, user('clerk-b'));
-  assert.equal(store.completeSync(old, profile('account-a'), tokens('account-a')), false);
+  assert.equal(store.completeSync(old, tokens('account-a')), false);
   assert.throws(guard.requireAuthorizedToken);
-  assert.equal(store.completeSync(next, profile('account-b'), tokens('account-b')), true);
-  store.updateProfile(old, profile('account-a'));
-  assert.throws(() => store.updateProfile(next, profile('account-a')), /identity mismatch/);
-  const refreshed = { ...profile('account-b'), remaining_limit: 3 };
+  const currentProfile = { ...profile(), uuid: 'account-b' };
+  assert.equal(store.completeSync(next, tokens('account-b')), true);
+  store.updateProfile(next, currentProfile);
+  store.updateProfile(old, profile());
+  assert.equal(store.getSnapshot().userInfo, currentProfile);
+  const changedUuid = { ...currentProfile, uuid: 'updated-account-b' };
+  store.updateProfile(next, changedUuid);
+  assert.equal(store.getSnapshot().userInfo, changedUuid);
+  const refreshed = { ...profile(), remaining_limit: 3 };
   store.updateProfile(next, refreshed);
   assert.equal(store.getSnapshot().userInfo, refreshed);
+  assert.equal(store.getSnapshot().status, 'signed-in');
   assert.equal(store.getSnapshot().user.id, 'clerk-b');
   assert.equal(guard.requireAuthorizedToken(), 'token-account-b');
 });
@@ -347,7 +415,7 @@ test('retry cannot restore a stale session or receive errors from an older attem
   entry.attempt = entry.store.start();
   entry.store.fail(new Error('late old error'), previousAttempt);
   assert.equal(entry.store.getSnapshot().status, 'loading');
-  assert.equal(entry.store.completeSync(old, profile('user-a'), tokens('user-a')), false);
+  assert.equal(entry.store.completeSync(old, tokens('user-a')), false);
   await assertPaidActionsBlocked();
   signIn(entry.store, entry.attempt, 'user-b');
   assert.equal(guard.requireAuthorizedToken(), 'token-user-b');
@@ -388,7 +456,7 @@ test('queued auth commands do not run after a failure', async () => {
 test('token expiration cannot use a previously authorized backend token', async () => {
   const { store, attempt } = fresh();
   const operation = store.beginSync(attempt, user('user-a'));
-  assert.throws(() => store.completeSync(operation, profile('user-a'), { ...tokens('user-a'), expire_at: 1 }));
+  assert.throws(() => store.completeSync(operation, { ...tokens('user-a'), expire_at: 1 }));
   await assertPaidActionsBlocked();
 });
 

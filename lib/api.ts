@@ -1,6 +1,12 @@
 // API 基础配置 - 从 website-config 导入
 import { apiConfig } from '@/website-config';
-import { requireAuthorizedToken, revokeRequestAuthorization } from '@/lib/auth/request-guard';
+import {
+  rejectRequestAuthorization,
+  requireAuthorizedToken,
+  requireRequestAuthorization,
+  revokeRequestAuthorization,
+  type RequestAuthorization,
+} from '@/lib/auth/request-guard';
 
 const API_CONFIG = {
   VIDOR_AI_BASE: apiConfig.baseUrl,
@@ -8,25 +14,24 @@ const API_CONFIG = {
 };
 
 // 通用请求头
-const getHeaders = (includeAuth = true) => {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'x-appid': API_CONFIG.APP_ID,
-  };
+const getHeaders = (): Record<string, string> => ({
+  'Content-Type': 'application/json',
+  'x-appid': API_CONFIG.APP_ID,
+});
 
-  if (includeAuth) {
-    headers['Authorization'] = `Bearer ${requireAuthorizedToken()}`;
+export class ApiError extends Error {
+  constructor(message: string, readonly code: number) {
+    super(message);
   }
-
-  return headers;
-};
+}
 
 // 通用错误处理
-const handleApiError = async (response: Response) => {
+const handleApiError = async (response: Response, authorization?: RequestAuthorization) => {
   // 首先检查 HTTP 状态码
   if (!response.ok) {
-    const errorData = await response.text();
-    throw new Error(`HTTP Error ${response.status}: ${errorData || response.statusText}`);
+    if (response.status === 401 && authorization) rejectRequestAuthorization(authorization);
+    const errorData = await response.text().catch(() => '');
+    throw new ApiError(`HTTP Error ${response.status}: ${errorData || response.statusText}`, response.status);
   }
 
   // 解析 JSON 响应
@@ -34,17 +39,27 @@ const handleApiError = async (response: Response) => {
 
   // 检查业务错误码
   if (result.code && result.code !== 200) {
-    throw new Error(`${result.message || result.msg || 'Unknown error'}`);
+    if (result.code === 401 && authorization) rejectRequestAuthorization(authorization);
+    throw new ApiError(`${result.message || result.msg || 'Unknown error'}`, result.code);
   }
 
   return result;
+};
+
+const requestWithAuthorization = async (url: string, options: RequestInit) => {
+  const authorization = requireRequestAuthorization();
+  const headers = getHeaders();
+  if (options.body instanceof FormData) delete headers['Content-Type'];
+  headers.Authorization = `Bearer ${authorization.token}`;
+  const response = await fetch(url, { ...options, headers });
+  return handleApiError(response, authorization);
 };
 
 // 用户认证相关接口
 export const authApi = {
   // 用户登录同步接口
   syncUser: async (userData: {
-    uuid: string;
+    uuid: string; // Clerk user ID in the backend login payload.
     email: string;
     token: string;
     nickname?: string;
@@ -57,23 +72,11 @@ export const authApi = {
 
     const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/${endpoint}`, {
       method: 'POST',
-      headers: getHeaders(false), // 登录接口不需要Authorization
+      headers: getHeaders(), // 登录接口不需要Authorization
       body: JSON.stringify(userData),
       signal,
     });
 
-    const result = await handleApiError(response);
-
-    // The auth runtime commits tokens only after identity/profile validation.
-    return result;
-  },
-
-  // Bootstrap is private to the auth runtime: do not authorize application actions yet.
-  getBootstrapProfile: async (token: string, signal: AbortSignal) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/info`, {
-      headers: { ...getHeaders(false), Authorization: `Bearer ${token}` },
-      signal,
-    });
     return handleApiError(response);
   },
 
@@ -95,81 +98,61 @@ export const authApi = {
 export const userApi = {
   // 获取用户信息
   getUserInfo: async (signal?: AbortSignal) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/info`, {
-      headers: getHeaders(),
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/user/info`, {
+      cache: 'no-store',
       signal,
     });
-
-    return handleApiError(response);
   },
 
   // 获取用户作品列表
   getUserOpusList: async (page: number = 1, pageSize: number = 30) => {
-    const response = await fetch(
+    return requestWithAuthorization(
       `${API_CONFIG.VIDOR_AI_BASE}/api/user/opus_list?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
-        headers: getHeaders(),
       }
     );
-
-    return handleApiError(response);
   },
 
   // 获取用户积分记录
   getTimesLog: async (page: number = 1, pageSize: number = 10) => {
-    const response = await fetch(
+    return requestWithAuthorization(
       `${API_CONFIG.VIDOR_AI_BASE}/api/user/times_log?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
-        headers: getHeaders(),
       }
     );
-
-    return handleApiError(response);
   },
   // 获取用户支付记录（为与页面调用保持一致）
   getPayLog: async (page: number = 1, pageSize: number = 10) => {
-    const response = await fetch(
+    return requestWithAuthorization(
       `${API_CONFIG.VIDOR_AI_BASE}/api/user/pay_log?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
-        headers: getHeaders(),
       }
     );
-
-    return handleApiError(response);
   },
   // 删除用户作品
   deleteOpus: async (opusId: number) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/opus/delete`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/opus/delete`, {
       method: 'POST',
-      headers: getHeaders(),
       body: JSON.stringify({
         opus_id: opusId,
       }),
     });
-
-    return handleApiError(response);
   },
   // 获取推广链接
   getPromotionLink: async () => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/promotion_link`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/user/promotion_link`, {
       method: 'GET',
-      headers: getHeaders(),
     });
-
-    return handleApiError(response);
   },
 
   // 获取推广统计数据
   getPromotionStatistics: async () => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/promotion_statistics`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/user/promotion_statistics`, {
       method: 'GET',
-      headers: getHeaders(),
     });
-
-    return handleApiError(response);
   },
 
   // 获取推广收益明细
@@ -179,35 +162,26 @@ export const userApi = {
       url += `&status=${status}`;
     }
 
-    const response = await fetch(url, {
+    return requestWithAuthorization(url, {
       method: 'GET',
-      headers: getHeaders(),
     });
-
-    return handleApiError(response);
   },
 
   // 获取推广用户列表
   getPromotionUsers: async (page: number = 1, pageSize: number = 10) => {
-    const response = await fetch(
+    return requestWithAuthorization(
       `${API_CONFIG.VIDOR_AI_BASE}/api/user/promotion_users?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
-        headers: getHeaders(),
       }
     );
-
-    return handleApiError(response);
   },
 
   // 注销账户
   closeAccount: async () => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/user/close_account`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/user/close_account`, {
       method: 'POST',
-      headers: getHeaders(),
     });
-
-    return handleApiError(response);
   },
 };
 
@@ -215,51 +189,39 @@ export const userApi = {
 export const paymentApi = {
   // 创建PayPal支付会话
   createPaypalSession: async (priceId: string) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/stripe`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/stripe`, {
       method: 'POST',
-      headers: getHeaders(),
       body: JSON.stringify({
         price_id: priceId,
       }),
     });
-
-    return handleApiError(response);
   },
 
   // 获取订阅记录
   getSubscriptions: async () => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/subscriptions`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/subscriptions`, {
       method: 'GET',
-      headers: getHeaders(),
     });
-
-    return handleApiError(response);
   },
 
   // 获取支付记录（对齐 seedance 实现）
   getPayLog: async (page: number = 1, pageSize: number = 10) => {
-    const response = await fetch(
+    return requestWithAuthorization(
       `${API_CONFIG.VIDOR_AI_BASE}/api/user/pay_log?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
-        headers: getHeaders(),
       }
     );
-
-    return handleApiError(response);
   },
 
   // 取消订阅
   cancelSubscription: async (id: number) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/subscription/cancel`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/subscription/cancel`, {
       method: 'POST',
-      headers: getHeaders(),
       body: JSON.stringify({
         id: id,
       }),
     });
-
-    return handleApiError(response);
   },
 
   // 创建发票（与 seedance 保持一致）
@@ -268,13 +230,10 @@ export const paymentApi = {
     company_address?: string;
     pay_log_id: number;
   }) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/create_invoice`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/pay/create_invoice`, {
       method: 'POST',
-      headers: getHeaders(),
       body: JSON.stringify(params),
     });
-
-    return handleApiError(response);
   },
 };
 
@@ -287,9 +246,8 @@ export const videoApi = {
     duration: number;
     framepersecond?: number;
   }) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/text2video`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/text2video`, {
       method: 'POST',
-      headers: getHeaders(),
       body: JSON.stringify({
         prompt: params.prompt,
         resolution: params.resolution,
@@ -298,8 +256,6 @@ export const videoApi = {
         framepersecond: params.framepersecond || 24,
       }),
     });
-
-    return handleApiError(response);
   },
 
   // 图生视频接口
@@ -326,34 +282,18 @@ export const videoApi = {
 
     console.log(formData);
 
-    // 为FormData请求创建特殊的头部（不包含Content-Type，让浏览器自动设置）
-    const token = requireAuthorizedToken();
-    const headers: Record<string, string> = {
-      'x-appid': API_CONFIG.APP_ID,
-    };
-
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/img2video`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/img2video`, {
       method: 'POST',
-      headers: headers,
       body: formData,
     });
-
-    return handleApiError(response);
   },
 
 
   // 检查任务状态接口
   checkTaskStatus: async (taskId: string) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/check_task_status?task_id=${taskId}`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/check_task_status?task_id=${taskId}`, {
       method: 'GET',
-      headers: getHeaders(),
     });
-
-    return handleApiError(response);
   },
 
 
@@ -412,9 +352,8 @@ export const videoApi = {
     camerafixed: boolean;
     audio: boolean;
   }) => {
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/seedance1.5/text2video`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/seedance1.5/text2video`, {
       method: 'POST',
-      headers: getHeaders(),
       body: JSON.stringify({
         prompt: params.prompt,
         resolution: params.resolution,
@@ -423,8 +362,6 @@ export const videoApi = {
         audio: params.audio,
       }),
     });
-
-    return handleApiError(response);
   },
 
   // Seedance 1.5 Pro - 图生视频接口
@@ -450,23 +387,10 @@ export const videoApi = {
       formData.append('image_tail_file', params.image_tail_file);
     }
 
-    // 为FormData请求创建特殊的头部（不包含Content-Type，让浏览器自动设置）
-    const token = requireAuthorizedToken();
-    const headers: Record<string, string> = {
-      'x-appid': API_CONFIG.APP_ID,
-    };
-
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/seedance1.5/img2video`, {
+    return requestWithAuthorization(`${API_CONFIG.VIDOR_AI_BASE}/api/task/volcengine/seedance1.5/img2video`, {
       method: 'POST',
-      headers: headers,
       body: formData,
     });
-
-    return handleApiError(response);
   },
 };
 
@@ -476,7 +400,7 @@ export const cmsApi = {
   getFriendLinkList: async () => {
     const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/cms/friendLinkList`, {
       method: 'GET',
-      headers: getHeaders(false), // 不需要认证
+      headers: getHeaders(), // 不需要认证
     });
 
     return handleApiError(response);
@@ -486,7 +410,7 @@ export const cmsApi = {
   trackBlogClick: async (url: string) => {
     const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/cms/statistics?url=${encodeURIComponent(url)}`, {
       method: 'GET',
-      headers: getHeaders(false), // 不需要认证
+      headers: getHeaders(), // 不需要认证
     });
 
     return handleApiError(response);
@@ -499,7 +423,7 @@ export const websiteApi = {
   getConfig: async () => {
     const response = await fetch(`${API_CONFIG.VIDOR_AI_BASE}/api/website/config`, {
       method: 'GET',
-      headers: getHeaders(false), // 不需要认证
+      headers: getHeaders(), // 不需要认证
     });
 
     return handleApiError(response);
@@ -511,7 +435,7 @@ export const websiteApi = {
       `${API_CONFIG.VIDOR_AI_BASE}/api/website/open/opus_list?page=${page}&page_size=${pageSize}`,
       {
         method: 'GET',
-        headers: getHeaders(false), // 不需要认证
+        headers: getHeaders(), // 不需要认证
       }
     );
 
@@ -535,7 +459,7 @@ export const apiWithRetry = async <T>(
     } catch (error) {
       console.error(`API call failed (attempt ${i + 1}/${maxRetries}):`, error);
 
-      if (i === maxRetries - 1) {
+      if (i === maxRetries - 1 || (error instanceof ApiError && error.code === 401)) {
         throw error;
       }
 

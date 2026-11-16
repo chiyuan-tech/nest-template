@@ -9,6 +9,7 @@ export class AuthLoadError extends Error {}
 export type AuthAction = 'openSignIn' | 'openSignUp' | 'closeAuth' | 'signOut' | 'refreshUserInfo';
 type Commands = Record<AuthAction, () => unknown | Promise<unknown>>;
 export type AuthOperation = { revision: number; signal: AbortSignal; user: AuthUser };
+const emptyUserInfo = { userInfo: null, userInfoStatus: 'idle' } as const;
 
 export function withAuthTimeout<T>(work: Promise<T>, signal: AbortSignal, timeout = AUTH_TIMEOUT_MS): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,7 @@ export function withAuthTimeout<T>(work: Promise<T>, signal: AbortSignal, timeou
 }
 
 export class AuthSessionStore {
-  private snapshot: AuthSnapshot = { status: 'loading', user: null, userInfo: null };
+  private snapshot: AuthSnapshot = { status: 'loading', user: null, ...emptyUserInfo };
   private listeners = new Set<() => void>();
   private attempt = 0;
   private revision = 0;
@@ -66,7 +67,7 @@ export class AuthSessionStore {
     this.loadFailure = false;
     this.attempt++;
     this.commands = null;
-    this.publish({ status: 'loading', user: null, userInfo: null });
+    this.publish({ status: 'loading', user: null, ...emptyUserInfo });
     const attempt = this.attempt;
     this.deadline = setTimeout(() => this.fail(new AuthLoadError('Clerk loading timed out'), attempt), AUTH_LOAD_TIMEOUT_MS);
     return attempt;
@@ -77,7 +78,7 @@ export class AuthSessionStore {
     this.invalidate();
     this.commands = null;
     this.loadFailure = error instanceof AuthLoadError;
-    this.publish({ status: 'unavailable', user: null, userInfo: null });
+    this.publish({ status: 'unavailable', user: null, ...emptyUserInfo });
     // This is a handled outage: the public page remains usable and paid actions
     // stay blocked. Keep its cause visible without raising Next's error overlay.
     console.warn('[auth] Authentication module unavailable:', error instanceof Error ? error.message : 'Unknown authentication failure');
@@ -95,24 +96,24 @@ export class AuthSessionStore {
   signedOut = (attempt: number) => {
     if (!this.isAttempt(attempt)) return;
     this.invalidate();
-    this.publish({ status: 'signed-out', user: null, userInfo: null });
+    this.publish({ status: 'signed-out', user: null, ...emptyUserInfo });
   };
   clear = () => this.signedOut(this.attempt);
   beginSync = (attempt: number, user: AuthUser): AuthOperation | null => {
     if (!this.isAttempt(attempt)) return null;
     this.invalidate();
-    this.publish({ status: 'syncing', user: null, userInfo: null });
+    this.publish({ status: 'syncing', user: null, ...emptyUserInfo });
     this.deadline = setTimeout(() => this.fail(new Error('User sync timed out'), attempt), AUTH_TIMEOUT_MS);
     return { revision: this.revision, signal: this.controller.signal, user };
   };
   isCurrent = (operation: AuthOperation) => operation.revision === this.revision && !operation.signal.aborted;
   cancel = (operation: AuthOperation) => { if (this.isCurrent(operation)) this.invalidate(); };
-  completeSync = (operation: AuthOperation, profile: UserInfo, tokens: BackendTokens) => {
+  completeSync = (operation: AuthOperation, tokens: BackendTokens) => {
     if (!this.isCurrent(operation)) return false;
-    // The token-authenticated profile supplies the backend UUID, which can differ from the Clerk ID.
-    if (typeof profile.uuid !== 'string' || !profile.uuid.trim()) throw new Error('User profile UUID unavailable');
     const expiresAt = Number(tokens.expire_at);
-    grantRequestAuthorization(tokens.access_token, expiresAt);
+    grantRequestAuthorization(tokens.access_token, expiresAt, () => {
+      if (this.isCurrent(operation)) this.fail(new Error('Backend token rejected'));
+    });
     try {
       localStorage.setItem('access_token', tokens.access_token);
       localStorage.setItem('refresh_token', tokens.refresh_token || '');
@@ -120,13 +121,16 @@ export class AuthSessionStore {
     } catch (error) { revokeRequestAuthorization(); throw error; }
     clearTimeout(this.deadline);
     this.expiry = setTimeout(() => this.fail(new Error('Session expired')), Math.min(expiresAt * 1000 - Date.now(), 2147483647));
-    this.publish({ status: 'signed-in', user: operation.user, userInfo: profile });
+    this.publish({ status: 'signed-in', user: operation.user, userInfo: null, userInfoStatus: 'loading' });
     return true;
   };
   updateProfile = (operation: AuthOperation, profile: UserInfo) => {
-    if (!this.isCurrent(operation)) return;
-    if (profile.uuid !== this.snapshot.userInfo?.uuid) throw new Error('User profile identity mismatch');
-    this.publish({ ...this.snapshot, userInfo: profile });
+    if (!this.isCurrent(operation) || this.snapshot.status !== 'signed-in') return;
+    this.publish({ ...this.snapshot, userInfo: profile, userInfoStatus: 'ready' });
+  };
+  setUserInfoStatus = (operation: AuthOperation, status: 'loading' | 'error') => {
+    if (!this.isCurrent(operation) || this.snapshot.status !== 'signed-in' || this.snapshot.userInfoStatus === status) return;
+    this.publish({ ...this.snapshot, userInfoStatus: status });
   };
   run = async (action: AuthAction): Promise<void> => {
     const attempt = this.attempt;
@@ -136,7 +140,7 @@ export class AuthSessionStore {
     // Revoke immediately; a rejected or hanging sign-out cannot leave paid actions enabled.
     if (action === 'signOut') {
       this.invalidate();
-      this.publish({ status: 'loading', user: null, userInfo: null });
+      this.publish({ status: 'loading', user: null, ...emptyUserInfo });
     }
     try {
       const signal = this.controller.signal;
@@ -146,6 +150,7 @@ export class AuthSessionStore {
       }), signal);
       if (action === 'signOut' && this.isAttempt(attempt)) this.signedOut(attempt);
     } catch (error) {
+      if (action === 'refreshUserInfo') throw error;
       if (this.isAttempt(attempt) && !(action === 'signOut' && this.snapshot.status === 'signed-out')) this.fail(error, attempt);
       throw new Error(AUTH_UNAVAILABLE_MESSAGE);
     }

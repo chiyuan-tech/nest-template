@@ -31,7 +31,6 @@ import {
 } from '@/components/profile';
 import { 
   FriendLink, 
-  UserApiInfo, 
   GenerationHistoryItem 
 } from '@/components/profile/types';
 import { 
@@ -44,16 +43,11 @@ import {
 
 export default function ProfilePage() {
   const auth = useAppAuth();
-  return <ProfilePageContent key={auth.userInfo?.uuid} auth={auth} />;
+  return <ProfilePageContent key={auth.userId} auth={auth} />;
 }
 
 function ProfilePageContent({ auth }: { auth: ReturnType<typeof useAppAuth> }) {
-  const { user, isLoaded, isSignedIn, userId, status, requireAuth } = auth;
-
-  // API 鏁版嵁鐘舵€?(鐢ㄦ埛淇℃伅)
-  const [userApiInfo, setUserApiInfo] = useState<UserApiInfo | null>(null);
-  const [isLoadingUserInfo, setIsLoadingUserInfo] = useState(true);
-  const [userInfoError, setUserInfoError] = useState<string | null>(null);
+  const { user, isLoaded, isSignedIn, userId, status, requireAuth, userInfo: userApiInfo, userInfoStatus, refreshUserInfo } = auth;
 
   // 鍥剧墖鍘嗗彶璁板綍鐘舵€?
   const [historyList, setHistoryList] = useState<GenerationHistoryItem[]>([]);
@@ -123,37 +117,6 @@ function ProfilePageContent({ auth }: { auth: ReturnType<typeof useAppAuth> }) {
 
     fetchFriendlyLinks();
   }, []); // 鍙湪缁勪欢鎸傝浇鏃舵墽琛屼竴娆?
-
-  // API 璋冪敤 Effect (鑾峰彇鐢ㄦ埛淇℃伅) - 娣诲姞userId鐩戝惉
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      if (!isLoaded || !userId) {
-        // 杩樻湭鍔犺浇瀹屾垚鎴栫敤鎴锋湭鐧诲綍
-        setIsLoadingUserInfo(false);
-        setUserApiInfo(null);
-        return;
-      }
-
-      setIsLoadingUserInfo(true);
-      setUserInfoError(null);
-      try {
-        const result = await api.user.getUserInfo();
-        if (result.code === 200 && result.data) {
-          setUserApiInfo(result.data);
-        } else {
-          console.warn("User info API returned success code but no data");
-          setUserApiInfo(null);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user API info:", error);
-        setUserInfoError(error instanceof Error ? error.message : 'An unknown error occurred fetching user info');
-      } finally {
-        setIsLoadingUserInfo(false);
-      }
-    };
-
-    fetchUserInfo();
-  }, [isLoaded, userId]);
 
   // 淇敼鑾峰彇浣滃搧鍘嗗彶璁板綍鐨剈seEffect锛岀Щ闄ゅ畾鏃跺櫒
   useEffect(() => {
@@ -357,7 +320,10 @@ function ProfilePageContent({ auth }: { auth: ReturnType<typeof useAppAuth> }) {
       default: return 'Free';
     }
   };
-  const userLevelName = getUserLevelName(userApiInfo?.level);
+  const profilePlaceholder = userInfoStatus === 'loading' ? '…' : '—';
+  const userLevelName = userApiInfo ? getUserLevelName(userApiInfo.level) : profilePlaceholder;
+  const pointsRemaining = userApiInfo?.total_credits ?? profilePlaceholder;
+  const pointsUsed = userApiInfo?.use_limit ?? profilePlaceholder;
 
   // Pagination items calculation
   const paginationItems = getPaginationItems(currentPage, totalPages);
@@ -379,17 +345,17 @@ function ProfilePageContent({ auth }: { auth: ReturnType<typeof useAppAuth> }) {
     },
     {
       label: 'Points Remaining',
-      value: ((userApiInfo?.remaining_limit || 0) + (userApiInfo?.free_limit || 0)).toString(),
+      value: pointsRemaining.toString(),
       key: 'points',
     },
     {
       label: 'Points Used',
-      value: userApiInfo?.use_limit?.toString() || '0',
+      value: pointsUsed.toString(),
       key: 'pointsUsed',
     },
     {
       label: 'Total Points',
-      value: userApiInfo?.total_limit?.toString() || '0',
+      value: userApiInfo?.total_limit?.toString() ?? profilePlaceholder,
       key: 'pointsTotal',
     },
   ];
@@ -433,17 +399,25 @@ function ProfilePageContent({ auth }: { auth: ReturnType<typeof useAppAuth> }) {
                 </div>
                 <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
                   <span>Points Remaining</span>
-                  <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.remaining_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
+                  <span className="font-bold ml-2 text-card-foreground">{pointsRemaining}</span>
                 </div>
                 <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
                   <span>Points Used</span>
-                  <span className="font-bold ml-2 text-card-foreground">{userApiInfo?.use_limit || 0}</span>
+                  <span className="font-bold ml-2 text-card-foreground">{pointsUsed}</span>
                 </div>
                 <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
                   <span>Total Points</span>
-                  <span className="font-bold ml-2 text-card-foreground">{(userApiInfo?.total_limit || 0) + (userApiInfo?.free_limit || 0)}</span>
+                  <span className="font-bold ml-2 text-card-foreground">
+                    {userApiInfo ? userApiInfo.total_limit + userApiInfo.free_limit : profilePlaceholder}
+                  </span>
                 </div>
               </div>
+              {userInfoStatus === 'error' && (
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  <p role="status">Could not load your profile details.</p>
+                  <Button type="button" variant="secondary" size="sm" onClick={refreshUserInfo}>Retry</Button>
+                </div>
+              )}
               {/* Action Buttons */}
               <div className="mt-6 flex flex-wrap gap-3">
                 <Dialog open={isPayLogDialogOpen} onOpenChange={setIsPayLogDialogOpen}>

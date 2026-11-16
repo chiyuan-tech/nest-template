@@ -23,10 +23,29 @@ function AuthBridge({ store, attempt }: AuthRuntimeProps) {
   const tokenRef = useRef(getToken);
   tokenRef.current = getToken;
   const operationRef = useRef<AuthOperation | null>(null);
+  const profileRequestRef = useRef(0);
   const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
-  const [voucherNotice, setVoucherNotice] = useState<{ uuid: string; dismissed: boolean } | null>(null);
+  const [voucherNotice, setVoucherNotice] = useState<{ userId: string; dismissed: boolean } | null>(null);
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const refreshUserInfo = useCallback(async () => {
+    const operation = operationRef.current;
+    if (!operation || !store.isCurrent(operation) || store.getSnapshot().status !== 'signed-in') return;
+    const request = ++profileRequestRef.current;
+    store.setUserInfoStatus(operation, 'loading');
+    try {
+      const result = await withAuthTimeout(api.user.getUserInfo(operation.signal), operation.signal);
+      if (!store.isCurrent(operation) || request !== profileRequestRef.current) return;
+      if (result.code !== 200 || !result.data) throw new Error('User profile unavailable');
+      store.updateProfile(operation, normalizeProfile(result.data));
+    } catch (error) {
+      if (!store.isCurrent(operation) || request !== profileRequestRef.current) return;
+      store.setUserInfoStatus(operation, 'error');
+      console.warn('[auth] User profile refresh failed:', error instanceof Error ? error.message : 'Unknown profile error');
+      throw error;
+    }
+  }, [store]);
 
   useEffect(() => {
     const onStatus = (status: typeof clerk.status) => {
@@ -78,56 +97,39 @@ function AuthBridge({ store, attempt }: AuthRuntimeProps) {
       }, operation.signal);
       if (!store.isCurrent(operation)) return;
       if (result.code !== 200 || !result.data?.access_token) throw new Error('User synchronization failed');
-      const profile = await api.auth.getBootstrapProfile(result.data.access_token, operation.signal);
-      if (!store.isCurrent(operation)) return;
-      if (profile.code !== 200 || !profile.data) throw new Error('User profile unavailable');
-      if (store.completeSync(operation, normalizeProfile(profile.data), result.data) && ivcode) {
-        localStorage.removeItem('pending_ivcode');
-      }
+      if (!store.completeSync(operation, result.data)) return;
+      if (ivcode) localStorage.removeItem('pending_ivcode');
+      void refreshUserInfo().catch(() => {});
     };
     void sync().catch(error => { if (store.isCurrent(operation)) store.fail(error, attempt); });
     return () => { store.cancel(operation); };
     // Identity/session changes invalidate pending work, including account switches.
     // Clerk user resources change identity during polling; do not resync for each object update.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [store, attempt, authLoaded, userLoaded, isSignedIn, user?.id, sessionId]);
+  }, [store, attempt, authLoaded, userLoaded, isSignedIn, user?.id, sessionId, refreshUserInfo]);
 
   useEffect(() => {
-    let refreshing = false;
-    const refreshUserInfo = async () => {
-      const operation = operationRef.current;
-      if (!operation || !store.isCurrent(operation) || store.getSnapshot().status !== 'signed-in' || refreshing) return;
-      refreshing = true;
-      try {
-        const result = await withAuthTimeout(api.user.getUserInfo(operation.signal), operation.signal);
-        if (!store.isCurrent(operation)) return;
-        if (result.code !== 200 || !result.data) throw new Error('User profile unavailable');
-        store.updateProfile(operation, normalizeProfile(result.data));
-      } catch (error) {
-        if (store.isCurrent(operation)) { store.fail(error, attempt); throw error; }
-      } finally { refreshing = false; }
-    };
-    const unregister = store.register(attempt, {
+    return store.register(attempt, {
       openSignIn: () => clerk.openSignIn({ oauthFlow: 'popup', fallbackRedirectUrl: '/', signUpFallbackRedirectUrl: '/' }),
       openSignUp: () => clerk.openSignUp({ oauthFlow: 'popup', fallbackRedirectUrl: '/', signInFallbackRedirectUrl: '/' }),
       closeAuth: () => { clerk.closeSignIn(); clerk.closeSignUp(); },
       signOut: () => clerk.signOut(),
       refreshUserInfo,
     });
-    const interval = setInterval(() => { void refreshUserInfo().catch(() => {}); }, 30000);
-    return () => { clearInterval(interval); unregister(); };
-  }, [store, attempt, clerk]);
+  }, [store, attempt, clerk, refreshUserInfo]);
 
   const info = snapshot.userInfo;
-  const voucherUuid = snapshot.status === 'signed-in' && info && info.level <= 0 && info.free_times > 0 ? info.uuid : null;
+  const voucherUserId = snapshot.status === 'signed-in' && snapshot.user && info && info.level <= 0 && info.free_times > 0
+    ? snapshot.user.id
+    : null;
   useEffect(() => {
-    if (!voucherUuid) return;
-    setVoucherNotice(notice => notice?.uuid === voucherUuid ? notice : { uuid: voucherUuid, dismissed: false });
-  }, [voucherUuid]);
+    if (!voucherUserId) return;
+    setVoucherNotice(notice => notice?.userId === voucherUserId ? notice : { userId: voucherUserId, dismissed: false });
+  }, [voucherUserId]);
   const closeVoucher = useCallback(() => {
     setVoucherNotice(notice => notice && notice === voucherNotice ? { ...notice, dismissed: true } : notice);
   }, [voucherNotice]);
-  const voucherCount = info && voucherNotice?.uuid === voucherUuid && !voucherNotice.dismissed ? info.free_times : 0;
+  const voucherCount = info && voucherNotice?.userId === voucherUserId && !voucherNotice.dismissed ? info.free_times : 0;
 
   const requestedRedirect = searchParams.get('redirect_url');
   const redirectUrl = requestedRedirect?.startsWith('/') && !requestedRedirect.startsWith('//') && !requestedRedirect.includes('\\') ? requestedRedirect : '/';

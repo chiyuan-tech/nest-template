@@ -19,6 +19,10 @@ function useAuthValue(store: AuthSessionStore, retry: () => void) {
       if (store.getSnapshot().status !== 'signed-out' || action !== 'signOut') showError(error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE);
     });
   }, [store, showError]);
+  const refreshUserInfo = useCallback(async () => {
+    try { await store.run('refreshUserInfo'); }
+    catch { showError('Could not refresh your profile. Please try again.'); }
+  }, [store, showError]);
   return {
     ...snapshot,
     isLoaded: snapshot.status !== 'loading' && snapshot.status !== 'syncing',
@@ -28,7 +32,7 @@ function useAuthValue(store: AuthSessionStore, retry: () => void) {
     openSignUp: () => perform('openSignUp'),
     closeAuth: () => perform('closeAuth'),
     signOut: () => perform('signOut'),
-    refreshUserInfo: async () => { try { await store.run('refreshUserInfo'); } catch { showError(AUTH_UNAVAILABLE_MESSAGE); } },
+    refreshUserInfo,
     clearUserState: store.clear,
     reportFailure: store.fail,
     retry,

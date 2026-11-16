@@ -1,4 +1,5 @@
 export type AuthStatus = 'loading' | 'syncing' | 'signed-out' | 'signed-in' | 'unavailable';
+export type UserInfoStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 // Application-owned data. Public components never receive a Clerk resource.
 export interface AuthUser {
@@ -12,7 +13,6 @@ export interface AuthUser {
 }
 
 export interface UserInfo {
-  uuid: string;
   email: string;
   from_login: string;
   nickname: string;
@@ -35,6 +35,7 @@ export interface AuthSnapshot {
   status: AuthStatus;
   user: AuthUser | null;
   userInfo: UserInfo | null;
+  userInfoStatus: UserInfoStatus;
 }
 
 export interface BackendTokens {

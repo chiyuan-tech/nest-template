@@ -48,7 +48,7 @@ interface HistoryItem {
 
 export default function Hero() {
   const { isSignedIn, requireAuth } = useAppAuth();
-  const { userInfo } = useUserInfo();
+  const { userInfo, refreshUserInfo } = useUserInfo();
   const { openAuthModal } = useAuthModal();
   const { openUpgradeModal } = useUpgradeModal();
   const { success: showSuccess, error: showError, info: showInfo } = useToast();
@@ -115,7 +115,7 @@ export default function Hero() {
         voucherEligible: false,
         voucherRestricted: false,
         allowed: false,
-        primaryAction: 'signin' as const,
+        primaryAction: isSignedIn ? 'generate' as const : 'signin' as const,
         buttonText: 'GENERATE',
         costBadge: 'free',
         requiredCredits: 0,
@@ -214,6 +214,7 @@ export default function Hero() {
 
     // Check user info is loaded
     if (!userInfo) {
+      void refreshUserInfo();
       showError('Loading user information, please wait...');
       return;
     }
@@ -301,6 +302,7 @@ export default function Hero() {
 
       if (result.code === 200 && result.data?.task_id) {
         const taskId = result.data.task_id;
+        void refreshUserInfo();
         const taskResult = await api.video.pollTaskStatus(
           taskId,
           (p, statusMsg) => {

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useAppAuth } from '@/components/auth/auth-provider';
-import { useUserInfo } from '@/lib/providers';
 import { api } from '@/lib/api';
 import { useToast } from '@/components/ui/toast-provider';
 import { AuthButton } from '@/components/auth';
@@ -75,8 +74,12 @@ interface WebsiteConfig {
 const PLACEHOLDER = '***';
 
 export default function PromotionClient() {
-  const { userInfo } = useUserInfo();
-  const { openSignIn } = useAppAuth();
+  const auth = useAppAuth();
+  return <PromotionContent key={auth.userId} auth={auth} />;
+}
+
+function PromotionContent({ auth }: { auth: ReturnType<typeof useAppAuth> }) {
+  const { isSignedIn: isLoggedIn, openSignIn } = auth;
   const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   const [promotionLink, setPromotionLink] = useState<PromotionLink | null>(null);
@@ -92,8 +95,6 @@ export default function PromotionClient() {
   const [currentView, setCurrentView] = useState<'earnings' | 'users'>('earnings');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [websiteConfig, setWebsiteConfig] = useState<WebsiteConfig | null>(null);
-
-  const isLoggedIn = Boolean(userInfo?.id);
 
   // Fetchers
   const fetchWebsiteConfig = async () => {

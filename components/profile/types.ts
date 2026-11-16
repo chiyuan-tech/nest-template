@@ -12,25 +12,6 @@ export interface FriendLink {
   created_time: number;
 }
 
-// 定义从API获取的用户信息类型
-export interface UserApiInfo {
-  uuid: string;
-  email: string;
-  from_login: string;
-  nickname: string;
-  avatar?: string;
-  free_limit: number;
-  remaining_limit: number;
-  total_limit: number;
-  use_limit: number;
-  vip_last_time: number;
-  level: number;
-  created_at: number;
-  updated_at: number;
-  status: number;
-  id: number;
-}
-
 // 定义图片历史记录项的类型
 export interface GenerationHistoryItem {
   id: number;

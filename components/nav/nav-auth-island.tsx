@@ -31,7 +31,7 @@ const CoinsIcon = ({ className }: { className: string }) => (
 
 function NavAuthIsland({ variant = 'desktop' }: NavAuthIslandProps) {
   const { isSignedIn, reportFailure } = useAppAuth();
-  const { userInfo, isLoadingUserInfo } = useUserInfo();
+  const { userInfo, isLoadingUserInfo, userInfoStatus, refreshUserInfo } = useUserInfo();
 
   const coinIconClassName = variant === 'desktop' ? 'h-4 w-4' : 'h-3 w-3';
 
@@ -52,7 +52,17 @@ function NavAuthIsland({ variant = 'desktop' }: NavAuthIslandProps) {
       {isSignedIn && (
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <CoinsIcon className={coinIconClassName} />
-          <span>{isLoadingUserInfo ? '...' : userInfo?.total_credits || '0'}</span>
+          <span>{userInfo?.total_credits ?? (isLoadingUserInfo ? '…' : '—')}</span>
+          {userInfoStatus === 'error' && (
+            <button
+              type="button"
+              onClick={refreshUserInfo}
+              aria-label="Retry loading credits"
+              className="rounded-full bg-secondary px-2 py-1 text-xs text-foreground hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              Retry
+            </button>
+          )}
         </div>
       )}
       <AuthButton />
