@@ -96,12 +96,16 @@ test('old persisted tokens cannot enable payment or any generation endpoint', as
 
 test('only completed live user synchronization enables authenticated requests', async () => {
   const { store, attempt } = fresh();
-  const operation = store.beginSync(attempt, user('user-a'));
+  const operation = store.beginSync(attempt, user('clerk-a'));
+  const incompleteProfile = profile('account-a');
+  delete incompleteProfile.uuid;
+  assert.throws(() => store.completeSync(operation, incompleteProfile, tokens('account-a')), /UUID unavailable/);
   await assertPaidActionsBlocked();
-  store.completeSync(operation, profile('user-a'), tokens('user-a'));
+  assert.equal(store.completeSync(operation, profile('account-a'), tokens('account-a')), true);
+  assert.equal(store.getSnapshot().userInfo.uuid, 'account-a');
   await api.payment.createPaypalSession('price-test');
   assert.equal(requests.length, 1);
-  assert.equal(requests[0].options.headers.Authorization, 'Bearer token-user-a');
+  assert.equal(requests[0].options.headers.Authorization, 'Bearer token-account-a');
 });
 
 test('runtime failure revokes an existing session and rejects a late synchronization result', async () => {
@@ -119,16 +123,20 @@ test('runtime failure revokes an existing session and rejects a late synchroniza
   assert.equal(requests.length, 2, 'Public requests remain available');
 });
 
-test('account switch discards user A and rejects mismatched user profiles', () => {
+test('account switch discards old responses and refresh stays on the current backend account', () => {
   const { store, attempt } = fresh();
-  const old = store.beginSync(attempt, user('user-a'));
-  const next = store.beginSync(attempt, user('user-b'));
-  assert.equal(store.completeSync(old, profile('user-a'), tokens('user-a')), false);
-  assert.throws(() => store.completeSync(next, profile('user-a'), tokens('user-a')), /identity mismatch/);
+  const old = signIn(store, attempt, 'account-a');
+  const next = store.beginSync(attempt, user('clerk-b'));
+  assert.equal(store.completeSync(old, profile('account-a'), tokens('account-a')), false);
   assert.throws(guard.requireAuthorizedToken);
-  store.completeSync(next, profile('user-b'), tokens('user-b'));
-  assert.equal(store.getSnapshot().user.id, 'user-b');
-  assert.equal(guard.requireAuthorizedToken(), 'token-user-b');
+  assert.equal(store.completeSync(next, profile('account-b'), tokens('account-b')), true);
+  store.updateProfile(old, profile('account-a'));
+  assert.throws(() => store.updateProfile(next, profile('account-a')), /identity mismatch/);
+  const refreshed = { ...profile('account-b'), remaining_limit: 3 };
+  store.updateProfile(next, refreshed);
+  assert.equal(store.getSnapshot().userInfo, refreshed);
+  assert.equal(store.getSnapshot().user.id, 'clerk-b');
+  assert.equal(guard.requireAuthorizedToken(), 'token-account-b');
 });
 
 test('loading and user-sync deadlines fail closed', t => {

@@ -109,7 +109,8 @@ export class AuthSessionStore {
   cancel = (operation: AuthOperation) => { if (this.isCurrent(operation)) this.invalidate(); };
   completeSync = (operation: AuthOperation, profile: UserInfo, tokens: BackendTokens) => {
     if (!this.isCurrent(operation)) return false;
-    if (profile.uuid !== operation.user.id) throw new Error('User sync identity mismatch');
+    // The token-authenticated profile supplies the backend UUID, which can differ from the Clerk ID.
+    if (typeof profile.uuid !== 'string' || !profile.uuid.trim()) throw new Error('User profile UUID unavailable');
     const expiresAt = Number(tokens.expire_at);
     grantRequestAuthorization(tokens.access_token, expiresAt);
     try {
@@ -124,7 +125,7 @@ export class AuthSessionStore {
   };
   updateProfile = (operation: AuthOperation, profile: UserInfo) => {
     if (!this.isCurrent(operation)) return;
-    if (profile.uuid !== operation.user.id) throw new Error('User profile identity mismatch');
+    if (profile.uuid !== this.snapshot.userInfo?.uuid) throw new Error('User profile identity mismatch');
     this.publish({ ...this.snapshot, userInfo: profile });
   };
   run = async (action: AuthAction): Promise<void> => {
